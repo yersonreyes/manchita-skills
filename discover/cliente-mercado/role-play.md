@@ -45,3 +45,6 @@ Role Play es una técnica de investigación y diseño en la que los participante
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Cliente/Mercado > Cliente/Mercado

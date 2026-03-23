@@ -60,3 +60,6 @@ Lo opuesto: qué NO hacer, qué falla en otros contextos. Evitar errores conocid
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Empresa > Empresa

@@ -51,3 +51,6 @@ En inglés: **S**trengths, **W**eaknesses, **O**pportunities, **T**hreats (SWOT)
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Empresa > Empresa

@@ -56,3 +56,6 @@ Una User Persona es una representación arquetípica de un usuario objetivo, bas
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Cliente/Mercado > Cliente/Mercado

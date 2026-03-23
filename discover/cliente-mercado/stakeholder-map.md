@@ -51,3 +51,6 @@ El Stakeholder Map es una herramienta visual que identifica y clasifica a todas 
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Cliente/Mercado > Cliente/Mercado

@@ -57,3 +57,6 @@ El Customer Journey Map (Mapa de Viaje del Cliente) es una representación visua
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Cliente/Mercado > Cliente/Mercado

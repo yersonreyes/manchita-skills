@@ -57,3 +57,6 @@ El Mapa de Empatía es una herramienta visual que ayuda a entender profundamente
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Cliente/Mercado > Cliente/Mercado

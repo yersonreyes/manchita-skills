@@ -56,3 +56,6 @@ SISTEMA SIMPLE                  SISTEMA COMPLEJO
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Empresa > Empresa

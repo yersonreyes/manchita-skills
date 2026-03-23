@@ -55,3 +55,6 @@ El Diagnóstico de la Industria es un análisis exhaustivo del sector o mercado 
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Empresa > Empresa

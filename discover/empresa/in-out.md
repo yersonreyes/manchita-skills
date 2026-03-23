@@ -49,3 +49,6 @@ El Diagrama de In/Out es una herramienta simple pero poderosa para definir los l
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Empresa > Empresa

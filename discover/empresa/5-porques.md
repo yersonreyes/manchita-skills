@@ -33,3 +33,6 @@ Los 5 Porqués (5 Whys) es una técnica de análisis causal iterativa que consis
 ---
 
 > 🐾 Herramienta de Discover
+
+---
+> 🐾 Herramienta de Empresa > Empresa
