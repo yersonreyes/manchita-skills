@@ -66,3 +66,54 @@ El MVP (Mínimo Producto Viable) es la versión más simple de un producto que p
 ---
 
 > 🐾 Herramienta de Develop > Prototipar
+
+---
+
+## 📖 ¿Qué es?
+
+El **MVP (Mínimo Producto Viable)** es la versión más simple de un producto que puede ser lanzada para validar una hipótesis de negocio. Es la cantidad mínima de trabajo necesaria para obtener la máxima cantidad de aprendizaje validado.
+
+El MVP no es un producto incompleto - es un producto completo en su forma más básica pero suficiente para resolver el problema core del usuario. Su objetivo no es tener un producto perfecto, sino aprender rápido qué funciona.
+
+## 💡 Ejemplo de uso
+
+**Caso: Validar app de delivery de comida**
+
+**Opción 1 (MVP tradicional):**
+- App con lista de restaurantes
+- Carrito de compras
+- Checkout con pago
+- Tracking de entrega
+- Panel para restaurantes
+
+**Problema:** 3 meses de desarrollo antes de validar.
+
+**Opción 2 (MVP smarter):**
+1. **Landing page** con lista de restaurantes + formulario de pedido
+2. **Pedidos por WhatsApp** - el equipo fulfilled manualmente
+3. **Solo 5 restaurantes**合作伙伴
+
+**Validación en 2 semanas:**
+- ¿La gente ordena comida online?
+- ¿Cuánto están dispuestos a pagar?
+- ¿Qué tipo de comida prefieren?
+- ¿El delivery es el principal dolor?
+
+**Resultado:** Aprendieron que el delivery era menos importante que el problema real (no había opciones de comida saludable en la zona). Pivotaron el negocio antes de invertir en desarrollo.
+
+## 🛠️ Herramientas digitales
+
+| Herramienta | Descripción | Precio |
+|-------------|-------------|--------|
+| **Carrd** | Landing pages simples | $0-19€/año |
+| **Webflow** | Landing pages avanzado | $0-19€/mes |
+| **Bubble** | App sin código | $0-32€/mes |
+| **Glide** | App desde Google Sheets | $0-8€/mes |
+| **Typeform** | Formularios de validación | $0-25€/mes |
+
+## 📚 Recursos adicionales
+
+- [The Lean Startup - Eric Ries](https://theleanstartup.com/) - Metodología MVP
+- [MVP Canvas - Ash Maurya](https://ashmaurya.com/mvp-canvas/) - Plantilla MVP
+- [Y Combinator - Startup Library](https://www.ycombinator.com/library/) - Recursos para startups
+- [Startup Mistakes - Y Combinator](https://www.ycombinator.com/library/?c=startup_mistakes) - Errores comunes
