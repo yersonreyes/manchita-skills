@@ -1,0 +1,167 @@
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-800">Gestión de Usuarios</h1>
+    <p class="text-gray-500 mt-1">Administra los usuarios del sistema</p>
+  </div>
+  <p-button
+    *hasPermission="'users:create'"
+    label="Nuevo Usuario"
+    icon="pi pi-plus"
+    (onClick)="openCreate()"
+  />
+</div>
+
+<p-card>
+  <p-table
+    [value]="users()"
+    [loading]="loading()"
+    [paginator]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} usuarios"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Roles</th>
+        <th>Estado</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-user>
+      <tr>
+        <td>
+          <div class="flex items-center gap-2">
+            <span class="font-medium">{{ user.nombre }}</span>
+            @if (user.isSuperAdmin) {
+              <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Super Admin</span>
+            }
+          </div>
+        </td>
+        <td class="text-gray-600">{{ user.email }}</td>
+        <td class="text-gray-600 text-sm">{{ getUserRolesLabel(user) }}</td>
+        <td>
+          <p-tag
+            [value]="user.activo ? 'Activo' : 'Inactivo'"
+            [severity]="user.activo ? 'success' : 'danger'"
+          />
+        </td>
+        <td>
+          <div class="flex justify-center gap-1">
+            <p-button
+              *hasPermission="'users:update'"
+              icon="pi pi-pencil"
+              [rounded]="true"
+              severity="secondary"
+              variant="text"
+              pTooltip="Editar"
+              tooltipPosition="top"
+              (onClick)="openEdit(user)"
+            />
+            <p-button
+              *hasPermission="'users:update'"
+              icon="pi pi-shield"
+              [rounded]="true"
+              severity="info"
+              variant="text"
+              pTooltip="Asignar roles"
+              tooltipPosition="top"
+              (onClick)="openRolesDialog(user)"
+            />
+            <p-button
+              *hasPermission="'users:update'"
+              [icon]="user.activo ? 'pi pi-ban' : 'pi pi-check-circle'"
+              [rounded]="true"
+              [severity]="user.activo ? 'warn' : 'success'"
+              variant="text"
+              [pTooltip]="user.activo ? 'Desactivar' : 'Activar'"
+              tooltipPosition="top"
+              (onClick)="toggleActive(user)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="text-center text-gray-400 py-8">
+          No se encontraron usuarios
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<!-- Diálogo crear/editar -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [header]="editingUser() ? 'Editar Usuario' : 'Nuevo Usuario'"
+  [style]="{ width: '480px' }"
+>
+  <div class="flex flex-col gap-4 py-2">
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Nombre completo *</label>
+      <input pInputText [(ngModel)]="form.nombre" placeholder="Juan Pérez" class="w-full" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Correo electrónico *</label>
+      <input pInputText type="email" [(ngModel)]="form.email" placeholder="correo@ejemplo.com" class="w-full" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">
+        Contraseña {{ editingUser() ? '(dejar vacío para no cambiar)' : '*' }}
+      </label>
+      <p-password
+        [(ngModel)]="form.password"
+        [feedback]="false"
+        [toggleMask]="true"
+        placeholder="••••••••"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+      />
+    </div>
+    <div class="flex items-center gap-2">
+      <p-checkbox [(ngModel)]="form.activo" [binary]="true" inputId="activo" />
+      <label for="activo" class="text-sm text-gray-700">Usuario activo</label>
+    </div>
+  </div>
+  <ng-template #footer>
+    <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="dialogVisible.set(false)" />
+    <p-button [label]="editingUser() ? 'Guardar cambios' : 'Crear usuario'" (onClick)="saveUser()" />
+  </ng-template>
+</p-dialog>
+
+<!-- Diálogo asignación de roles -->
+<p-dialog
+  [(visible)]="rolesDialogVisible"
+  [modal]="true"
+  [header]="'Roles de ' + (selectedUser()?.nombre ?? '')"
+  [style]="{ width: '420px' }"
+>
+  <div class="flex flex-col gap-3 py-2">
+    @for (role of roles(); track role.id) {
+      <div class="flex items-center gap-3 p-3 rounded border hover:bg-gray-50 cursor-pointer"
+        (click)="toggleRole(role.id)">
+        <p-checkbox
+          [binary]="true"
+          [ngModel]="isRoleSelected(role.id)"
+          (ngModelChange)="toggleRole(role.id)"
+          [inputId]="'role-' + role.id"
+        />
+        <div>
+          <p class="font-medium text-sm">{{ role.nombre }}</p>
+          @if (role.descripcion) {
+            <p class="text-xs text-gray-500">{{ role.descripcion }}</p>
+          }
+        </div>
+      </div>
+    }
+  </div>
+  <ng-template #footer>
+    <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="rolesDialogVisible.set(false)" />
+    <p-button label="Guardar roles" (onClick)="saveRoles()" />
+  </ng-template>
+</p-dialog>

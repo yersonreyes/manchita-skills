@@ -1,0 +1,110 @@
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-800">Gestión de Roles</h1>
+    <p class="text-gray-500 mt-1">Administra los roles y sus permisos</p>
+  </div>
+</div>
+
+<p-card>
+  <p-table
+    [value]="roles()"
+    [loading]="loading()"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Rol</th>
+        <th>Descripción</th>
+        <th>Permisos</th>
+        <th>Estado</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-role>
+      <tr>
+        <td>
+          <span class="font-semibold text-gray-800">{{ role.nombre }}</span>
+          <span class="text-xs text-gray-400 ml-2 font-mono">({{ role.codigo }})</span>
+        </td>
+        <td class="text-gray-600 text-sm">{{ role.descripcion || '—' }}</td>
+        <td>
+          <div class="flex flex-wrap gap-1 max-w-xs">
+            @if (!role.permissions || role.permissions.length === 0) {
+              <span class="text-gray-400 text-sm">Sin permisos</span>
+            } @else {
+              @for (perm of role.permissions; track perm.id) {
+                <span class="perm-badge">{{ perm.codigo }}</span>
+              }
+            }
+          </div>
+        </td>
+        <td>
+          <p-tag
+            [value]="role.activo ? 'Activo' : 'Inactivo'"
+            [severity]="role.activo ? 'success' : 'danger'"
+          />
+        </td>
+        <td>
+          <div class="flex justify-center">
+            <p-button
+              *hasPermission="'permissions:update'"
+              icon="pi pi-cog"
+              [rounded]="true"
+              severity="info"
+              variant="text"
+              pTooltip="Editar permisos"
+              tooltipPosition="top"
+              (onClick)="openPermissionsDialog(role)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="text-center text-gray-400 py-8">
+          No se encontraron roles
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<!-- Diálogo edición de permisos -->
+<p-dialog
+  [(visible)]="permissionsDialogVisible"
+  [modal]="true"
+  [header]="'Permisos del rol: ' + (selectedRole()?.nombre ?? '')"
+  [style]="{ width: '520px' }"
+>
+  <div class="grid grid-cols-1 gap-2 py-2 max-h-96 overflow-y-auto">
+    @for (perm of allPermissions(); track perm.id) {
+      <div
+        class="flex items-center gap-3 p-3 rounded border hover:bg-gray-50 cursor-pointer"
+        (click)="togglePermission(perm.id)"
+      >
+        <p-checkbox
+          [binary]="true"
+          [ngModel]="isPermissionSelected(perm.id)"
+          (ngModelChange)="togglePermission(perm.id)"
+          [inputId]="'perm-' + perm.id"
+        />
+        <div>
+          <p class="font-mono text-sm font-medium text-gray-800">{{ perm.codigo }}</p>
+          @if (perm.descripcion) {
+            <p class="text-xs text-gray-500">{{ perm.descripcion }}</p>
+          }
+        </div>
+      </div>
+    }
+  </div>
+  <ng-template #footer>
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      variant="outlined"
+      (onClick)="permissionsDialogVisible.set(false)"
+    />
+    <p-button label="Guardar permisos" (onClick)="savePermissions()" />
+  </ng-template>
+</p-dialog>

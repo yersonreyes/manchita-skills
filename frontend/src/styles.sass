@@ -1,0 +1,38 @@
+@use 'colors' as *
+@import 'primeicons/primeicons.css'
+
+// ─── Reset base ──────────────────────────────────────────────────────────────
+*
+  box-sizing: border-box
+
+body
+  margin: 0
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif
+  background-color: #f8fafc
+
+// ─── Overrides PrimeNG ───────────────────────────────────────────────────────
+
+// Botón outlined: mantener borde de 1px
+.p-button-outlined
+  border-width: 1px !important
+
+// DataTable: headers en bold, body más pequeño
+.p-datatable
+  .p-datatable-thead > tr > th
+    font-weight: 600
+    font-size: 0.875rem
+
+  .p-datatable-tbody > tr > td
+    font-size: 0.875rem
+
+// InputText: ancho completo por defecto cuando está en un formulario
+.p-fluid .p-inputtext
+  width: 100%
+
+// Toast: z-index alto
+.p-toast
+  z-index: 9999
+
+// ─── Utilidades ──────────────────────────────────────────────────────────────
+.cursor-pointer
+  cursor: pointer

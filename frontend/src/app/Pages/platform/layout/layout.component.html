@@ -1,0 +1,136 @@
+<!-- Sidebar -->
+<aside
+  class="sidebar"
+  [class.sidebar--collapsed]="sidebarCollapsed()"
+>
+  <!-- Logo -->
+  <div class="sidebar__logo">
+    <i class="pi pi-star-fill text-green-400 text-xl"></i>
+    @if (!sidebarCollapsed()) {
+      <span class="sidebar__title">Manchita Skills</span>
+    }
+  </div>
+
+  <!-- Navegación -->
+  <nav class="sidebar__nav">
+    @for (item of menuItems; track item.route) {
+      @if (isMenuItemVisible(item)) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="sidebar__link--active"
+          class="sidebar__link"
+          [pTooltip]="sidebarCollapsed() ? item.label : ''"
+          tooltipPosition="right"
+        >
+          <i [class]="item.icon + ' text-lg'"></i>
+          @if (!sidebarCollapsed()) {
+            <span>{{ item.label }}</span>
+          }
+        </a>
+      }
+    }
+  </nav>
+
+  <!-- Footer del sidebar -->
+  <div class="sidebar__footer">
+    <button
+      class="sidebar__link"
+      [pTooltip]="sidebarCollapsed() ? 'Cerrar Sesión' : ''"
+      tooltipPosition="right"
+      (click)="logout()"
+    >
+      <i class="pi pi-sign-out text-lg"></i>
+      @if (!sidebarCollapsed()) {
+        <span>Cerrar Sesión</span>
+      }
+    </button>
+  </div>
+</aside>
+
+<!-- Header -->
+<header
+  class="header"
+  [class.header--expanded]="!sidebarCollapsed()"
+>
+  <div class="header__left">
+    <p-button
+      [icon]="sidebarCollapsed() ? 'pi pi-bars' : 'pi pi-times'"
+      [rounded]="true"
+      severity="secondary"
+      variant="text"
+      (onClick)="toggleSidebar()"
+    />
+    <span class="header__app-title">Panel de Administración</span>
+  </div>
+
+  <div class="header__right">
+    @if (user(); as u) {
+      <button class="header__user" (click)="userPopover.toggle($event)">
+        <p-avatar
+          [label]="u.nombre.charAt(0).toUpperCase()"
+          shape="circle"
+          styleClass="bg-green-600 text-white"
+        />
+        <div class="header__user-info">
+          <span class="header__user-name">{{ u.nombre }}</span>
+          <span class="header__user-role">
+            {{ u.isSuperAdmin ? 'Super Admin' : 'Usuario' }}
+          </span>
+        </div>
+        <i class="pi pi-chevron-down text-gray-400 text-xs"></i>
+      </button>
+
+      <p-popover #userPopover>
+        <div class="flex flex-col gap-1 min-w-40">
+          <a
+            routerLink="/platform/profile"
+            class="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 text-sm cursor-pointer"
+            (click)="userPopover.hide()"
+          >
+            <i class="pi pi-user text-gray-500"></i>
+            <span>Mi Perfil</span>
+          </a>
+          <hr class="my-1 border-gray-200" />
+          <button
+            class="flex items-center gap-2 px-3 py-2 rounded hover:bg-red-50 text-sm text-red-600 w-full"
+            (click)="logout(); userPopover.hide()"
+          >
+            <i class="pi pi-sign-out"></i>
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </p-popover>
+    }
+  </div>
+</header>
+
+<!-- Contenido principal -->
+<main
+  class="main-content"
+  [class.main-content--expanded]="!sidebarCollapsed()"
+>
+  <router-outlet />
+</main>
+
+<!-- Modal sesión expirada -->
+<p-dialog
+  [(visible)]="sessionExpiredVisible"
+  [modal]="true"
+  [closable]="false"
+  header="Sesión Expirada"
+  [style]="{ width: '400px' }"
+>
+  <div class="flex flex-col items-center gap-4 py-4">
+    <i class="pi pi-lock text-5xl text-orange-400"></i>
+    <p class="text-center text-gray-600">
+      Tu sesión ha expirado. Por favor, inicia sesión nuevamente para continuar.
+    </p>
+  </div>
+  <ng-template #footer>
+    <p-button
+      label="Iniciar Sesión"
+      icon="pi pi-sign-in"
+      (onClick)="onSessionExpiredLogin()"
+    />
+  </ng-template>
+</p-dialog>
