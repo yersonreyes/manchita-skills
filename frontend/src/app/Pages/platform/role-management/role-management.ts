@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { PermissionDto, RoleDto } from '@core/services/permissionService/permission.res.dto';
 import { PermissionService } from '@core/services/permissionService/permission.service';
 import { UiDialogService } from '@core/services/ui-dialog.service';
@@ -22,6 +23,7 @@ import { Tooltip } from 'primeng/tooltip';
     Card,
     Tooltip,
     Checkbox,
+    FormsModule,
     HasPermissionDirective,
   ],
   templateUrl: './role-management.html',
