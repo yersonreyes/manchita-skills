@@ -57,7 +57,7 @@ export class RefreshTokenResponseDto {
 }
 
 export class MessageResponseDto {
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: Object, nullable: true, example: null })
   res: null;
 
   @ApiProperty()
