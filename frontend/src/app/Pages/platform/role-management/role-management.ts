@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PermissionDto, RoleDto } from '@core/services/permissionService/permission.res.dto';
 import { PermissionService } from '@core/services/permissionService/permission.service';
@@ -30,6 +30,9 @@ import { Tooltip } from 'primeng/tooltip';
   styleUrl: './role-management.sass',
 })
 export class RoleManagement implements OnInit {
+  private readonly permissionService = inject(PermissionService);
+  private readonly uiDialog = inject(UiDialogService);
+
   roles = signal<RoleDto[]>([]);
   allPermissions = signal<PermissionDto[]>([]);
   loading = signal(false);
@@ -38,11 +41,6 @@ export class RoleManagement implements OnInit {
   permissionsDialogVisible = signal(false);
   selectedRole = signal<RoleDto | null>(null);
   selectedPermissionIds = signal<number[]>([]);
-
-  constructor(
-    private readonly permissionService: PermissionService,
-    private readonly uiDialog: UiDialogService,
-  ) {}
 
   ngOnInit(): void {
     void this.loadData();
