@@ -10,6 +10,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─── ENUMS ──────────────────────────────────────────────────────────────────
+
+enum ProjectStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum ProjectMemberRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+enum PhaseStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ToolApplicationStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum AttachmentType {
+  IMAGE
+  PDF
+  LINK
+  OTHER
+}
+
 // ─── USUARIO ─────────────────────────────────────────────────────────────────
 
 model User {
@@ -22,10 +56,17 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // Relaciones
+  // Relaciones auth
   userRoles       UserRole[]
   userPermissions UserPermission[]
   refreshTokens   RefreshToken[]
+
+  // Relaciones proyecto
+  ownedProjects      Project[]                    @relation("ProjectOwner")
+  projectMemberships ProjectMember[]
+  toolApplications   ToolApplication[]            @relation("ToolApplicationCreator")
+  toolAppNotes       ToolApplicationNote[]        @relation("NoteCreator")
+  toolAppAttachments ToolApplicationAttachment[]  @relation("AttachmentCreator")
 
   @@index([activo])
 }
@@ -119,4 +160,202 @@ model RefreshToken {
 
   @@index([userId])
   @@index([tokenHash])
+}
+
+// ─── FASE DE DISEÑO (Catálogo: 4 fases Double Diamond) ──────────────────────
+
+model DesignPhase {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  nombre      String
+  descripcion String   @db.Text
+  orden       Int
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  categories    ToolCategory[]
+  projectPhases ProjectPhase[]
+
+  @@index([activo])
+}
+
+// ─── CATEGORÍA DE HERRAMIENTA (9 subcategorías) ─────────────────────────────
+
+model ToolCategory {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  nombre      String
+  descripcion String?  @db.Text
+  phaseId     Int
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  phase DesignPhase       @relation(fields: [phaseId], references: [id])
+  tools ToolCategoryTool[]
+
+  @@index([phaseId])
+  @@index([activo])
+}
+
+// ─── HERRAMIENTA DE DISEÑO (Catálogo: ~67 herramientas únicas) ──────────────
+
+model Tool {
+  id           Int      @id @default(autoincrement())
+  codigo       String   @unique
+  nombre       String
+  descripcion  String   @db.Text
+  comoSeUsa    String?  @db.Text
+  ejemplo      String?  @db.Text
+  cuandoUsarlo String?  @db.Text
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relaciones
+  categories       ToolCategoryTool[]
+  toolApplications ToolApplication[]
+
+  @@index([activo])
+}
+
+// ─── HERRAMIENTA - CATEGORÍA (Many-to-Many) ─────────────────────────────────
+
+model ToolCategoryTool {
+  toolId     Int
+  categoryId Int
+  tool       Tool         @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  category   ToolCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([toolId, categoryId])
+  @@index([toolId])
+  @@index([categoryId])
+}
+
+// ─── PROYECTO ───────────────────────────────────────────────────────────────
+
+model Project {
+  id          Int           @id @default(autoincrement())
+  nombre      String
+  descripcion String?       @db.Text
+  estado      ProjectStatus @default(DRAFT)
+  ownerId     Int
+  activo      Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relaciones
+  owner   User            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  members ProjectMember[]
+  phases  ProjectPhase[]
+
+  @@index([ownerId])
+  @@index([estado])
+  @@index([activo])
+}
+
+// ─── MIEMBRO DE PROYECTO ────────────────────────────────────────────────────
+
+model ProjectMember {
+  id        Int               @id @default(autoincrement())
+  projectId Int
+  userId    Int
+  role      ProjectMemberRole
+  createdAt DateTime          @default(now())
+
+  // Relaciones
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+// ─── FASE DE PROYECTO ───────────────────────────────────────────────────────
+
+model ProjectPhase {
+  id        Int         @id @default(autoincrement())
+  projectId Int
+  phaseId   Int
+  estado    PhaseStatus @default(NOT_STARTED)
+  orden     Int
+  notas     String?     @db.Text
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Relaciones
+  project          Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phase            DesignPhase       @relation(fields: [phaseId], references: [id])
+  toolApplications ToolApplication[]
+
+  @@unique([projectId, phaseId, orden])
+  @@index([projectId])
+  @@index([phaseId])
+}
+
+// ─── APLICACIÓN DE HERRAMIENTA ──────────────────────────────────────────────
+
+model ToolApplication {
+  id             Int                   @id @default(autoincrement())
+  projectPhaseId Int
+  toolId         Int
+  titulo         String
+  structuredData Json                  @default("{}")
+  estado         ToolApplicationStatus @default(PENDING)
+  createdById    Int
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  // Relaciones
+  projectPhase ProjectPhase              @relation(fields: [projectPhaseId], references: [id], onDelete: Cascade)
+  tool         Tool                      @relation(fields: [toolId], references: [id])
+  createdBy    User                      @relation("ToolApplicationCreator", fields: [createdById], references: [id])
+  notes        ToolApplicationNote[]
+  attachments  ToolApplicationAttachment[]
+
+  @@index([projectPhaseId])
+  @@index([toolId])
+  @@index([createdById])
+}
+
+// ─── NOTA DE APLICACIÓN ─────────────────────────────────────────────────────
+
+model ToolApplicationNote {
+  id                Int      @id @default(autoincrement())
+  toolApplicationId Int
+  contenido         String   @db.Text
+  createdById       Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relaciones
+  toolApplication ToolApplication @relation(fields: [toolApplicationId], references: [id], onDelete: Cascade)
+  createdBy       User            @relation("NoteCreator", fields: [createdById], references: [id])
+
+  @@index([toolApplicationId])
+  @@index([createdById])
+}
+
+// ─── ADJUNTO DE APLICACIÓN ──────────────────────────────────────────────────
+
+model ToolApplicationAttachment {
+  id                Int            @id @default(autoincrement())
+  toolApplicationId Int
+  nombre            String
+  url               String
+  tipo              AttachmentType
+  size              Int?
+  createdById       Int
+  createdAt         DateTime       @default(now())
+
+  // Relaciones
+  toolApplication ToolApplication @relation(fields: [toolApplicationId], references: [id], onDelete: Cascade)
+  createdBy       User            @relation("AttachmentCreator", fields: [createdById], references: [id])
+
+  @@index([toolApplicationId])
+  @@index([createdById])
 }
