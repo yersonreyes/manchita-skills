@@ -5,9 +5,13 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { PermissionGuard } from './auth/guards/permission.guard';
 import { AssetsModule } from './assets/assets.module';
 import { AuthModule } from './auth/auth.module';
+import { CatalogModule } from './catalog/catalog.module';
 import { MailModule } from './mail/mail.module';
 import { PermissionModule } from './permission/permission.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ProjectModule } from './project/project.module';
+import { ProjectPhaseModule } from './project-phase/project-phase.module';
+import { ToolApplicationModule } from './tool-application/tool-application.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -22,8 +26,11 @@ import { UserModule } from './user/user.module';
     UserModule,
     AssetsModule,
 
-    // ─── Módulos de Dominio (agregar aquí) ─────────────────────────────────
-    // Ejemplo: ItemModule, OrderModule, ProductModule
+    // ─── Módulos de Dominio ─────────────────────────────────────────────────
+    CatalogModule,
+    ProjectModule,
+    ProjectPhaseModule,
+    ToolApplicationModule,
   ],
   providers: [
     {
