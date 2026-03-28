@@ -1,0 +1,30 @@
+@use 'colors' as *
+
+// ─── CSS Custom Properties (design tokens) ───────────────────────────────────
+// Bridge SASS → CSS for JavaScript access and Tailwind @theme
+
+:root
+  // Brand — Primary (Emerald)
+  --color-primary:       #{$brand-primary}
+  --color-primary-dark:  #{$brand-primary-dark}
+  --color-primary-light: #{$brand-primary-light}
+
+  // Brand — Accent (Amber)
+  --color-accent:        #{$brand-accent}
+  --color-accent-dark:   #{$brand-accent-dark}
+
+  // Text hierarchy
+  --color-heading:       #{$text-heading}
+  --color-body:          #{$text-body}
+  --color-muted:         #{$text-muted}
+  --color-subtle:        #{$text-subtle}
+
+  // Surface / border
+  --color-border:        #{$border-color}
+  --color-hover:         #{$hover-bg}
+  --color-input-border:  #{$input-border}
+
+  // Layout
+  --color-sidebar:       #{$sidebar-bg}
+  --color-content:       #{$content-bg}
+  --color-header:        #{$header-bg}

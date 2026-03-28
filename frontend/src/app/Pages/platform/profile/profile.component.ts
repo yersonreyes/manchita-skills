@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '@core/services/authService/auth.service';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { Avatar } from 'primeng/avatar';
 import { Card } from 'primeng/card';
 import { Tag } from 'primeng/tag';
@@ -7,7 +8,7 @@ import { Tag } from 'primeng/tag';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [Card, Avatar, Tag],
+  imports: [Card, Avatar, Tag, PageHeaderComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.sass',
 })

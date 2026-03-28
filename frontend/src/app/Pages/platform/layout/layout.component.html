@@ -13,21 +13,28 @@
 
   <!-- Navegación -->
   <nav class="sidebar__nav">
-    @for (item of menuItems; track item.route) {
-      @if (isMenuItemVisible(item)) {
-        <a
-          [routerLink]="item.route"
-          routerLinkActive="sidebar__link--active"
-          class="sidebar__link"
-          [pTooltip]="sidebarCollapsed() ? item.label : ''"
-          tooltipPosition="right"
-        >
-          <i [class]="item.icon + ' text-lg'"></i>
-          @if (!sidebarCollapsed()) {
-            <span>{{ item.label }}</span>
-          }
-        </a>
-      }
+    @for (group of visibleMenuGroups(); track group.label; let isFirst = $first) {
+      <div class="sidebar__group">
+        @if (!sidebarCollapsed()) {
+          <span class="sidebar__section-label">{{ group.label }}</span>
+        } @else if (!isFirst) {
+          <div class="sidebar__group-divider"></div>
+        }
+        @for (item of group.items; track item.route) {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="sidebar__link--active"
+            class="sidebar__link"
+            [pTooltip]="sidebarCollapsed() ? item.label : ''"
+            tooltipPosition="right"
+          >
+            <i [class]="item.icon + ' text-lg'"></i>
+            @if (!sidebarCollapsed()) {
+              <span>{{ item.label }}</span>
+            }
+          </a>
+        }
+      </div>
     }
   </nav>
 

@@ -3,9 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { UiDialogService } from '@core/services/ui-dialog.service';
 import { UserDto } from '@core/services/userService/user.res.dto';
 import { UserService } from '@core/services/userService/user.service';
-import { ProjectMemberRole, ProjectStatus } from '@core/services/projectService/project.req.dto';
+import { ProjectMemberRole, ProjectStatus, UpdateProjectReqDto } from '@core/services/projectService/project.req.dto';
 import { ProjectMemberDto, ProjectResDto } from '@core/services/projectService/project.res.dto';
 import { ProjectService } from '@core/services/projectService/project.service';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { HasPermissionDirective } from '@shared/directives/has-permission.directive';
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
@@ -37,8 +38,10 @@ interface SelectOption<T> {
     Tooltip,
     Checkbox,
     HasPermissionDirective,
+    PageHeaderComponent,
   ],
   templateUrl: './project-management.html',
+  styleUrl: './project-management.sass',
 })
 export class ProjectManagement implements OnInit {
   private readonly projectService = inject(ProjectService);
@@ -55,6 +58,7 @@ export class ProjectManagement implements OnInit {
   wizardStep = signal<1 | 2>(1);
   createdProjectId = signal<number | null>(null);
   wizardMembers = signal<ProjectMemberDto[]>([]);
+  editingProject = signal<ProjectResDto | null>(null);
 
   // ─── Formulario Step 1 ────────────────────────────────────────────────────
   projectForm = {
@@ -117,11 +121,28 @@ export class ProjectManagement implements OnInit {
 
   // ─── Wizard ───────────────────────────────────────────────────────────────
   openCreateDialog(): void {
+    this.editingProject.set(null);
     this.projectForm = { nombre: '', descripcion: '', estado: 'DRAFT', activo: true };
     this.selectedUser = null;
     this.selectedRole = 'VIEWER';
     this.wizardMembers.set([]);
     this.createdProjectId.set(null);
+    this.wizardStep.set(1);
+    this.dialogVisible.set(true);
+  }
+
+  openEditDialog(project: ProjectResDto): void {
+    this.editingProject.set(project);
+    this.projectForm = {
+      nombre: project.nombre,
+      descripcion: project.descripcion ?? '',
+      estado: project.estado,
+      activo: project.activo,
+    };
+    this.selectedUser = null;
+    this.selectedRole = 'VIEWER';
+    this.wizardMembers.set([...project.members]);
+    this.createdProjectId.set(project.id);
     this.wizardStep.set(1);
     this.dialogVisible.set(true);
   }
@@ -132,14 +153,26 @@ export class ProjectManagement implements OnInit {
       return;
     }
 
+    const editing = this.editingProject();
+
     try {
-      const project = await this.projectService.create({
-        nombre: this.projectForm.nombre.trim(),
-        descripcion: this.projectForm.descripcion.trim() || null,
-        estado: this.projectForm.estado,
-        activo: this.projectForm.activo,
-      });
-      this.createdProjectId.set(project.id);
+      if (editing) {
+        const dto: UpdateProjectReqDto = {
+          nombre: this.projectForm.nombre.trim(),
+          descripcion: this.projectForm.descripcion.trim() || null,
+          estado: this.projectForm.estado,
+          activo: this.projectForm.activo,
+        };
+        await this.projectService.update(editing.id, dto);
+      } else {
+        const project = await this.projectService.create({
+          nombre: this.projectForm.nombre.trim(),
+          descripcion: this.projectForm.descripcion.trim() || null,
+          estado: this.projectForm.estado,
+          activo: this.projectForm.activo,
+        });
+        this.createdProjectId.set(project.id);
+      }
       this.wizardStep.set(2);
     } catch {
       // Error manejado por el builder
@@ -186,8 +219,12 @@ export class ProjectManagement implements OnInit {
   }
 
   async finishWizard(): Promise<void> {
+    const isEditing = !!this.editingProject();
     this.dialogVisible.set(false);
-    this.uiDialog.showSuccess('Proyecto creado', 'El proyecto fue creado correctamente');
+    this.uiDialog.showSuccess(
+      isEditing ? 'Proyecto actualizado' : 'Proyecto creado',
+      isEditing ? 'Los cambios fueron guardados correctamente' : 'El proyecto fue creado correctamente',
+    );
     await this.loadProjects();
   }
 

@@ -3,3 +3,13 @@
 @layer tailwind, primeng;
 @source "../**/*.html";
 @source "../**/*.ts";
+
+@theme {
+  --color-brand:        #059669;
+  --color-brand-dark:   #047857;
+  --color-brand-light:  #34d399;
+  --color-accent:       #f59e0b;
+  --color-accent-dark:  #d97706;
+  --color-sidebar:      #0a0f1e;
+  --color-content:      #fafaf9;
+}

@@ -1,67 +1,89 @@
-<div class="page-header mb-6">
-  <h1 class="text-2xl font-bold text-gray-800">Mi Perfil</h1>
-  <p class="text-gray-500 mt-1">Información de tu cuenta</p>
-</div>
+<app-page-header title="Mi Perfil" subtitle="Información de tu cuenta" />
 
 @if (user(); as u) {
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Tarjeta de perfil -->
-    <div class="lg:col-span-1">
-      <p-card>
-        <div class="flex flex-col items-center gap-4 py-4">
+  <div class="profile-layout">
+
+    <!-- ─── Tarjeta de identidad ─────────────────────────────────────────── -->
+    <div class="profile-card">
+      <div class="profile-card__accent"></div>
+      <div class="profile-card__body">
+
+        <div class="profile-avatar-wrap">
           <p-avatar
             [label]="u.nombre.charAt(0).toUpperCase()"
             shape="circle"
             size="xlarge"
-            styleClass="bg-emerald-600 text-white text-3xl"
+            styleClass="profile-avatar"
           />
-          <div class="text-center">
-            <h2 class="text-xl font-bold text-gray-800">{{ u.nombre }}</h2>
-            <p class="text-gray-500 text-sm">{{ u.email }}</p>
+        </div>
+
+        <div class="profile-info">
+          <h2 class="profile-info__name">{{ u.nombre }}</h2>
+          <p class="profile-info__email">{{ u.email }}</p>
+          <div class="profile-info__tags">
+            <p-tag
+              [value]="u.activo ? 'Activo' : 'Inactivo'"
+              [severity]="u.activo ? 'success' : 'danger'"
+            />
             @if (isSuperAdmin()) {
-              <p-tag value="Super Admin" severity="success" styleClass="mt-2" />
+              <p-tag value="Super Admin" severity="success" />
             }
           </div>
-          <div class="w-full border-t pt-4">
-            <div class="flex justify-between text-sm mb-2">
-              <span class="text-gray-500">Estado</span>
-              <p-tag
-                [value]="u.activo ? 'Activo' : 'Inactivo'"
-                [severity]="u.activo ? 'success' : 'danger'"
-              />
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-500">ID</span>
-              <span class="font-medium text-gray-700">#{{ u.id }}</span>
-            </div>
+        </div>
+
+        <div class="profile-meta">
+          <div class="profile-meta__row">
+            <span class="profile-meta__label">
+              <i class="pi pi-user"></i>ID de usuario
+            </span>
+            <code class="profile-meta__value">#{{ u.id }}</code>
+          </div>
+          <div class="profile-meta__row">
+            <span class="profile-meta__label">
+              <i class="pi pi-envelope"></i>Email
+            </span>
+            <span class="profile-meta__value">{{ u.email }}</span>
           </div>
         </div>
-      </p-card>
+
+      </div>
     </div>
 
-    <!-- Permisos -->
-    <div class="lg:col-span-2">
-      <p-card header="Permisos Efectivos">
+    <!-- ─── Panel de permisos ─────────────────────────────────────────────── -->
+    <div class="perms-panel">
+      <div class="perms-panel__head">
+        <h3 class="perms-panel__title">Permisos Efectivos</h3>
+        @if (!isSuperAdmin()) {
+          <span class="perms-panel__count">{{ permissions().length }}</span>
+        }
+      </div>
+      <div class="perms-panel__body">
+
         @if (isSuperAdmin()) {
-          <div class="flex items-center gap-3 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-            <i class="pi pi-check-circle text-emerald-600 text-xl"></i>
+          <div class="superadmin-banner">
+            <div class="superadmin-banner__icon">
+              <i class="pi pi-verified"></i>
+            </div>
             <div>
-              <p class="font-semibold text-emerald-800">Super Administrador</p>
-              <p class="text-emerald-600 text-sm">Tienes acceso total al sistema</p>
+              <p class="superadmin-banner__title">Super Administrador</p>
+              <p class="superadmin-banner__subtitle">Acceso total al sistema sin restricciones</p>
             </div>
           </div>
+        } @else if (permissions().length === 0) {
+          <div class="perms-empty">
+            <i class="pi pi-lock-open"></i>
+            <p>Sin permisos asignados</p>
+          </div>
         } @else {
-          @if (permissions().length === 0) {
-            <p class="text-gray-400 text-sm italic">No tienes permisos asignados</p>
-          } @else {
-            <div class="flex flex-wrap gap-2">
-              @for (perm of permissions(); track perm) {
-                <span class="permission-badge">{{ perm }}</span>
-              }
-            </div>
-          }
+          <div class="perms-cloud">
+            @for (perm of permissions(); track perm) {
+              <span class="permission-badge">{{ perm }}</span>
+            }
+          </div>
         }
-      </p-card>
+
+      </div>
     </div>
+
   </div>
 }

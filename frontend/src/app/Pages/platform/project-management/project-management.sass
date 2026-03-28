@@ -1,0 +1,127 @@
+@use '../../../sass/colors' as *
+
+// ─── Wizard: step indicator ───────────────────────────────────────────────────
+
+.wizard-steps
+  display: flex
+  align-items: center
+  gap: 0
+  padding: 0 0 1.25rem
+  border-bottom: 1px solid $border-color
+  margin-bottom: 1.25rem
+
+.wizard-step
+  display: flex
+  align-items: center
+  gap: 0.5rem
+
+.wizard-step__dot
+  width: 1.75rem
+  height: 1.75rem
+  border-radius: 9999px
+  border: 2px solid $border-color
+  background: #ffffff
+  color: $text-subtle
+  font-size: 0.75rem
+  font-weight: 700
+  font-family: 'Outfit', sans-serif
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease
+  flex-shrink: 0
+
+.wizard-step__label
+  font-size: 0.8125rem
+  font-weight: 500
+  color: $text-subtle
+  font-family: 'Outfit', sans-serif
+  white-space: nowrap
+  transition: color 0.2s ease
+
+.wizard-step__line
+  flex: 1
+  height: 1px
+  background-color: $border-color
+  margin: 0 0.75rem
+  transition: background-color 0.2s ease
+
+// ─── Active / done states ─────────────────────────────────────────────────────
+
+.wizard-step--active
+  .wizard-step__dot
+    border-color: $brand-primary
+    background-color: $brand-primary
+    color: #ffffff
+
+  .wizard-step__label
+    color: $text-heading
+    font-weight: 600
+
+.wizard-step--done
+  .wizard-step__dot
+    border-color: $brand-primary
+    background-color: #ecfdf5
+    color: $brand-primary
+
+  .wizard-step__label
+    color: $text-muted
+
+.wizard-step__line--active
+  background-color: $brand-primary
+
+// ─── Wizard: member cards ─────────────────────────────────────────────────────
+
+.wizard-member
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  padding: 0.625rem 0.75rem
+  border-radius: 0.5rem
+  border: 1px solid $border-color
+  background: #ffffff
+  transition: border-color 0.15s ease
+
+  &:hover
+    border-color: darken($border-color, 8%)
+
+.wizard-member__avatar
+  width: 2rem
+  height: 2rem
+  border-radius: 9999px
+  background-color: $brand-primary
+  color: #ffffff
+  font-size: 0.8125rem
+  font-weight: 700
+  font-family: 'Syne', sans-serif
+  display: flex
+  align-items: center
+  justify-content: center
+  flex-shrink: 0
+
+.wizard-member__info
+  flex: 1
+  min-width: 0
+
+.wizard-member__name
+  font-size: 0.875rem
+  font-weight: 500
+  color: $text-heading
+  margin: 0
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.wizard-member__email
+  font-size: 0.75rem
+  color: $text-muted
+  margin: 0
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.wizard-member__actions
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  flex-shrink: 0

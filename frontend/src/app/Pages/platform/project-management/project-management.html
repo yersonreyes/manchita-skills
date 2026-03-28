@@ -1,15 +1,11 @@
-<div class="flex items-center justify-between mb-6">
-  <div>
-    <h1 class="text-2xl font-bold text-gray-800">Gestión de Proyectos</h1>
-    <p class="text-gray-500 mt-1">Administra los proyectos y sus equipos</p>
-  </div>
+<app-page-header title="Gestión de Proyectos" subtitle="Administra los proyectos y sus equipos">
   <p-button
     *hasPermission="'projects:create'"
     label="Nuevo Proyecto"
     icon="pi pi-plus"
     (onClick)="openCreateDialog()"
   />
-</div>
+</app-page-header>
 
 <p-card>
   <p-table
@@ -28,6 +24,7 @@
         <th>Propietario</th>
         <th>Miembros</th>
         <th>Activo</th>
+        <th class="text-center">Acciones</th>
       </tr>
     </ng-template>
     <ng-template #body let-project>
@@ -54,11 +51,25 @@
             [severity]="project.activo ? 'success' : 'danger'"
           />
         </td>
+        <td>
+          <div class="flex justify-center">
+            <p-button
+              *hasPermission="'projects:update'"
+              icon="pi pi-pencil"
+              [rounded]="true"
+              severity="secondary"
+              variant="text"
+              pTooltip="Editar proyecto"
+              tooltipPosition="top"
+              (onClick)="openEditDialog(project)"
+            />
+          </div>
+        </td>
       </tr>
     </ng-template>
     <ng-template #emptymessage>
       <tr>
-        <td colspan="5" class="text-center text-gray-400 py-8">
+        <td colspan="6" class="text-center text-gray-400 py-8">
           No se encontraron proyectos
         </td>
       </tr>
@@ -70,16 +81,35 @@
 <p-dialog
   [(visible)]="dialogVisible"
   [modal]="true"
-  [header]="wizardStep() === 1 ? 'Nuevo Proyecto (1/2)' : 'Asignar Miembros (2/2)'"
-  [style]="{ width: '520px' }"
+  [header]="editingProject() ? 'Editar Proyecto' : 'Nuevo Proyecto'"
+  [style]="{ width: '540px' }"
   [closable]="false"
 >
 
+  <!-- ── Indicador de pasos ────────────────────────────────────────────────── -->
+  <div class="wizard-steps">
+    <div class="wizard-step" [class.wizard-step--active]="wizardStep() === 1" [class.wizard-step--done]="wizardStep() === 2">
+      <div class="wizard-step__dot">
+        @if (wizardStep() === 2) {
+          <i class="pi pi-check" style="font-size: 0.625rem"></i>
+        } @else {
+          1
+        }
+      </div>
+      <span class="wizard-step__label">Datos del proyecto</span>
+    </div>
+    <div class="wizard-step__line" [class.wizard-step__line--active]="wizardStep() === 2"></div>
+    <div class="wizard-step" [class.wizard-step--active]="wizardStep() === 2">
+      <div class="wizard-step__dot">2</div>
+      <span class="wizard-step__label">Miembros</span>
+    </div>
+  </div>
+
   <!-- ── Step 1: Datos del proyecto ──────────────────────────────────────── -->
   @if (wizardStep() === 1) {
-    <div class="flex flex-col gap-4 py-2">
-      <div class="flex flex-col gap-2">
-        <label class="text-sm font-medium text-gray-700">Nombre *</label>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-gray-700">Nombre <span class="text-red-400">*</span></label>
         <input
           pInputText
           [(ngModel)]="projectForm.nombre"
@@ -88,7 +118,7 @@
         />
       </div>
 
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-1.5">
         <label class="text-sm font-medium text-gray-700">Descripción</label>
         <textarea
           [(ngModel)]="projectForm.descripcion"
@@ -98,19 +128,20 @@
         ></textarea>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <label class="text-sm font-medium text-gray-700">Estado *</label>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-gray-700">Estado <span class="text-red-400">*</span></label>
         <p-select
           [(ngModel)]="projectForm.estado"
           [options]="estadoOptions"
           optionLabel="label"
           optionValue="value"
           placeholder="Seleccionar estado"
+          appendTo="body"
           class="w-full"
         />
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 pt-1">
         <p-checkbox [(ngModel)]="projectForm.activo" [binary]="true" inputId="activo" />
         <label for="activo" class="text-sm text-gray-700">Proyecto activo</label>
       </div>
@@ -123,16 +154,21 @@
         variant="outlined"
         (onClick)="dialogVisible.set(false)"
       />
-      <p-button label="Continuar" icon="pi pi-arrow-right" iconPos="right" (onClick)="submitStep1()" />
+      <p-button
+        [label]="editingProject() ? 'Guardar y continuar' : 'Continuar'"
+        icon="pi pi-arrow-right"
+        iconPos="right"
+        (onClick)="submitStep1()"
+      />
     </ng-template>
   }
 
-  <!-- ── Step 2: Asignar miembros ────────────────────────────────────────── -->
+  <!-- ── Step 2: Gestionar miembros ──────────────────────────────────────── -->
   @if (wizardStep() === 2) {
-    <div class="flex flex-col gap-4 py-2">
+    <div class="flex flex-col gap-4">
 
-      <div *hasPermission="'projects:update'" class="flex flex-col gap-3">
-        <p class="text-sm font-medium text-gray-700">Agregar miembro</p>
+      <div *hasPermission="'projects:update'" class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Agregar miembro</label>
         <div class="flex gap-2">
           <p-select
             [(ngModel)]="selectedUser"
@@ -141,6 +177,7 @@
             [filter]="true"
             filterBy="nombre,email"
             placeholder="Buscar usuario..."
+            appendTo="body"
             class="flex-1"
             [showClear]="true"
           />
@@ -150,7 +187,8 @@
             optionLabel="label"
             optionValue="value"
             placeholder="Rol"
-            class="w-40"
+            appendTo="body"
+            class="w-36"
           />
           <p-button
             icon="pi pi-user-plus"
@@ -164,23 +202,27 @@
 
       <div class="flex flex-col gap-2">
         <p class="text-sm font-medium text-gray-700">
-          Miembros agregados
+          Miembros del equipo
           <span class="text-gray-400 font-normal">({{ wizardMembers().length }})</span>
         </p>
 
         @if (wizardMembers().length === 0) {
-          <p class="text-sm text-gray-400 text-center py-4">
-            Ningún miembro agregado aún
-          </p>
+          <div class="flex flex-col items-center gap-2 py-6 text-gray-400">
+            <i class="pi pi-users text-2xl opacity-40"></i>
+            <p class="text-sm">Ningún miembro agregado aún</p>
+          </div>
         } @else {
-          <div class="flex flex-col gap-1 max-h-52 overflow-y-auto">
+          <div class="flex flex-col gap-1.5 max-h-52 overflow-y-auto pr-1">
             @for (member of wizardMembers(); track member.user.id) {
-              <div class="flex items-center justify-between px-3 py-2 rounded border bg-gray-50">
-                <div>
-                  <p class="text-sm font-medium text-gray-800">{{ member.user.nombre }}</p>
-                  <p class="text-xs text-gray-400">{{ member.user.email }}</p>
+              <div class="wizard-member">
+                <div class="wizard-member__avatar">
+                  {{ member.user.nombre.charAt(0).toUpperCase() }}
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="wizard-member__info">
+                  <p class="wizard-member__name">{{ member.user.nombre }}</p>
+                  <p class="wizard-member__email">{{ member.user.email }}</p>
+                </div>
+                <div class="wizard-member__actions">
                   <p-tag [value]="getRoleLabel(member.role)" severity="info" />
                   <p-button
                     *hasPermission="'projects:update'"

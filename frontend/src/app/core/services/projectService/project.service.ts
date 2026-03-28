@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpPromiseBuilderService } from '../http-promise-builder.service';
-import { CreateProjectReqDto, UpsertMemberReqDto } from './project.req.dto';
+import { CreateProjectReqDto, UpdateProjectReqDto, UpsertMemberReqDto } from './project.req.dto';
 import { ProjectResDto } from './project.res.dto';
 
 @Injectable({ providedIn: 'root' })
@@ -15,6 +15,10 @@ export class ProjectService {
 
   create(dto: CreateProjectReqDto): Promise<ProjectResDto> {
     return this.http.request<ProjectResDto>().post().url(`${this.baseUrl}/create`).body(dto).send();
+  }
+
+  update(id: number, dto: UpdateProjectReqDto): Promise<ProjectResDto> {
+    return this.http.request<ProjectResDto>().patch().url(`${this.baseUrl}/${id}`).body(dto).send();
   }
 
   upsertMember(projectId: number, dto: UpsertMemberReqDto): Promise<ProjectResDto> {

@@ -8,6 +8,13 @@ export interface CreateProjectReqDto {
   activo?: boolean;
 }
 
+export interface UpdateProjectReqDto {
+  nombre?: string;
+  descripcion?: string | null;
+  estado?: ProjectStatus;
+  activo?: boolean;
+}
+
 export interface UpsertMemberReqDto {
   userId: number;
   role: ProjectMemberRole;

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { PermissionDto, RoleDto } from '@core/services/permissionService/permission.res.dto';
 import { PermissionService } from '@core/services/permissionService/permission.service';
 import { UiDialogService } from '@core/services/ui-dialog.service';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { HasPermissionDirective } from '@shared/directives/has-permission.directive';
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
@@ -25,6 +26,7 @@ import { Tooltip } from 'primeng/tooltip';
     Checkbox,
     FormsModule,
     HasPermissionDirective,
+    PageHeaderComponent,
   ],
   templateUrl: './role-management.html',
   styleUrl: './role-management.sass',

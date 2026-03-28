@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '@core/services/authService/auth.service';
 import { PermissionCheckService } from '@core/services/common/permission-check.service';
@@ -14,6 +14,11 @@ interface MenuItem {
   icon: string;
   route: string;
   permission?: string;
+}
+
+interface MenuGroup {
+  label: string;
+  items: MenuItem[];
 }
 
 @Component({
@@ -38,31 +43,39 @@ export class PlatformLayoutComponent implements OnInit {
 
   readonly user = this.authService.user;
 
-  readonly menuItems: MenuItem[] = [
+  readonly menuGroups: MenuGroup[] = [
     {
-      label: 'Gestión de Usuarios',
-      icon: 'pi pi-users',
-      route: '/platform/userManagement',
-      permission: 'users:read',
+      label: 'Administración',
+      items: [
+        { label: 'Gestión de Usuarios', icon: 'pi pi-users', route: '/platform/userManagement', permission: 'users:read' },
+        { label: 'Gestión de Roles', icon: 'pi pi-shield', route: '/platform/roleManagement', permission: 'permissions:read' },
+      ],
     },
     {
-      label: 'Gestión de Roles',
-      icon: 'pi pi-shield',
-      route: '/platform/roleManagement',
-      permission: 'permissions:read',
+      label: 'Plataforma',
+      items: [
+        { label: 'Gestión de Proyectos', icon: 'pi pi-folder', route: '/platform/projects', permission: 'projects:read' },
+      ],
     },
     {
-      label: 'Gestión de Proyectos',
-      icon: 'pi pi-folder',
-      route: '/platform/projects',
-      permission: 'projects:read',
-    },
-    {
-      label: 'Mi Perfil',
-      icon: 'pi pi-user',
-      route: '/platform/profile',
+      label: 'Mi Cuenta',
+      items: [
+        { label: 'Mi Perfil', icon: 'pi pi-user', route: '/platform/profile' },
+      ],
     },
   ];
+
+  readonly visibleMenuGroups = computed(() => {
+    void this.authService.user(); // dependency: recompute when user changes
+    return this.menuGroups
+      .map((group) => ({
+        ...group,
+        items: group.items.filter(
+          (item) => !item.permission || this.permissionService.hasPermission(item.permission),
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
+  });
 
   constructor(
     readonly authService: AuthService,
@@ -79,11 +92,6 @@ export class PlatformLayoutComponent implements OnInit {
   }
 
   ngOnInit(): void {}
-
-  isMenuItemVisible(item: MenuItem): boolean {
-    if (!item.permission) return true;
-    return this.permissionService.hasPermission(item.permission);
-  }
 
   toggleSidebar(): void {
     this.sidebarCollapsed.update((v) => !v);

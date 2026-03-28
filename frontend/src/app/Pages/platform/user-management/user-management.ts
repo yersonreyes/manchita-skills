@@ -7,6 +7,7 @@ import { UiDialogService } from '@core/services/ui-dialog.service';
 import { CreateUserRequest, UpdateUserRequest } from '@core/services/userService/user.req.dto';
 import { UserDto } from '@core/services/userService/user.res.dto';
 import { UserService } from '@core/services/userService/user.service';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { HasPermissionDirective } from '@shared/directives/has-permission.directive';
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
@@ -33,6 +34,7 @@ import { Tooltip } from 'primeng/tooltip';
     Tooltip,
     Checkbox,
     HasPermissionDirective,
+    PageHeaderComponent,
   ],
   templateUrl: './user-management.html',
   styleUrl: './user-management.sass',
