@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { PermissionGuard } from './auth/guards/permission.guard';
+import { AiModule } from './ai/ai.module';
 import { AssetsModule } from './assets/assets.module';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
@@ -25,6 +26,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     UserModule,
     AssetsModule,
+    AiModule,
 
     // ─── Módulos de Dominio ─────────────────────────────────────────────────
     CatalogModule,
