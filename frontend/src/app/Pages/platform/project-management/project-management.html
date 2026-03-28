@@ -107,9 +107,9 @@
 
   <!-- ── Step 1: Datos del proyecto ──────────────────────────────────────── -->
   @if (wizardStep() === 1) {
-    <div class="flex flex-col gap-4">
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-gray-700">Nombre <span class="text-red-400">*</span></label>
+    <div class="wizard-body">
+      <div class="wizard-field">
+        <label class="wizard-field__label">Nombre <span class="text-red-400">*</span></label>
         <input
           pInputText
           [(ngModel)]="projectForm.nombre"
@@ -118,8 +118,8 @@
         />
       </div>
 
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-gray-700">Descripción</label>
+      <div class="wizard-field">
+        <label class="wizard-field__label">Descripción</label>
         <textarea
           [(ngModel)]="projectForm.descripcion"
           placeholder="Descripción opcional..."
@@ -128,8 +128,8 @@
         ></textarea>
       </div>
 
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-gray-700">Estado <span class="text-red-400">*</span></label>
+      <div class="wizard-field">
+        <label class="wizard-field__label">Estado <span class="text-red-400">*</span></label>
         <p-select
           [(ngModel)]="projectForm.estado"
           [options]="estadoOptions"
@@ -141,7 +141,7 @@
         />
       </div>
 
-      <div class="flex items-center gap-2 pt-1">
+      <div class="flex items-center gap-2">
         <p-checkbox [(ngModel)]="projectForm.activo" [binary]="true" inputId="activo" />
         <label for="activo" class="text-sm text-gray-700">Proyecto activo</label>
       </div>
@@ -165,10 +165,10 @@
 
   <!-- ── Step 2: Gestionar miembros ──────────────────────────────────────── -->
   @if (wizardStep() === 2) {
-    <div class="flex flex-col gap-4">
+    <div class="wizard-body">
 
-      <div *hasPermission="'projects:update'" class="flex flex-col gap-2">
-        <label class="text-sm font-medium text-gray-700">Agregar miembro</label>
+      <div *hasPermission="'projects:update'" class="wizard-field">
+        <label class="wizard-field__label">Agregar miembro</label>
         <div class="flex gap-2">
           <p-select
             [(ngModel)]="selectedUser"
@@ -200,19 +200,19 @@
         </div>
       </div>
 
-      <div class="flex flex-col gap-2">
+      <div class="wizard-field">
         <p class="text-sm font-medium text-gray-700">
           Miembros del equipo
           <span class="text-gray-400 font-normal">({{ wizardMembers().length }})</span>
         </p>
 
         @if (wizardMembers().length === 0) {
-          <div class="flex flex-col items-center gap-2 py-6 text-gray-400">
+          <div class="wizard-empty">
             <i class="pi pi-users text-2xl opacity-40"></i>
             <p class="text-sm">Ningún miembro agregado aún</p>
           </div>
         } @else {
-          <div class="flex flex-col gap-1.5 max-h-52 overflow-y-auto pr-1">
+          <div class="wizard-members-list">
             @for (member of wizardMembers(); track member.user.id) {
               <div class="wizard-member">
                 <div class="wizard-member__avatar">
