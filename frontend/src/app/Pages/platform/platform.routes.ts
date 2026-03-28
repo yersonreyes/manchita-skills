@@ -27,6 +27,13 @@ export const PLATFORM_ROUTES: Routes = [
           import('./profile/profile.component').then((m) => m.ProfileComponent),
       },
       {
+        path: 'projects',
+        loadComponent: () =>
+          import('./project-management/project-management').then((m) => m.ProjectManagement),
+        canActivate: [permissionGuard],
+        data: { permissions: ['projects:read'] },
+      },
+      {
         path: '',
         redirectTo: 'userManagement',
         pathMatch: 'full',

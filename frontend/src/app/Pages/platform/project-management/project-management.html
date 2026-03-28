@@ -1,0 +1,212 @@
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-800">Gestión de Proyectos</h1>
+    <p class="text-gray-500 mt-1">Administra los proyectos y sus equipos</p>
+  </div>
+  <p-button
+    *hasPermission="'projects:create'"
+    label="Nuevo Proyecto"
+    icon="pi pi-plus"
+    (onClick)="openCreateDialog()"
+  />
+</div>
+
+<p-card>
+  <p-table
+    [value]="projects()"
+    [loading]="loading()"
+    [paginator]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} proyectos"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Proyecto</th>
+        <th>Estado</th>
+        <th>Propietario</th>
+        <th>Miembros</th>
+        <th>Activo</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-project>
+      <tr>
+        <td>
+          <div>
+            <p class="font-medium text-gray-800">{{ project.nombre }}</p>
+            @if (project.descripcion) {
+              <p class="text-xs text-gray-400 mt-0.5">{{ project.descripcion }}</p>
+            }
+          </div>
+        </td>
+        <td>
+          <p-tag
+            [value]="getEstadoLabel(project.estado)"
+            [severity]="getEstadoSeverity(project.estado)"
+          />
+        </td>
+        <td class="text-gray-600 text-sm">{{ project.owner?.nombre ?? '—' }}</td>
+        <td class="text-gray-600 text-sm">{{ project.members?.length ?? 0 }}</td>
+        <td>
+          <p-tag
+            [value]="project.activo ? 'Activo' : 'Inactivo'"
+            [severity]="project.activo ? 'success' : 'danger'"
+          />
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="text-center text-gray-400 py-8">
+          No se encontraron proyectos
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<!-- ─── Wizard de Proyecto ──────────────────────────────────────────────── -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [header]="wizardStep() === 1 ? 'Nuevo Proyecto (1/2)' : 'Asignar Miembros (2/2)'"
+  [style]="{ width: '520px' }"
+  [closable]="false"
+>
+
+  <!-- ── Step 1: Datos del proyecto ──────────────────────────────────────── -->
+  @if (wizardStep() === 1) {
+    <div class="flex flex-col gap-4 py-2">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Nombre *</label>
+        <input
+          pInputText
+          [(ngModel)]="projectForm.nombre"
+          placeholder="Nombre del proyecto"
+          class="w-full"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Descripción</label>
+        <textarea
+          [(ngModel)]="projectForm.descripcion"
+          placeholder="Descripción opcional..."
+          rows="3"
+          class="w-full resize-none p-inputtext"
+        ></textarea>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Estado *</label>
+        <p-select
+          [(ngModel)]="projectForm.estado"
+          [options]="estadoOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Seleccionar estado"
+          class="w-full"
+        />
+      </div>
+
+      <div class="flex items-center gap-2">
+        <p-checkbox [(ngModel)]="projectForm.activo" [binary]="true" inputId="activo" />
+        <label for="activo" class="text-sm text-gray-700">Proyecto activo</label>
+      </div>
+    </div>
+
+    <ng-template #footer>
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="dialogVisible.set(false)"
+      />
+      <p-button label="Continuar" icon="pi pi-arrow-right" iconPos="right" (onClick)="submitStep1()" />
+    </ng-template>
+  }
+
+  <!-- ── Step 2: Asignar miembros ────────────────────────────────────────── -->
+  @if (wizardStep() === 2) {
+    <div class="flex flex-col gap-4 py-2">
+
+      <div *hasPermission="'projects:update'" class="flex flex-col gap-3">
+        <p class="text-sm font-medium text-gray-700">Agregar miembro</p>
+        <div class="flex gap-2">
+          <p-select
+            [(ngModel)]="selectedUser"
+            [options]="availableUsers()"
+            optionLabel="nombre"
+            [filter]="true"
+            filterBy="nombre,email"
+            placeholder="Buscar usuario..."
+            class="flex-1"
+            [showClear]="true"
+          />
+          <p-select
+            [(ngModel)]="selectedRole"
+            [options]="roleOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Rol"
+            class="w-40"
+          />
+          <p-button
+            icon="pi pi-user-plus"
+            [disabled]="!selectedUser"
+            pTooltip="Agregar miembro"
+            tooltipPosition="top"
+            (onClick)="addMember()"
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <p class="text-sm font-medium text-gray-700">
+          Miembros agregados
+          <span class="text-gray-400 font-normal">({{ wizardMembers().length }})</span>
+        </p>
+
+        @if (wizardMembers().length === 0) {
+          <p class="text-sm text-gray-400 text-center py-4">
+            Ningún miembro agregado aún
+          </p>
+        } @else {
+          <div class="flex flex-col gap-1 max-h-52 overflow-y-auto">
+            @for (member of wizardMembers(); track member.user.id) {
+              <div class="flex items-center justify-between px-3 py-2 rounded border bg-gray-50">
+                <div>
+                  <p class="text-sm font-medium text-gray-800">{{ member.user.nombre }}</p>
+                  <p class="text-xs text-gray-400">{{ member.user.email }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p-tag [value]="getRoleLabel(member.role)" severity="info" />
+                  <p-button
+                    *hasPermission="'projects:update'"
+                    icon="pi pi-times"
+                    [rounded]="true"
+                    severity="danger"
+                    variant="text"
+                    pTooltip="Quitar miembro"
+                    tooltipPosition="top"
+                    (onClick)="removeMember(member.user.id)"
+                  />
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <ng-template #footer>
+      <p-button
+        label="Finalizar"
+        icon="pi pi-check"
+        (onClick)="finishWizard()"
+      />
+    </ng-template>
+  }
+
+</p-dialog>

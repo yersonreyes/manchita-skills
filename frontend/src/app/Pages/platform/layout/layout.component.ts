@@ -52,6 +52,12 @@ export class PlatformLayoutComponent implements OnInit {
       permission: 'permissions:read',
     },
     {
+      label: 'Gestión de Proyectos',
+      icon: 'pi pi-folder',
+      route: '/platform/projects',
+      permission: 'projects:read',
+    },
+    {
       label: 'Mi Perfil',
       icon: 'pi pi-user',
       route: '/platform/profile',

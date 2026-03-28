@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Manchita Skills** is a monorepo (npm workspaces) with a NestJS backend and Angular 21 frontend, implementing a full-stack application with JWT authentication and RBAC (Role-Based Access Control).
+**Manchita Skills** is a monorepo (npm workspaces) with a NestJS backend and Angular 21 frontend. The app implements the **Double Diamond** design methodology: a catalog of tools organized by design phases and categories, and a project system where users apply those tools to track their design process. It includes JWT authentication and RBAC (Role-Based Access Control).
 
 ## Commands
 
@@ -56,9 +56,30 @@ npm run backend:db:reset       # Reset database
 
 ### Backend (NestJS 10 + Prisma + PostgreSQL)
 
-**Module structure:** Functional domains — `auth`, `user`, `permission`, `mail`, `assets`, `prisma`.
+**Module structure:** 11 functional domain modules.
 
-**Global guards:** `JwtAuthGuard` (authentication) → `PermissionGuard` (authorization) applied globally in `AppModule`. Use `@Public()` decorator to bypass auth, `@RequirePermissions()` to declare required permissions.
+| Module | Path | Responsibility |
+|--------|------|----------------|
+| `prisma` | `src/prisma/` | ORM singleton, global export |
+| `mail` | `src/mail/` | Email sending via Nodemailer |
+| `assets` | `src/assets/` | File upload/download via AWS S3 |
+| `auth` | `src/auth/` | JWT auth, refresh tokens, guards, decorators |
+| `user` | `src/user/` | User CRUD |
+| `permission` | `src/permission/` | Role and permission management |
+| `catalog` | `src/catalog/` | Double Diamond catalog (submódulos abajo) |
+| ↳ `design-phase` | `src/catalog/design-phase/` | 4 phases of the Double Diamond |
+| ↳ `tool-category` | `src/catalog/tool-category/` | 9 tool subcategories |
+| ↳ `tool` | `src/catalog/tool/` | ~67 unique design tools |
+| `project` | `src/project/` | Projects with members and roles |
+| `project-phase` | `src/project-phase/` | Active phases within a project |
+| `tool-application` | `src/tool-application/` | Tool usage in project phases, with notes and attachments |
+
+**Global guards:** `JwtAuthGuard` (authentication) → `PermissionGuard` (authorization) applied globally in `AppModule`.
+
+**Auth decorators** (in `src/auth/decorators/index.ts`):
+- `@Auth()` — bypass JWT guard (public endpoints)
+- `@Permission('codigo')` — declare required permission
+- `@CurrentUser()` — inject user from JWT payload into handler
 
 **Authentication flow:**
 - Login returns access token (1h) + refresh token (7 days, stored as hash in `RefreshToken` table)
@@ -68,7 +89,7 @@ npm run backend:db:reset       # Reset database
 **RBAC model:**
 - Users have Roles (many-to-many via `UserRole`)
 - Roles have Permissions (many-to-many via `RolePermission`)
-- Users can also have direct Permission overrides (many-to-many via `UserPermission`, with `granted: boolean` for allow/deny)
+- Users can have direct Permission overrides (`UserPermission`, with `granted: boolean` for allow/deny)
 - `isSuperAdmin` flag bypasses all permission checks
 
 **API docs:** Swagger UI at `http://localhost:3000/api/docs`
@@ -91,21 +112,79 @@ npm run backend:db:reset       # Reset database
 - `@pages/*` → `src/app/Pages/*`
 - `@shared/*` → `src/app/shared/*`
 
-**HTTP layer:** `HttpPromiseBuilder` service wraps Angular `HttpClient` in a promise-based builder pattern. Two interceptors:
+**Core services:**
+- `http-promise-builder.service.ts` — wraps `HttpClient` in a promise-based builder pattern
+- `ui-dialog.service.ts` — confirm dialogs and toast notifications
+- `authService/auth.service.ts` — login, register, refresh, logout
+- `userService/user.service.ts` — user CRUD
+- `permissionService/permission.service.ts` — fetch user permissions
+- `common/permission-check.service.ts` — permission helper utilities
+
+**Shared:**
+- `components/loading-wall/` — full-screen loading overlay
+- `directives/has-permission.directive.ts` — hides elements when user lacks a permission
+
+**HTTP interceptors:**
 - `auth-token` — attaches `Authorization: Bearer <token>` header
 - `auth-refresh` — intercepts 401, calls refresh endpoint, retries original request
+
+**Guards:**
+- `auth.guard.ts` — requires authenticated user
+- `guest.guard.ts` — requires unauthenticated user (auth routes)
+- `permission.guard.ts` — requires specific permission
+
+**Pages:**
+
+`/auth` feature:
+- `login/` — login form
+- `register/` — register form
+- `recover-password/` — request password reset
+- `new-password/` — set new password (token-based)
+
+`/platform` feature (protected):
+- `profile/` — user profile
+- `user-management/` — admin user management
+- `role-management/` — admin role management
+
+**UI config:**
+- Theme: PrimeNG **Aura** preset with custom Emerald colors (`app.config.ts`)
+- Fonts: **Syne** (headings), **Outfit** (body) — loaded in `index.html`
+- Locale: Español configured in `app.config.ts`
 
 **Backend API base URL:** `http://localhost:3000/api` (configured in `environments/`)
 
 ### Database Schema (Prisma)
 
-Located at `backend/prisma/schema.prisma`. Core models:
-- `User` — email (unique), password (hashed bcrypt), nombre, isSuperAdmin, activo
+Located at `backend/prisma/schema.prisma`.
+
+**Enums:**
+- `ProjectStatus` — DRAFT, IN_PROGRESS, COMPLETED, ARCHIVED
+- `ProjectMemberRole` — OWNER, EDITOR, VIEWER
+- `PhaseStatus` — NOT_STARTED, IN_PROGRESS, COMPLETED
+- `ToolApplicationStatus` — PENDING, IN_PROGRESS, COMPLETED
+- `AttachmentType` — IMAGE, PDF, LINK, OTHER
+
+**Auth / RBAC models:**
+- `User` — email (unique), password (bcrypt), nombre, isSuperAdmin, activo
 - `Role` — codigo (unique), nombre, descripcion, activo
 - `Permission` — codigo (unique), descripcion, activo
 - `UserRole`, `RolePermission` — junction tables
 - `UserPermission` — junction with `granted: boolean` for direct overrides
 - `RefreshToken` — tokenHash, expiresAt, revoked
+
+**Catalog models:**
+- `DesignPhase` — codigo (unique), nombre, descripcion, orden, activo
+- `ToolCategory` — codigo (unique), nombre, descripcion, phaseId, activo
+- `Tool` — codigo (unique), nombre, descripcion, comoSeUsa, ejemplo, cuandoUsarlo, activo
+- `ToolCategoryTool` — M2M junction: Tool ↔ ToolCategory
+
+**Project models:**
+- `Project` — nombre, descripcion, estado (ProjectStatus), ownerId, activo
+- `ProjectMember` — projectId, userId, role (ProjectMemberRole) — unique: projectId+userId
+- `ProjectPhase` — projectId, phaseId, estado (PhaseStatus), orden, notas — unique: projectId+phaseId+orden
+- `ToolApplication` — projectPhaseId, toolId, titulo, structuredData (JSON), estado (ToolApplicationStatus), createdById
+- `ToolApplicationNote` — toolApplicationId, contenido, createdById
+- `ToolApplicationAttachment` — toolApplicationId, nombre, url, tipo (AttachmentType), size, createdById
 
 ## Environment Setup
 
