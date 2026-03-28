@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/services/authService/auth.service';
 import { UiDialogService } from '@core/services/ui-dialog.service';
+import { environment } from '../../../../environments/environment';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
@@ -14,16 +15,21 @@ import { Password } from 'primeng/password';
   templateUrl: './login.component.html',
   styleUrl: './login.component.sass',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   loading = signal(false);
 
-  constructor(
-    private readonly authService: AuthService,
-    private readonly router: Router,
-    private readonly uiDialog: UiDialogService,
-  ) {}
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly uiDialog = inject(UiDialogService);
+
+  ngOnInit(): void {
+    if ('devCredentials' in environment) {
+      this.email = (environment as any).devCredentials.email;
+      this.password = (environment as any).devCredentials.password;
+    }
+  }
 
   async onLogin(): Promise<void> {
     if (!this.email || !this.password) {

@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { UiDialogService } from '@core/services/ui-dialog.service';
 import { UserDto } from '@core/services/userService/user.res.dto';
 import { UserService } from '@core/services/userService/user.service';
@@ -47,6 +48,7 @@ export class ProjectManagement implements OnInit {
   private readonly projectService = inject(ProjectService);
   private readonly userService = inject(UserService);
   private readonly uiDialog = inject(UiDialogService);
+  private readonly router = inject(Router);
 
   // ─── Estado de la página ──────────────────────────────────────────────────
   projects = signal<ProjectResDto[]>([]);
@@ -226,6 +228,10 @@ export class ProjectManagement implements OnInit {
       isEditing ? 'Los cambios fueron guardados correctamente' : 'El proyecto fue creado correctamente',
     );
     await this.loadProjects();
+  }
+
+  navigateToProject(id: number): void {
+    void this.router.navigate(['/platform/projects', id]);
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────

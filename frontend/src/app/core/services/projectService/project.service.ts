@@ -13,6 +13,10 @@ export class ProjectService {
     return this.http.request<ProjectResDto[]>().get().url(`${this.baseUrl}/all`).silent().send();
   }
 
+  getById(id: number): Promise<ProjectResDto> {
+    return this.http.request<ProjectResDto>().get().url(`${this.baseUrl}/${id}`).send();
+  }
+
   create(dto: CreateProjectReqDto): Promise<ProjectResDto> {
     return this.http.request<ProjectResDto>().post().url(`${this.baseUrl}/create`).body(dto).send();
   }

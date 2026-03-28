@@ -34,6 +34,20 @@ export const PLATFORM_ROUTES: Routes = [
         data: { permissions: ['projects:read'] },
       },
       {
+        path: 'projects/:id',
+        loadComponent: () =>
+          import('./project-detail/project-detail').then((m) => m.ProjectDetailComponent),
+        canActivate: [permissionGuard],
+        data: { permissions: ['project-phases:read'] },
+      },
+      {
+        path: 'projects/:id/phases/:phaseId',
+        loadComponent: () =>
+          import('./phase-detail/phase-detail').then((m) => m.PhaseDetailComponent),
+        canActivate: [permissionGuard],
+        data: { permissions: ['tool-applications:read'] },
+      },
+      {
         path: '',
         redirectTo: 'userManagement',
         pathMatch: 'full',

@@ -1,0 +1,144 @@
+<app-page-header
+  [title]="phase()?.phase?.nombre ?? 'Detalle de Fase'"
+  [subtitle]="'Proyecto: ' + (phase()?.project?.nombre ?? '')"
+>
+  <p-button
+    label="Volver al proyecto"
+    icon="pi pi-arrow-left"
+    severity="secondary"
+    variant="outlined"
+    (onClick)="goBack()"
+  />
+  <p-button
+    *hasPermission="'tool-applications:create'"
+    label="Agregar herramienta"
+    icon="pi pi-plus"
+    (onClick)="openCreateDialog()"
+  />
+</app-page-header>
+
+<p-card>
+  <p-table
+    [value]="applications()"
+    [loading]="loading()"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Título</th>
+        <th>Herramienta</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-app>
+      <tr class="cursor-pointer hover:bg-gray-50" (click)="openDetail(app)">
+        <td class="font-medium text-gray-800">{{ app.titulo }}</td>
+        <td class="text-sm text-gray-600">{{ app.tool?.nombre }}</td>
+        <td>
+          <p-tag
+            [value]="getEstadoLabel(app.estado)"
+            [severity]="getEstadoSeverity(app.estado)"
+          />
+        </td>
+        <td class="text-sm text-gray-400">{{ app.createdAt | date: 'dd/MM/yyyy' }}</td>
+        <td>
+          <div class="flex justify-center">
+            <p-button
+              icon="pi pi-eye"
+              [rounded]="true"
+              severity="secondary"
+              variant="text"
+              pTooltip="Ver detalle"
+              tooltipPosition="top"
+              (onClick)="$event.stopPropagation(); openDetail(app)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="text-center text-gray-400 py-8">
+          <div class="flex flex-col items-center gap-2">
+            <i class="pi pi-wrench text-2xl opacity-40"></i>
+            <p class="text-sm">Esta fase todavía no tiene herramientas aplicadas</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<!-- ─── Dialog crear tool application ───────────────────────────────────── -->
+<p-dialog
+  [(visible)]="createDialogVisible"
+  [modal]="true"
+  header="Agregar herramienta"
+  [style]="{ width: '480px' }"
+  [closable]="true"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Herramienta <span class="text-red-400">*</span></label>
+      <p-select
+        [(ngModel)]="createForm.toolId"
+        [options]="tools()"
+        optionLabel="nombre"
+        optionValue="id"
+        [filter]="true"
+        filterBy="nombre"
+        placeholder="Buscar herramienta..."
+        appendTo="body"
+        class="w-full"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Título <span class="text-red-400">*</span></label>
+      <input
+        pInputText
+        [(ngModel)]="createForm.titulo"
+        placeholder="Ej: Mapa de empatía del usuario principal"
+        class="w-full"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Estado inicial</label>
+      <p-select
+        [(ngModel)]="createForm.estado"
+        [options]="estadoOptions"
+        optionLabel="label"
+        optionValue="value"
+        appendTo="body"
+        class="w-full"
+      />
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      variant="outlined"
+      (onClick)="createDialogVisible.set(false)"
+    />
+    <p-button
+      label="Agregar"
+      icon="pi pi-check"
+      (onClick)="submitCreate()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- ─── Dialog detalle de herramienta ───────────────────────────────────── -->
+<app-tool-application-detail
+  [application]="selectedApplication()"
+  [visible]="detailDialogVisible()"
+  (visibleChange)="detailDialogVisible.set($event)"
+  (saved)="onApplicationSaved()"
+/>

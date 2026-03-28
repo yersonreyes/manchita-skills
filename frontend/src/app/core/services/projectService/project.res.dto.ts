@@ -1,4 +1,5 @@
 import { ProjectMemberRole, ProjectStatus } from './project.req.dto';
+import { ProjectPhaseResDto } from '../projectPhaseService/project-phase.res.dto';
 
 export interface ProjectUserDto {
   id: number;
@@ -19,6 +20,7 @@ export interface ProjectResDto {
   activo: boolean;
   owner: ProjectUserDto;
   members: ProjectMemberDto[];
+  phases?: ProjectPhaseResDto[];
   createdAt: string;
   updatedAt: string;
 }

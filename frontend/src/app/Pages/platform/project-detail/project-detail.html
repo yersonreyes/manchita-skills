@@ -1,0 +1,222 @@
+<app-page-header
+  [title]="project()?.nombre ?? 'Detalle de Proyecto'"
+  subtitle="Fases y herramientas del Double Diamond"
+>
+  <p-button
+    label="Volver"
+    icon="pi pi-arrow-left"
+    severity="secondary"
+    variant="outlined"
+    (onClick)="goBack()"
+  />
+  <p-button
+    *hasPermission="'project-phases:create'"
+    label="Agregar fase"
+    icon="pi pi-plus"
+    (onClick)="openAddPhaseDialog()"
+  />
+</app-page-header>
+
+@if (loading()) {
+  <p-card>
+    <div class="flex justify-center py-12">
+      <i class="pi pi-spin pi-spinner text-3xl text-gray-400"></i>
+    </div>
+  </p-card>
+} @else if (phases().length === 0) {
+  <p-card>
+    <div class="flex flex-col items-center justify-center py-16 text-gray-400 gap-3">
+      <i class="pi pi-sitemap text-4xl opacity-40"></i>
+      <p class="text-sm">Este proyecto todavía no tiene fases activas</p>
+      <p-button
+        *hasPermission="'project-phases:create'"
+        label="Agregar primera fase"
+        icon="pi pi-plus"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="openAddPhaseDialog()"
+      />
+    </div>
+  </p-card>
+} @else {
+  <div class="phases-list">
+    @for (phase of phases(); track phase.id) {
+      <p-card styleClass="phase-section">
+        <!-- ── Cabecera de la fase ────────────────────────────────────── -->
+        <div class="phase-section__header">
+          <div class="phase-section__title-area">
+            <div class="phase-section__icon">
+              <i class="pi pi-compass"></i>
+            </div>
+            <div>
+              <p class="phase-section__name">{{ phase.phase.nombre }}</p>
+              <p class="phase-section__description">{{ phase.phase.descripcion }}</p>
+            </div>
+          </div>
+
+          <div class="phase-section__controls" (click)="$event.stopPropagation()">
+            <p-select
+              *hasPermission="'project-phases:update'"
+              [ngModel]="phase.estado"
+              [options]="estadoOptions"
+              optionLabel="label"
+              optionValue="value"
+              appendTo="body"
+              (ngModelChange)="updatePhaseStatus(phase, $event)"
+            />
+            <p-button
+              *hasPermission="'tool-applications:create'"
+              label="Agregar herramienta"
+              icon="pi pi-plus"
+              severity="success"
+              variant="outlined"
+              (onClick)="openAddToolDialog(phase)"
+            />
+          </div>
+        </div>
+
+        <!-- ── Listado de herramientas ───────────────────────────────── -->
+        <div class="phase-section__tools">
+          @if (getPhaseTools(phase.id).length === 0) {
+            <div class="phase-section__tools-empty">
+              <i class="pi pi-wrench opacity-30"></i>
+              <span>Sin herramientas — agregá la primera</span>
+            </div>
+          } @else {
+            @for (app of getPhaseTools(phase.id); track app.id) {
+              <div class="tool-row">
+                <div class="tool-row__info">
+                  <p class="tool-row__title">{{ app.titulo }}</p>
+                  <p class="tool-row__tool-name">{{ app.tool?.nombre }}</p>
+                </div>
+                <div class="tool-row__actions">
+                  <p-tag
+                    [value]="getToolEstadoLabel(app.estado)"
+                    [severity]="getToolEstadoSeverity(app.estado)"
+                  />
+                  <p-button
+                    *hasPermission="'tool-applications:update'"
+                    icon="pi pi-pencil"
+                    [rounded]="true"
+                    severity="secondary"
+                    variant="text"
+                    pTooltip="Editar herramienta"
+                    tooltipPosition="top"
+                    (onClick)="openEditTool(app)"
+                  />
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </p-card>
+    }
+  </div>
+}
+
+<!-- ─── Dialog agregar herramienta ──────────────────────────────────────── -->
+<p-dialog
+  [(visible)]="addToolDialogVisible"
+  [modal]="true"
+  [header]="'Agregar herramienta — ' + (targetPhase()?.phase?.nombre ?? '')"
+  [style]="{ width: '480px' }"
+  [closable]="true"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Herramienta <span class="text-red-400">*</span></label>
+      <p-select
+        [(ngModel)]="addToolForm.toolId"
+        [options]="tools()"
+        optionLabel="nombre"
+        optionValue="id"
+        [filter]="true"
+        filterBy="nombre"
+        placeholder="Buscar herramienta..."
+        appendTo="body"
+        class="w-full"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Título <span class="text-red-400">*</span></label>
+      <input
+        pInputText
+        [(ngModel)]="addToolForm.titulo"
+        placeholder="Ej: Mapa de empatía del usuario"
+        class="w-full"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Estado inicial</label>
+      <p-select
+        [(ngModel)]="addToolForm.estado"
+        [options]="toolEstadoOptions"
+        optionLabel="label"
+        optionValue="value"
+        appendTo="body"
+        class="w-full"
+      />
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="addToolDialogVisible.set(false)" />
+    <p-button label="Agregar" icon="pi pi-check" (onClick)="submitAddTool()" />
+  </ng-template>
+</p-dialog>
+
+<!-- ─── Dialog agregar fase ──────────────────────────────────────────────── -->
+<p-dialog
+  [(visible)]="addPhaseDialogVisible"
+  [modal]="true"
+  header="Agregar fase al proyecto"
+  [style]="{ width: '440px' }"
+  [closable]="true"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Fase del catálogo <span class="text-red-400">*</span></label>
+      <p-select
+        [(ngModel)]="addPhaseForm.phaseId"
+        [options]="designPhases()"
+        optionLabel="nombre"
+        optionValue="id"
+        placeholder="Seleccioná una fase"
+        appendTo="body"
+        class="w-full"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Orden</label>
+      <p-inputnumber [(ngModel)]="addPhaseForm.orden" [min]="1" class="w-full" />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Estado inicial</label>
+      <p-select
+        [(ngModel)]="addPhaseForm.estado"
+        [options]="estadoOptions"
+        optionLabel="label"
+        optionValue="value"
+        appendTo="body"
+        class="w-full"
+      />
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="addPhaseDialogVisible.set(false)" />
+    <p-button label="Agregar fase" icon="pi pi-check" (onClick)="submitAddPhase()" />
+  </ng-template>
+</p-dialog>
+
+<!-- ─── Dialog editar herramienta ───────────────────────────────────────── -->
+<app-tool-application-detail
+  [application]="selectedApplication()"
+  [visible]="detailDialogVisible()"
+  (visibleChange)="detailDialogVisible.set($event)"
+  (saved)="onToolSaved(selectedApplication()!.projectPhaseId)"
+/>
