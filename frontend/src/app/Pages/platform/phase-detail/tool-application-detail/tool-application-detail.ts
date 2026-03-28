@@ -18,6 +18,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Tooltip } from 'primeng/tooltip';
+import { AiChatComponent } from './ai-chat/ai-chat';
 
 interface SelectOption<T> {
   label: string;
@@ -43,6 +44,7 @@ interface SelectOption<T> {
     TabPanels,
     TabPanel,
     HasPermissionDirective,
+    AiChatComponent,
   ],
   templateUrl: './tool-application-detail.html',
   styleUrl: './tool-application-detail.sass',
@@ -247,6 +249,10 @@ export class ToolApplicationDetailComponent implements OnChanges {
       COMPLETED: 'success',
     };
     return map[estado];
+  }
+
+  onAiSessionSaved(): void {
+    this.saved.emit();
   }
 
   close(): void {

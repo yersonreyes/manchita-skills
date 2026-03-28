@@ -25,8 +25,12 @@
       </div>
     </div>
 
-    <p-tabs [value]="'datos'">
+    <p-tabs [value]="'ia'">
       <p-tablist>
+        <p-tab value="ia">
+          <i class="pi pi-sparkles"></i>
+          IA
+        </p-tab>
         <p-tab value="datos">
           <i class="pi pi-file-edit"></i>
           Datos
@@ -48,6 +52,14 @@
       </p-tablist>
 
       <p-tabpanels>
+
+        <!-- ── Tab IA ────────────────────────────────────────────────────── -->
+        <p-tabpanel value="ia">
+          <app-ai-chat
+            [application]="application()"
+            (sessionSaved)="onAiSessionSaved()"
+          />
+        </p-tabpanel>
 
         <!-- ── Tab Datos ──────────────────────────────────────────────────── -->
         <p-tabpanel value="datos">

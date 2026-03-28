@@ -1,0 +1,186 @@
+<!-- ── Sin sesión activa: formulario de inicio ──────────────────────────── -->
+@if (!hasSession()) {
+  <div class="session-start">
+    <div class="session-start__icon">
+      <i class="pi pi-sparkles"></i>
+    </div>
+    <h3 class="session-start__title">Asistente IA para {{ application()?.tool?.nombre }}</h3>
+    <p class="session-start__desc">
+      Describí el problema o contexto que querés explorar. La IA te guiará con preguntas
+      usando la metodología de esta herramienta.
+    </p>
+
+    <div class="session-start__form">
+      <textarea
+        [ngModel]="contextInput()"
+        (ngModelChange)="contextInput.set($event)"
+        placeholder="Ej: los usuarios están abandonando el carrito antes de completar la compra..."
+        rows="4"
+        class="session-start__textarea p-inputtext"
+        (keydown.ctrl.enter)="contextInput().trim() && startSession()"
+      ></textarea>
+      <p class="session-start__hint">
+        <i class="pi pi-info-circle"></i>
+        Ctrl + Enter para enviar
+      </p>
+      <p-button
+        label="Iniciar sesión"
+        icon="pi pi-sparkles"
+        [disabled]="!contextInput().trim()"
+        [loading]="sending()"
+        (onClick)="startSession()"
+        class="w-full"
+        styleClass="w-full"
+      />
+    </div>
+  </div>
+}
+
+<!-- ── Sesión activa: chat ───────────────────────────────────────────────── -->
+@if (hasSession()) {
+  <div class="chat-layout">
+
+    <!-- Mensajes -->
+    <div class="chat-messages">
+      @for (msg of messages(); track $index) {
+        <div class="message" [class.message--user]="msg.role === 'user'" [class.message--assistant]="msg.role === 'assistant'">
+          @if (msg.role === 'assistant') {
+            <div class="message__avatar">
+              <i class="pi pi-sparkles"></i>
+            </div>
+          }
+          <div class="message__bubble">
+            <p class="message__text">{{ msg.content }}</p>
+          </div>
+          @if (msg.role === 'user') {
+            <div class="message__avatar message__avatar--user">
+              <i class="pi pi-user"></i>
+            </div>
+          }
+        </div>
+      }
+
+      @if (sending()) {
+        <div class="message message--assistant">
+          <div class="message__avatar">
+            <i class="pi pi-sparkles"></i>
+          </div>
+          <div class="message__bubble message__bubble--thinking">
+            <span class="thinking-dot"></span>
+            <span class="thinking-dot"></span>
+            <span class="thinking-dot"></span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Análisis final -->
+    @if (isAnalyzed() && aiSession()?.analysis) {
+      <div class="analysis-card">
+        <div class="analysis-card__header">
+          <div class="analysis-card__icon">
+            <i class="pi pi-chart-bar"></i>
+          </div>
+          <h4 class="analysis-card__title">Análisis Final</h4>
+          <span class="analysis-card__badge">
+            {{ aiSession()!.turnCount }} intercambios
+          </span>
+        </div>
+
+        <div class="analysis-card__summary">
+          <p>{{ aiSession()!.analysis!.summary }}</p>
+        </div>
+
+        <div class="analysis-card__section">
+          <p class="analysis-card__label">
+            <i class="pi pi-search"></i>
+            Causa raíz
+          </p>
+          <p class="analysis-card__root-cause">{{ aiSession()!.analysis!.rootCause }}</p>
+        </div>
+
+        @if (aiSession()!.analysis!.insights?.length) {
+          <div class="analysis-card__section">
+            <p class="analysis-card__label">
+              <i class="pi pi-lightbulb"></i>
+              Insights
+            </p>
+            <ul class="analysis-card__list">
+              @for (insight of aiSession()!.analysis!.insights; track $index) {
+                <li>{{ insight }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (aiSession()!.analysis!.recommendations?.length) {
+          <div class="analysis-card__section">
+            <p class="analysis-card__label">
+              <i class="pi pi-check-square"></i>
+              Recomendaciones
+            </p>
+            <ul class="analysis-card__list analysis-card__list--recommendations">
+              @for (rec of aiSession()!.analysis!.recommendations; track $index) {
+                <li>{{ rec }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Input area (si no está analizado) -->
+    @if (!isAnalyzed()) {
+      <div class="chat-input-area">
+        <div class="chat-input">
+          <input
+            pInputText
+            [ngModel]="userInput()"
+            (ngModelChange)="userInput.set($event)"
+            placeholder="Escribí tu respuesta..."
+            class="chat-input__field"
+            [disabled]="sending()"
+            (keydown.enter)="!sending() && userInput().trim() && sendMessage()"
+          />
+          <p-button
+            icon="pi pi-send"
+            [disabled]="!userInput().trim() || sending()"
+            [loading]="sending()"
+            pTooltip="Enviar (Enter)"
+            tooltipPosition="top"
+            (onClick)="sendMessage()"
+          />
+        </div>
+
+        @if (canRequestAnalysis()) {
+          <div class="analyze-trigger">
+            <p-button
+              label="Solicitar análisis final"
+              icon="pi pi-chart-bar"
+              severity="secondary"
+              variant="outlined"
+              [loading]="analyzing()"
+              [disabled]="sending()"
+              (onClick)="requestAnalysis()"
+              styleClass="w-full"
+            />
+            @if ((aiSession()?.turnCount ?? 0) < 5) {
+              <p class="analyze-trigger__hint">
+                <i class="pi pi-info-circle"></i>
+                Recomendado después de 5 intercambios ({{ aiSession()?.turnCount ?? 0 }} hasta ahora)
+              </p>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @if (isAnalyzed()) {
+      <p class="session-closed">
+        <i class="pi pi-lock"></i>
+        Sesión finalizada — el análisis está guardado
+      </p>
+    }
+
+  </div>
+}
