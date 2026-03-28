@@ -7,24 +7,53 @@
   [closable]="true"
 >
   @if (application()) {
+
+    <!-- ── Tool identity strip ──────────────────────────────────────────── -->
+    <div class="tool-identity">
+      <div class="tool-identity__badge">
+        <i class="pi pi-wrench"></i>
+      </div>
+      <div>
+        <p class="tool-identity__label">Herramienta base</p>
+        <p class="tool-identity__name">{{ application()?.tool?.nombre }}</p>
+      </div>
+      <div class="tool-identity__status">
+        <p-tag
+          [value]="getEstadoLabel(application()!.estado)"
+          [severity]="getEstadoSeverity(application()!.estado)"
+        />
+      </div>
+    </div>
+
     <p-tabs [value]="'datos'">
       <p-tablist>
-        <p-tab value="datos">Datos</p-tab>
-        <p-tab value="notas">Notas ({{ notes().length }})</p-tab>
-        <p-tab value="adjuntos">Adjuntos ({{ attachments().length }})</p-tab>
+        <p-tab value="datos">
+          <i class="pi pi-file-edit"></i>
+          Datos
+        </p-tab>
+        <p-tab value="notas">
+          <i class="pi pi-comments"></i>
+          Notas
+          @if (notes().length > 0) {
+            <span class="tab-badge">{{ notes().length }}</span>
+          }
+        </p-tab>
+        <p-tab value="adjuntos">
+          <i class="pi pi-paperclip"></i>
+          Adjuntos
+          @if (attachments().length > 0) {
+            <span class="tab-badge">{{ attachments().length }}</span>
+          }
+        </p-tab>
       </p-tablist>
 
       <p-tabpanels>
 
         <!-- ── Tab Datos ──────────────────────────────────────────────────── -->
         <p-tabpanel value="datos">
-          <div class="flex flex-col gap-4 pt-3">
-            <div class="text-xs text-gray-400">
-              Herramienta: <span class="font-medium text-gray-600">{{ application()?.tool?.nombre }}</span>
-            </div>
-
-            <div class="flex flex-col gap-2">
-              <label class="text-sm font-medium text-gray-700">Título</label>
+          <div class="tab-body">
+            <div class="form-field">
+              <label class="form-field__label">Título</label>
               <input
                 pInputText
                 [(ngModel)]="editForm.titulo"
@@ -32,8 +61,8 @@
               />
             </div>
 
-            <div class="flex flex-col gap-2">
-              <label class="text-sm font-medium text-gray-700">Estado</label>
+            <div class="form-field">
+              <label class="form-field__label">Estado</label>
               <p-select
                 [(ngModel)]="editForm.estado"
                 [options]="estadoOptions"
@@ -44,21 +73,29 @@
               />
             </div>
 
-            <div class="flex flex-col gap-2">
-              <label class="text-sm font-medium text-gray-700">Datos estructurados (JSON)</label>
-              <textarea
-                [(ngModel)]="editForm.structuredDataJson"
-                (blur)="validateJson()"
-                rows="8"
-                class="w-full resize-y p-inputtext font-mono text-sm"
-                placeholder="{}"
-              ></textarea>
+            <div class="form-field">
+              <label class="form-field__label">
+                Datos estructurados
+                <span class="form-field__hint">JSON</span>
+              </label>
+              <div class="json-editor-wrapper">
+                <textarea
+                  [(ngModel)]="editForm.structuredDataJson"
+                  (blur)="validateJson()"
+                  rows="8"
+                  class="json-editor"
+                  placeholder="{}"
+                ></textarea>
+              </div>
               @if (jsonError()) {
-                <p class="text-xs text-red-500">{{ jsonError() }}</p>
+                <p class="form-field__error">
+                  <i class="pi pi-exclamation-circle"></i>
+                  {{ jsonError() }}
+                </p>
               }
             </div>
 
-            <div class="flex justify-end">
+            <div class="flex justify-end pt-1">
               <p-button
                 *hasPermission="'tool-applications:update'"
                 label="Guardar cambios"
@@ -72,15 +109,16 @@
 
         <!-- ── Tab Notas ──────────────────────────────────────────────────── -->
         <p-tabpanel value="notas">
-          <div class="flex flex-col gap-3 pt-3">
+          <div class="tab-body">
 
-            <div *hasPermission="'tool-applications:create'" class="flex gap-2">
+            <div *hasPermission="'tool-applications:create'" class="note-compose">
               <input
                 pInputText
                 [ngModel]="newNoteContent()"
                 (ngModelChange)="newNoteContent.set($event)"
                 placeholder="Escribir una nota..."
-                class="flex-1"
+                class="note-compose__input"
+                (keydown.enter)="newNoteContent().trim() && addNote()"
               />
               <p-button
                 icon="pi pi-send"
@@ -92,36 +130,49 @@
             </div>
 
             @if (notes().length === 0) {
-              <div class="text-center text-gray-400 py-6 text-sm">
-                No hay notas todavía
+              <div class="empty-state">
+                <div class="empty-state__icon">
+                  <i class="pi pi-comment"></i>
+                </div>
+                <p class="empty-state__text">Sin notas todavía</p>
+                <p class="empty-state__hint">Escribí la primera nota arriba</p>
               </div>
             } @else {
-              <div class="flex flex-col gap-2">
+              <div class="notes-list">
                 @for (note of notes(); track note.id) {
                   <div class="note-card">
-                    @if (editingNoteId() === note.id) {
-                      <div class="flex gap-2">
-                        <input
-                          pInputText
-                          [ngModel]="editingNoteContent()"
-                          (ngModelChange)="editingNoteContent.set($event)"
-                          class="flex-1"
-                        />
-                        <p-button icon="pi pi-check" severity="success" [rounded]="true" variant="text" (onClick)="saveNote(note.id)" />
-                        <p-button icon="pi pi-times" severity="secondary" [rounded]="true" variant="text" (onClick)="cancelEditNote()" />
-                      </div>
-                    } @else {
-                      <div class="flex items-start justify-between gap-2">
-                        <div class="flex-1">
-                          <p class="text-sm text-gray-700">{{ note.contenido }}</p>
-                          <p class="text-xs text-gray-400 mt-0.5">{{ note.createdBy?.nombre }} · {{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+                    <div class="note-card__avatar">
+                      {{ note.createdBy?.nombre?.charAt(0)?.toUpperCase() ?? '?' }}
+                    </div>
+                    <div class="note-card__body">
+                      @if (editingNoteId() === note.id) {
+                        <div class="note-card__edit">
+                          <input
+                            pInputText
+                            [ngModel]="editingNoteContent()"
+                            (ngModelChange)="editingNoteContent.set($event)"
+                            class="w-full"
+                          />
+                          <div class="flex gap-1 mt-2 justify-end">
+                            <p-button icon="pi pi-check" severity="success" [rounded]="true" variant="text" (onClick)="saveNote(note.id)" />
+                            <p-button icon="pi pi-times" severity="secondary" [rounded]="true" variant="text" (onClick)="cancelEditNote()" />
+                          </div>
                         </div>
-                        <div class="flex gap-1 shrink-0">
+                      } @else {
+                        <div class="note-card__content">
+                          <p class="note-card__text">{{ note.contenido }}</p>
+                          <div class="note-card__footer">
+                            <span class="note-card__author">{{ note.createdBy?.nombre }}</span>
+                            <span class="note-card__sep">·</span>
+                            <span class="note-card__time">{{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                          </div>
+                        </div>
+                        <div class="note-card__actions">
                           <p-button *hasPermission="'tool-applications:update'" icon="pi pi-pencil" [rounded]="true" severity="secondary" variant="text" (onClick)="startEditNote(note)" />
                           <p-button *hasPermission="'tool-applications:delete'" icon="pi pi-trash" [rounded]="true" severity="danger" variant="text" (onClick)="deleteNote(note.id)" />
                         </div>
-                      </div>
-                    }
+                      }
+                    </div>
                   </div>
                 }
               </div>
@@ -131,7 +182,7 @@
 
         <!-- ── Tab Adjuntos ───────────────────────────────────────────────── -->
         <p-tabpanel value="adjuntos">
-          <div class="flex flex-col gap-3 pt-3">
+          <div class="tab-body">
 
             <div *hasPermission="'tool-applications:create'" class="flex justify-end">
               <p-button
@@ -145,68 +196,72 @@
 
             @if (addAttachmentVisible()) {
               <div class="attachment-form">
-                <div class="flex flex-col gap-2">
-                  <label class="text-sm font-medium text-gray-700">Nombre</label>
-                  <input pInputText [(ngModel)]="newAttachmentForm.nombre" placeholder="Nombre del adjunto" class="w-full" />
+                <div class="attachment-form__grid">
+                  <div class="form-field">
+                    <label class="form-field__label">Nombre</label>
+                    <input pInputText [(ngModel)]="newAttachmentForm.nombre" placeholder="Nombre del adjunto" class="w-full" />
+                  </div>
+                  <div class="form-field">
+                    <label class="form-field__label">Tipo</label>
+                    <p-select
+                      [(ngModel)]="newAttachmentForm.tipo"
+                      [options]="tipoOptions"
+                      optionLabel="label"
+                      optionValue="value"
+                      appendTo="body"
+                      class="w-full"
+                    />
+                  </div>
                 </div>
-                <div class="flex flex-col gap-2">
-                  <label class="text-sm font-medium text-gray-700">URL</label>
+                <div class="form-field">
+                  <label class="form-field__label">URL</label>
                   <input pInputText [(ngModel)]="newAttachmentForm.url" placeholder="https://..." class="w-full" />
                 </div>
-                <div class="flex flex-col gap-2">
-                  <label class="text-sm font-medium text-gray-700">Tipo</label>
-                  <p-select
-                    [(ngModel)]="newAttachmentForm.tipo"
-                    [options]="tipoOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    appendTo="body"
-                    class="w-full"
-                  />
-                </div>
-                <div class="flex justify-end gap-2">
+                <div class="flex justify-end gap-2 pt-1">
                   <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="addAttachmentVisible.set(false)" />
-                  <p-button label="Guardar" icon="pi pi-check" (onClick)="addAttachment()" />
+                  <p-button label="Guardar adjunto" icon="pi pi-check" (onClick)="addAttachment()" />
                 </div>
               </div>
             }
 
-            @if (attachments().length === 0) {
-              <div class="text-center text-gray-400 py-6 text-sm">
-                No hay adjuntos todavía
+            @if (attachments().length === 0 && !addAttachmentVisible()) {
+              <div class="empty-state">
+                <div class="empty-state__icon">
+                  <i class="pi pi-paperclip"></i>
+                </div>
+                <p class="empty-state__text">Sin adjuntos todavía</p>
+                <p class="empty-state__hint">Links, imágenes, PDFs y más</p>
               </div>
-            } @else {
-              <p-table [value]="attachments()" styleClass="p-datatable-sm">
-                <ng-template #header>
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Tipo</th>
-                    <th>URL</th>
-                    <th></th>
-                  </tr>
-                </ng-template>
-                <ng-template #body let-att>
-                  <tr>
-                    <td class="text-sm">{{ att.nombre }}</td>
-                    <td><p-tag [value]="att.tipo" severity="secondary" /></td>
-                    <td>
-                      <a [href]="att.url" target="_blank" class="text-emerald-600 hover:text-emerald-700 text-sm truncate max-w-xs block">
-                        {{ att.url }}
-                      </a>
-                    </td>
-                    <td>
-                      <p-button
-                        *hasPermission="'tool-applications:delete'"
-                        icon="pi pi-trash"
-                        [rounded]="true"
-                        severity="danger"
-                        variant="text"
-                        (onClick)="deleteAttachment(att.id)"
-                      />
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
+            }
+
+            @if (attachments().length > 0) {
+              <div class="attachments-list">
+                @for (att of attachments(); track att.id) {
+                  <div class="attachment-item">
+                    <div class="attachment-item__icon attachment-item__icon--{{ att.tipo }}">
+                      @if (att.tipo === 'IMAGE') { <i class="pi pi-image"></i> }
+                      @else if (att.tipo === 'PDF') { <i class="pi pi-file-pdf"></i> }
+                      @else if (att.tipo === 'LINK') { <i class="pi pi-link"></i> }
+                      @else { <i class="pi pi-file"></i> }
+                    </div>
+                    <div class="attachment-item__info">
+                      <p class="attachment-item__name">{{ att.nombre }}</p>
+                      <a [href]="att.url" target="_blank" class="attachment-item__url">{{ att.url }}</a>
+                    </div>
+                    <p-tag [value]="att.tipo" severity="secondary" />
+                    <p-button
+                      *hasPermission="'tool-applications:delete'"
+                      icon="pi pi-trash"
+                      [rounded]="true"
+                      severity="danger"
+                      variant="text"
+                      pTooltip="Eliminar adjunto"
+                      tooltipPosition="top"
+                      (onClick)="deleteAttachment(att.id)"
+                    />
+                  </div>
+                }
+              </div>
             }
           </div>
         </p-tabpanel>

@@ -40,15 +40,25 @@
   </p-card>
 } @else {
   <div class="phases-list">
-    @for (phase of phases(); track phase.id) {
-      <p-card styleClass="phase-section">
+    @for (phase of phases(); track phase.id; let idx = $index) {
+      <p-card [styleClass]="'phase-section phase-section--' + phase.estado">
         <!-- ── Cabecera de la fase ────────────────────────────────────── -->
         <div class="phase-section__header">
           <div class="phase-section__title-area">
-            <div class="phase-section__icon">
-              <i class="pi pi-compass"></i>
+            <div class="phase-section__icon"
+                 [class.phase-section__icon--not-started]="phase.estado === 'NOT_STARTED'"
+                 [class.phase-section__icon--in-progress]="phase.estado === 'IN_PROGRESS'"
+                 [class.phase-section__icon--completed]="phase.estado === 'COMPLETED'">
+              @if (phase.estado === 'COMPLETED') {
+                <i class="pi pi-check-circle"></i>
+              } @else if (phase.estado === 'IN_PROGRESS') {
+                <i class="pi pi-compass"></i>
+              } @else {
+                <i class="pi pi-circle"></i>
+              }
             </div>
             <div>
+              <span class="phase-section__meta">Fase {{ phase.orden }}</span>
               <p class="phase-section__name">{{ phase.phase.nombre }}</p>
               <p class="phase-section__description">{{ phase.phase.descripcion }}</p>
             </div>
@@ -79,17 +89,21 @@
         <div class="phase-section__tools">
           @if (getPhaseTools(phase.id).length === 0) {
             <div class="phase-section__tools-empty">
-              <i class="pi pi-wrench opacity-30"></i>
-              <span>Sin herramientas — agregá la primera</span>
+              <i class="pi pi-wrench"></i>
+              <span>Sin herramientas — agregá la primera para esta fase</span>
             </div>
           } @else {
             @for (app of getPhaseTools(phase.id); track app.id) {
-              <div class="tool-row">
+              <div class="tool-row" (click)="openEditTool(app)">
+                <div class="tool-row__status-dot tool-row__status-dot--{{ app.estado }}"></div>
                 <div class="tool-row__info">
                   <p class="tool-row__title">{{ app.titulo }}</p>
-                  <p class="tool-row__tool-name">{{ app.tool?.nombre }}</p>
+                  <p class="tool-row__tool-name">
+                    <i class="pi pi-wrench"></i>
+                    {{ app.tool?.nombre }}
+                  </p>
                 </div>
-                <div class="tool-row__actions">
+                <div class="tool-row__actions" (click)="$event.stopPropagation()">
                   <p-tag
                     [value]="getToolEstadoLabel(app.estado)"
                     [severity]="getToolEstadoSeverity(app.estado)"

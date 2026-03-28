@@ -235,6 +235,20 @@ export class ToolApplicationDetailComponent implements OnChanges {
     }
   }
 
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+  getEstadoLabel(estado: ToolApplicationStatus): string {
+    return this.estadoOptions.find((o) => o.value === estado)?.label ?? estado;
+  }
+
+  getEstadoSeverity(estado: ToolApplicationStatus): 'secondary' | 'info' | 'success' {
+    const map: Record<ToolApplicationStatus, 'secondary' | 'info' | 'success'> = {
+      PENDING: 'secondary',
+      IN_PROGRESS: 'info',
+      COMPLETED: 'success',
+    };
+    return map[estado];
+  }
+
   close(): void {
     this.visible.set(false);
   }
