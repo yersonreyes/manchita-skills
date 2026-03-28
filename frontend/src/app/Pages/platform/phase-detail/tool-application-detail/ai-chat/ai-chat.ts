@@ -1,6 +1,5 @@
 import { Component, OnChanges, inject, input, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
 import { ToolApplicationResDto } from '@core/services/toolApplicationService/tool-application.res.dto';
 import { ToolApplicationService } from '@core/services/toolApplicationService/tool-application.service';
 import { AiService } from '@core/services/aiService/ai.service';
@@ -13,7 +12,7 @@ import { InputText } from 'primeng/inputtext';
 @Component({
   selector: 'app-ai-chat',
   standalone: true,
-  imports: [FormsModule, NgClass, Button, InputText],
+  imports: [FormsModule, Button, InputText],
   templateUrl: './ai-chat.html',
   styleUrl: './ai-chat.sass',
 })
@@ -96,6 +95,8 @@ export class AiChatComponent implements OnChanges {
         history: session.messages,
       });
 
+      console.log('[AiChat] Análisis recibido:', res.analysis);
+
       const now = new Date().toISOString();
       const updatedSession: AiSessionDto = {
         ...session,
@@ -105,8 +106,9 @@ export class AiChatComponent implements OnChanges {
       };
 
       await this.persistSession(updatedSession);
-    } catch {
-      // Error manejado por el builder
+    } catch (error) {
+      console.error('[AiChat] Error al analizar:', error);
+      this.uiDialog.showError('Error', `No se pudo generar el análisis: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       this.analyzing.set(false);
     }
@@ -135,6 +137,15 @@ export class AiChatComponent implements OnChanges {
         history: session.messages,
       });
 
+      console.log('[AiChat] Respuesta del servidor:', res);
+
+      if (!res.assistantMessage || res.assistantMessage.trim() === '') {
+        console.warn('[AiChat] Respuesta vacía del AI');
+        this.uiDialog.showError('Error', 'El AI no retornó una respuesta. Intenta nuevamente.');
+        this.aiSession.set(session);
+        return;
+      }
+
       const assistantMsg: AiMessageDto = { role: 'assistant', content: res.assistantMessage };
       const updatedSession: AiSessionDto = {
         ...optimisticSession,
@@ -144,7 +155,9 @@ export class AiChatComponent implements OnChanges {
       };
 
       await this.persistSession(updatedSession);
-    } catch {
+    } catch (error) {
+      console.error('[AiChat] Error al enviar mensaje:', error);
+      this.uiDialog.showError('Error', `No se pudo enviar el mensaje: ${error instanceof Error ? error.message : 'Error desconocido'}`);
       // Revertir mensaje optimista si falla
       this.aiSession.set(session);
     } finally {

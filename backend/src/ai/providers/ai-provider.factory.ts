@@ -17,7 +17,7 @@ export function createAiProvider(config: ConfigService): IAiProvider {
     case 'minimax':
       return new MinimaxProvider(
         config.get<string>('MINIMAX_API_KEY'),
-        config.get<string>('MINIMAX_GROUP_ID'),
+        config.get<string>('MINIMAX_GROUP_ID') ?? undefined, // opcional con claves sk-cp-*
         config.get<string>('MINIMAX_MODEL'),
       );
 

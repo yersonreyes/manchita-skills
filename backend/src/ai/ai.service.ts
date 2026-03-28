@@ -13,6 +13,8 @@ export class AiService {
   ) {}
 
   async chat(dto: AiChatRequestDto): Promise<AiChatResDto> {
+    console.log('[AiService:chat] Incoming request - toolAppId:', dto.toolApplicationId, 'userMessage length:', dto.userMessage.length, 'history length:', dto.history.length);
+
     this.validateHistory(dto.history);
 
     const tool = await this.loadToolForApplication(dto.toolApplicationId);
@@ -23,7 +25,10 @@ export class AiService {
       { role: 'user', content: dto.userMessage },
     ];
 
+    console.log('[AiService:chat] Calling provider with', messages.length, 'messages');
     const assistantMessage = await this.provider.chat(messages, systemPrompt, 512);
+    console.log('[AiService:chat] Provider returned message length:', assistantMessage.length, 'content:', assistantMessage.substring(0, 100));
+
     const turnCount = Math.floor(dto.history.length / 2) + 1;
 
     return { assistantMessage, turnCount };
