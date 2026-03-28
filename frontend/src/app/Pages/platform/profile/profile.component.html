@@ -13,7 +13,7 @@
             [label]="u.nombre.charAt(0).toUpperCase()"
             shape="circle"
             size="xlarge"
-            styleClass="bg-green-600 text-white text-3xl"
+            styleClass="bg-emerald-600 text-white text-3xl"
           />
           <div class="text-center">
             <h2 class="text-xl font-bold text-gray-800">{{ u.nombre }}</h2>
@@ -43,11 +43,11 @@
     <div class="lg:col-span-2">
       <p-card header="Permisos Efectivos">
         @if (isSuperAdmin()) {
-          <div class="flex items-center gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
-            <i class="pi pi-check-circle text-green-600 text-xl"></i>
+          <div class="flex items-center gap-3 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+            <i class="pi pi-check-circle text-emerald-600 text-xl"></i>
             <div>
-              <p class="font-semibold text-green-800">Super Administrador</p>
-              <p class="text-green-600 text-sm">Tienes acceso total al sistema</p>
+              <p class="font-semibold text-emerald-800">Super Administrador</p>
+              <p class="text-emerald-600 text-sm">Tienes acceso total al sistema</p>
             </div>
           </div>
         } @else {

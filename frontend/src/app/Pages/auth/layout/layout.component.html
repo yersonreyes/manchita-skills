@@ -1,26 +1,65 @@
-<div class="flex min-h-screen">
-  <!-- Columna izquierda: formulario -->
-  <div class="flex flex-col justify-center items-center w-full lg:w-1/2 p-8 bg-white">
+<div class="auth-wrapper">
+  <!-- Panel izquierdo: formulario -->
+  <div class="auth-form-panel">
     <div class="w-full max-w-md">
       <router-outlet />
     </div>
   </div>
 
-  <!-- Columna derecha: branding (oculta en móvil) -->
-  <div class="hidden lg:flex flex-col justify-center items-center w-1/2 bg-green-900 text-white p-12">
-    <div class="text-center max-w-md">
-      <div class="mb-6">
-        <i class="pi pi-star-fill text-6xl text-green-300"></i>
+  <!-- Panel derecho: branding -->
+  <div class="auth-brand-panel">
+    <!-- SVG de fondo -->
+    <svg class="brand-bg-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <pattern id="ms-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#ms-grid)" />
+      <!-- Hexágonos decorativos usando coordenadas porcentuales -->
+      <polygon
+        points="75%,5% 92%,15% 92%,35% 75%,45% 58%,35% 58%,15%"
+        fill="none" stroke="rgba(5,150,105,0.15)" stroke-width="1.5"/>
+      <polygon
+        points="20%,55% 37%,65% 37%,85% 20%,95% 3%,85% 3%,65%"
+        fill="none" stroke="rgba(245,158,11,0.12)" stroke-width="1.5"/>
+      <polygon
+        points="85%,65% 97%,72% 97%,86% 85%,93% 73%,86% 73%,72%"
+        fill="none" stroke="rgba(5,150,105,0.10)" stroke-width="1.5"/>
+    </svg>
+
+    <!-- Contenido -->
+    <div class="brand-content">
+      <!-- Logo mark -->
+      <div class="brand-logo">
+        <div class="brand-logo-mark">
+          <div class="brand-logo-outer"></div>
+          <div class="brand-logo-inner"></div>
+          <div class="brand-logo-icon">
+            <i class="pi pi-bolt" style="color: #f59e0b; font-size: 1.375rem;"></i>
+          </div>
+        </div>
       </div>
-      <h1 class="text-4xl font-bold mb-4">Manchita Skills</h1>
-      <p class="text-green-200 text-lg leading-relaxed">
-        Sistema de gestión de habilidades y competencias.
-        Administra usuarios, roles y permisos de forma sencilla.
+
+      <h1 class="brand-title">Manchita Skills</h1>
+
+      <p class="brand-description">
+        Plataforma de gestión de habilidades y competencias.
+        Administra usuarios, roles y permisos con precisión.
       </p>
-      <div class="mt-8 flex justify-center gap-3">
-        <div class="w-2 h-2 rounded-full bg-green-400"></div>
-        <div class="w-2 h-2 rounded-full bg-green-300 opacity-60"></div>
-        <div class="w-2 h-2 rounded-full bg-green-300 opacity-40"></div>
+
+      <!-- Divisor amber -->
+      <div class="brand-divider">
+        <div class="brand-divider-line"></div>
+        <div class="brand-divider-dot"></div>
+        <div class="brand-divider-line"></div>
+      </div>
+
+      <!-- Feature chips -->
+      <div class="brand-chips">
+        <span class="brand-chip brand-chip--emerald">Control de acceso</span>
+        <span class="brand-chip brand-chip--amber">Roles y permisos</span>
+        <span class="brand-chip brand-chip--emerald">Gestión de usuarios</span>
       </div>
     </div>
   </div>
