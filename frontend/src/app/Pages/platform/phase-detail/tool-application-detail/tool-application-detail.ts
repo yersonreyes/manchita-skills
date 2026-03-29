@@ -17,7 +17,6 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
-import { Tag } from 'primeng/tag';
 import { Tooltip } from 'primeng/tooltip';
 import { ToolMeta, resolveToolMeta } from './tools/tool-registry';
 
@@ -38,7 +37,6 @@ interface SelectOption<T> {
     Dialog,
     InputText,
     Select,
-    Tag,
     Tooltip,
     HasPermissionDirective,
     PageHeaderComponent,

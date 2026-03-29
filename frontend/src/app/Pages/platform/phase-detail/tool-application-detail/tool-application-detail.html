@@ -6,7 +6,7 @@
 
   <app-page-header
     [title]="application()!.titulo"
-    [subtitle]="application()!.tool?.nombre ?? ''"
+    [subtitle]="application()!.tool.nombre"
   >
     <p-button
       label="Volver"
@@ -77,7 +77,7 @@
             <div class="header-meta">
               <span class="meta-item">
                 <i class="pi pi-user"></i>
-                {{ application()!.createdBy?.nombre }}
+                {{ application()!.createdBy.nombre }}
               </span>
               <span class="meta-sep">·</span>
               <span class="meta-item">
@@ -135,7 +135,7 @@
                 @for (note of notes(); track note.id) {
                   <div class="note-card">
                     <div class="note-card__avatar">
-                      {{ note.createdBy?.nombre?.charAt(0)?.toUpperCase() ?? '?' }}
+                      {{ note.createdBy.nombre.charAt(0).toUpperCase() }}
                     </div>
                     <div class="note-card__body">
                       @if (editingNoteId() === note.id) {
@@ -154,7 +154,7 @@
                           <div class="note-card__text-wrap">
                             <p class="note-card__text">{{ note.contenido }}</p>
                             <div class="note-card__footer">
-                              <span>{{ note.createdBy?.nombre }}</span>
+                              <span>{{ note.createdBy.nombre }}</span>
                               <span class="sep">·</span>
                               <span>{{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
                             </div>

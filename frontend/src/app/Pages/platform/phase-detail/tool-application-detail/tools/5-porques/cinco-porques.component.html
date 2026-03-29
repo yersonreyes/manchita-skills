@@ -110,7 +110,7 @@
           <p class="analysis-card__root-cause">{{ aiSession()!.analysis!.rootCause }}</p>
         </div>
 
-        @if (aiSession()!.analysis!.insights?.length) {
+        @if (aiSession()!.analysis!.insights.length) {
           <div class="analysis-card__section">
             <p class="analysis-card__label">
               <i class="pi pi-lightbulb"></i>
@@ -124,7 +124,7 @@
           </div>
         }
 
-        @if (aiSession()!.analysis!.recommendations?.length) {
+        @if (aiSession()!.analysis!.recommendations.length) {
           <div class="analysis-card__section">
             <p class="analysis-card__label">
               <i class="pi pi-check-square"></i>

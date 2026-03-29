@@ -73,7 +73,7 @@ import { Select } from 'primeng/select';
 
             <!-- Risks & Recommendations side-by-side -->
             <div class="rep-highlights">
-              @if (rv.report.risks?.length) {
+              @if (rv.report.risks.length) {
                 <div class="rep-card rep-card--risk">
                   <div class="rep-card__header">
                     <span class="rep-card__icon rep-card__icon--risk">⚠</span>
@@ -86,7 +86,7 @@ import { Select } from 'primeng/select';
                   </ul>
                 </div>
               }
-              @if (rv.report.recommendations?.length) {
+              @if (rv.report.recommendations.length) {
                 <div class="rep-card rep-card--rec">
                   <div class="rep-card__header">
                     <span class="rep-card__icon rep-card__icon--rec">→</span>
@@ -113,21 +113,21 @@ import { Select } from 'primeng/select';
                       <i class="pi {{ blockIcon(entry.key) }}"></i>
                       {{ blockLabel(entry.key) }}
                     </div>
-                    @if (entry.analysis.strengths?.length) {
+                    @if (entry.analysis.strengths.length) {
                       <div class="rep-block__group rep-block__group--s">
                         @for (item of entry.analysis.strengths; track $index) {
                           <span class="rep-block__item">{{ item }}</span>
                         }
                       </div>
                     }
-                    @if (entry.analysis.weaknesses?.length) {
+                    @if (entry.analysis.weaknesses.length) {
                       <div class="rep-block__group rep-block__group--w">
                         @for (item of entry.analysis.weaknesses; track $index) {
                           <span class="rep-block__item">{{ item }}</span>
                         }
                       </div>
                     }
-                    @if (entry.analysis.suggestions?.length) {
+                    @if (entry.analysis.suggestions.length) {
                       <div class="rep-block__group rep-block__group--sg">
                         @for (item of entry.analysis.suggestions; track $index) {
                           <span class="rep-block__item">{{ item }}</span>
