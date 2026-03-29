@@ -94,7 +94,7 @@
             </div>
           } @else {
             @for (app of getPhaseTools(phase.id); track app.id) {
-              <div class="tool-row" (click)="openEditTool(app)">
+              <div class="tool-row" (click)="openEditTool(app, phase)">
                 <div class="tool-row__status-dot tool-row__status-dot--{{ app.estado }}"></div>
                 <div class="tool-row__info">
                   <p class="tool-row__title">{{ app.titulo }}</p>
@@ -116,7 +116,7 @@
                     variant="text"
                     pTooltip="Editar herramienta"
                     tooltipPosition="top"
-                    (onClick)="openEditTool(app)"
+                    (onClick)="openEditTool(app, phase)"
                   />
                 </div>
               </div>
@@ -227,10 +227,3 @@
   </ng-template>
 </p-dialog>
 
-<!-- ─── Dialog editar herramienta ───────────────────────────────────────── -->
-<app-tool-application-detail
-  [application]="selectedApplication()"
-  [visible]="detailDialogVisible()"
-  (visibleChange)="detailDialogVisible.set($event)"
-  (saved)="onToolSaved(selectedApplication()!.projectPhaseId)"
-/>

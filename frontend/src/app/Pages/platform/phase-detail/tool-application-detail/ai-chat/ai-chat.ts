@@ -83,6 +83,25 @@ export class AiChatComponent implements OnChanges {
     this.userInput.set('');
   }
 
+  async clearSession(): Promise<void> {
+    const confirmed = await this.uiDialog.confirm({
+      header: 'Limpiar conversación',
+      message: '¿Estás seguro? Se perderán todos los mensajes y el análisis de esta sesión.',
+      icon: 'pi pi-exclamation-triangle',
+    });
+    if (!confirmed) return;
+
+    const app = this.application();
+    if (!app) return;
+
+    const currentData = (app.structuredData as Record<string, unknown>) ?? {};
+    const { aiSession: _, ...rest } = currentData;
+    await this.toolApplicationService.update(app.id, { structuredData: rest });
+
+    this.aiSession.set(null);
+    this.sessionSaved.emit();
+  }
+
   async requestAnalysis(): Promise<void> {
     const session = this.aiSession();
     const app = this.application();

@@ -1,293 +1,276 @@
-<p-dialog
-  [visible]="visible()"
-  (visibleChange)="visible.set($event)"
-  [modal]="true"
-  [header]="application()?.titulo ?? 'Detalle de herramienta'"
-  [style]="{ width: '720px' }"
-  [closable]="true"
->
-  @if (application()) {
+@if (loading()) {
+  <div class="loading-state">
+    <i class="pi pi-spin pi-spinner"></i>
+  </div>
+} @else if (application()) {
 
-    <!-- ── Tool identity strip ──────────────────────────────────────────── -->
-    <div class="tool-identity">
-      <div class="tool-identity__badge">
-        <i class="pi pi-wrench"></i>
+  <app-page-header
+    [title]="application()!.titulo"
+    [subtitle]="application()!.tool?.nombre ?? ''"
+  >
+    <p-button
+      label="Volver"
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      variant="outlined"
+      (onClick)="goBack()"
+    />
+  </app-page-header>
+
+  <div class="detail-layout">
+
+    <!-- ── Cabecera editable ──────────────────────────────────────────────── -->
+    <section class="detail-card detail-card--header">
+      <div class="header-fields">
+        <div class="form-field">
+          <label class="form-field__label">Título</label>
+          <input
+            pInputText
+            [ngModel]="editTitulo()"
+            (ngModelChange)="editTitulo.set($event)"
+            class="w-full"
+            placeholder="Título de la aplicación"
+          />
+        </div>
+
+        <div class="form-field">
+          <label class="form-field__label">Estado</label>
+          <p-select
+            [ngModel]="editEstado()"
+            (ngModelChange)="editEstado.set($event)"
+            [options]="estadoOptions"
+            optionLabel="label"
+            optionValue="value"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
       </div>
-      <div>
-        <p class="tool-identity__label">Herramienta base</p>
-        <p class="tool-identity__name">{{ application()?.tool?.nombre }}</p>
+
+      <div class="header-meta">
+        <span class="meta-item">
+          <i class="pi pi-user"></i>
+          {{ application()!.createdBy?.nombre }}
+        </span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item">
+          <i class="pi pi-calendar"></i>
+          {{ application()!.createdAt | date: 'dd/MM/yyyy' }}
+        </span>
+        <div class="header-actions">
+          <p-button
+            *hasPermission="'tool-applications:update'"
+            label="Guardar cambios"
+            icon="pi pi-check"
+            size="small"
+            [loading]="saving()"
+            (onClick)="saveData()"
+          />
+        </div>
       </div>
-      <div class="tool-identity__status">
-        <p-tag
-          [value]="getEstadoLabel(application()!.estado)"
-          [severity]="getEstadoSeverity(application()!.estado)"
+    </section>
+
+    <!-- ── Notas ─────────────────────────────────────────────────────────── -->
+    <section class="detail-card">
+      <h3 class="section-title">
+        <i class="pi pi-comments"></i>
+        Notas
+        @if (notes().length > 0) {
+          <span class="section-badge">{{ notes().length }}</span>
+        }
+      </h3>
+
+      <div *hasPermission="'tool-applications:create'" class="note-compose">
+        <input
+          pInputText
+          [ngModel]="newNoteContent()"
+          (ngModelChange)="newNoteContent.set($event)"
+          placeholder="Escribir una nota..."
+          class="note-compose__input"
+          (keydown.enter)="newNoteContent().trim() && addNote()"
+        />
+        <p-button
+          icon="pi pi-send"
+          pTooltip="Agregar nota"
+          tooltipPosition="top"
+          [disabled]="!newNoteContent().trim()"
+          (onClick)="addNote()"
         />
       </div>
-    </div>
 
-    <p-tabs [value]="'ia'">
-      <p-tablist>
-        <p-tab value="ia">
-          <i class="pi pi-sparkles"></i>
-          IA
-        </p-tab>
-        <p-tab value="datos">
-          <i class="pi pi-file-edit"></i>
-          Datos
-        </p-tab>
-        <p-tab value="notas">
-          <i class="pi pi-comments"></i>
-          Notas
-          @if (notes().length > 0) {
-            <span class="tab-badge">{{ notes().length }}</span>
+      @if (notes().length === 0) {
+        <div class="empty-state">
+          <i class="pi pi-comment empty-state__icon"></i>
+          <p>Sin notas todavía</p>
+        </div>
+      } @else {
+        <div class="notes-list">
+          @for (note of notes(); track note.id) {
+            <div class="note-card">
+              <div class="note-card__avatar">
+                {{ note.createdBy?.nombre?.charAt(0)?.toUpperCase() ?? '?' }}
+              </div>
+              <div class="note-card__body">
+                @if (editingNoteId() === note.id) {
+                  <input
+                    pInputText
+                    [ngModel]="editingNoteContent()"
+                    (ngModelChange)="editingNoteContent.set($event)"
+                    class="w-full"
+                  />
+                  <div class="flex gap-1 mt-2 justify-end">
+                    <p-button icon="pi pi-check" severity="success" [rounded]="true" variant="text" (onClick)="saveNote(note.id)" />
+                    <p-button icon="pi pi-times" severity="secondary" [rounded]="true" variant="text" (onClick)="cancelEditNote()" />
+                  </div>
+                } @else {
+                  <div class="note-card__content">
+                    <div class="note-card__text-wrap">
+                      <p class="note-card__text">{{ note.contenido }}</p>
+                      <div class="note-card__footer">
+                        <span>{{ note.createdBy?.nombre }}</span>
+                        <span class="sep">·</span>
+                        <span>{{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                      </div>
+                    </div>
+                    <div class="note-card__actions">
+                      <p-button *hasPermission="'tool-applications:update'" icon="pi pi-pencil" [rounded]="true" severity="secondary" variant="text" (onClick)="startEditNote(note)" />
+                      <p-button *hasPermission="'tool-applications:delete'" icon="pi pi-trash" [rounded]="true" severity="danger" variant="text" (onClick)="deleteNote(note.id)" />
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
           }
-        </p-tab>
-        <p-tab value="adjuntos">
+        </div>
+      }
+    </section>
+
+    <!-- ── Adjuntos ───────────────────────────────────────────────────────── -->
+    <section class="detail-card">
+      <div class="section-header">
+        <h3 class="section-title">
           <i class="pi pi-paperclip"></i>
           Adjuntos
           @if (attachments().length > 0) {
-            <span class="tab-badge">{{ attachments().length }}</span>
+            <span class="section-badge">{{ attachments().length }}</span>
           }
-        </p-tab>
-      </p-tablist>
+        </h3>
+        <p-button
+          *hasPermission="'tool-applications:create'"
+          label="Agregar"
+          icon="pi pi-plus"
+          severity="secondary"
+          variant="outlined"
+          size="small"
+          (onClick)="addAttachmentVisible.set(true)"
+        />
+      </div>
 
-      <p-tabpanels>
-
-        <!-- ── Tab IA ────────────────────────────────────────────────────── -->
-        <p-tabpanel value="ia">
-          <app-ai-chat
-            [application]="application()"
-            (sessionSaved)="onAiSessionSaved()"
-          />
-        </p-tabpanel>
-
-        <!-- ── Tab Datos ──────────────────────────────────────────────────── -->
-        <p-tabpanel value="datos">
-          <div class="tab-body">
+      @if (addAttachmentVisible()) {
+        <div class="attachment-form">
+          <div class="attachment-form__grid">
             <div class="form-field">
-              <label class="form-field__label">Título</label>
-              <input
-                pInputText
-                [(ngModel)]="editForm.titulo"
-                class="w-full"
-              />
+              <label class="form-field__label">Nombre</label>
+              <input pInputText [(ngModel)]="newAttachmentForm.nombre" placeholder="Nombre del adjunto" class="w-full" />
             </div>
-
             <div class="form-field">
-              <label class="form-field__label">Estado</label>
-              <p-select
-                [(ngModel)]="editForm.estado"
-                [options]="estadoOptions"
-                optionLabel="label"
-                optionValue="value"
-                appendTo="body"
-                class="w-full"
-              />
-            </div>
-
-            <div class="form-field">
-              <label class="form-field__label">
-                Datos estructurados
-                <span class="form-field__hint">JSON</span>
-              </label>
-              <div class="json-editor-wrapper">
-                <textarea
-                  [(ngModel)]="editForm.structuredDataJson"
-                  (blur)="validateJson()"
-                  rows="8"
-                  class="json-editor"
-                  placeholder="{}"
-                ></textarea>
-              </div>
-              @if (jsonError()) {
-                <p class="form-field__error">
-                  <i class="pi pi-exclamation-circle"></i>
-                  {{ jsonError() }}
-                </p>
-              }
-            </div>
-
-            <div class="flex justify-end pt-1">
-              <p-button
-                *hasPermission="'tool-applications:update'"
-                label="Guardar cambios"
-                icon="pi pi-check"
-                [loading]="saving()"
-                (onClick)="saveData()"
-              />
+              <label class="form-field__label">Tipo</label>
+              <p-select [(ngModel)]="newAttachmentForm.tipo" [options]="tipoOptions" optionLabel="label" optionValue="value" appendTo="body" class="w-full" />
             </div>
           </div>
-        </p-tabpanel>
+          <div class="form-field">
+            <label class="form-field__label">URL</label>
+            <input pInputText [(ngModel)]="newAttachmentForm.url" placeholder="https://..." class="w-full" />
+          </div>
+          <div class="flex justify-end gap-2">
+            <p-button label="Cancelar" severity="secondary" variant="outlined" size="small" (onClick)="addAttachmentVisible.set(false)" />
+            <p-button label="Guardar adjunto" icon="pi pi-check" size="small" (onClick)="addAttachment()" />
+          </div>
+        </div>
+      }
 
-        <!-- ── Tab Notas ──────────────────────────────────────────────────── -->
-        <p-tabpanel value="notas">
-          <div class="tab-body">
+      @if (attachments().length === 0 && !addAttachmentVisible()) {
+        <div class="empty-state">
+          <i class="pi pi-paperclip empty-state__icon"></i>
+          <p>Sin adjuntos todavía</p>
+        </div>
+      }
 
-            <div *hasPermission="'tool-applications:create'" class="note-compose">
-              <input
-                pInputText
-                [ngModel]="newNoteContent()"
-                (ngModelChange)="newNoteContent.set($event)"
-                placeholder="Escribir una nota..."
-                class="note-compose__input"
-                (keydown.enter)="newNoteContent().trim() && addNote()"
-              />
+      @if (attachments().length > 0) {
+        <div class="attachments-grid">
+          @for (att of attachments(); track att.id) {
+            <div class="attachment-card">
+              <div class="attachment-card__icon attachment-card__icon--{{ att.tipo }}">
+                @if (att.tipo === 'IMAGE') { <i class="pi pi-image"></i> }
+                @else if (att.tipo === 'PDF') { <i class="pi pi-file-pdf"></i> }
+                @else if (att.tipo === 'LINK') { <i class="pi pi-link"></i> }
+                @else { <i class="pi pi-file"></i> }
+              </div>
+              <div class="attachment-card__info">
+                <p class="attachment-card__name">{{ att.nombre }}</p>
+                <a [href]="att.url" target="_blank" class="attachment-card__url">{{ att.url }}</a>
+              </div>
               <p-button
-                icon="pi pi-send"
-                pTooltip="Agregar nota"
+                *hasPermission="'tool-applications:delete'"
+                icon="pi pi-trash"
+                [rounded]="true"
+                severity="danger"
+                variant="text"
+                size="small"
+                pTooltip="Eliminar"
                 tooltipPosition="top"
-                [disabled]="!newNoteContent().trim()"
-                (onClick)="addNote()"
+                (onClick)="deleteAttachment(att.id)"
               />
             </div>
+          }
+        </div>
+      }
+    </section>
 
-            @if (notes().length === 0) {
-              <div class="empty-state">
-                <div class="empty-state__icon">
-                  <i class="pi pi-comment"></i>
-                </div>
-                <p class="empty-state__text">Sin notas todavía</p>
-                <p class="empty-state__hint">Escribí la primera nota arriba</p>
-              </div>
-            } @else {
-              <div class="notes-list">
-                @for (note of notes(); track note.id) {
-                  <div class="note-card">
-                    <div class="note-card__avatar">
-                      {{ note.createdBy?.nombre?.charAt(0)?.toUpperCase() ?? '?' }}
-                    </div>
-                    <div class="note-card__body">
-                      @if (editingNoteId() === note.id) {
-                        <div class="note-card__edit">
-                          <input
-                            pInputText
-                            [ngModel]="editingNoteContent()"
-                            (ngModelChange)="editingNoteContent.set($event)"
-                            class="w-full"
-                          />
-                          <div class="flex gap-1 mt-2 justify-end">
-                            <p-button icon="pi pi-check" severity="success" [rounded]="true" variant="text" (onClick)="saveNote(note.id)" />
-                            <p-button icon="pi pi-times" severity="secondary" [rounded]="true" variant="text" (onClick)="cancelEditNote()" />
-                          </div>
-                        </div>
-                      } @else {
-                        <div class="note-card__content">
-                          <p class="note-card__text">{{ note.contenido }}</p>
-                          <div class="note-card__footer">
-                            <span class="note-card__author">{{ note.createdBy?.nombre }}</span>
-                            <span class="note-card__sep">·</span>
-                            <span class="note-card__time">{{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
-                          </div>
-                        </div>
-                        <div class="note-card__actions">
-                          <p-button *hasPermission="'tool-applications:update'" icon="pi pi-pencil" [rounded]="true" severity="secondary" variant="text" (onClick)="startEditNote(note)" />
-                          <p-button *hasPermission="'tool-applications:delete'" icon="pi pi-trash" [rounded]="true" severity="danger" variant="text" (onClick)="deleteNote(note.id)" />
-                        </div>
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        </p-tabpanel>
+    <!-- ── Chat con IA ──────────────────────────────────────────────────── -->
+    <section class="detail-card">
+      <h3 class="section-title">
+        <i class="pi pi-sparkles"></i>
+        Asistente IA
+      </h3>
+      <app-ai-chat
+        [application]="application()"
+        (sessionSaved)="loadApplication()"
+      />
+    </section>
 
-        <!-- ── Tab Adjuntos ───────────────────────────────────────────────── -->
-        <p-tabpanel value="adjuntos">
-          <div class="tab-body">
+    <!-- ── Datos estructurados (ocultos) ─────────────────────────────────── -->
+    <div class="json-toggle-bar">
+      <p-button
+        label="Ver datos estructurados (JSON)"
+        icon="pi pi-code"
+        severity="secondary"
+        variant="text"
+        size="small"
+        (onClick)="jsonModalVisible.set(true)"
+      />
+    </div>
 
-            <div *hasPermission="'tool-applications:create'" class="flex justify-end">
-              <p-button
-                label="Agregar adjunto"
-                icon="pi pi-paperclip"
-                severity="secondary"
-                variant="outlined"
-                (onClick)="addAttachmentVisible.set(true)"
-              />
-            </div>
+    <!-- ── Representación de la herramienta ──────────────────────────────── -->
+    <section class="detail-card detail-card--tool">
+      <h3 class="section-title">
+        <i class="pi pi-wrench"></i>
+        {{ application()!.tool?.nombre }}
+      </h3>
+      <app-tool-renderer [application]="application()" />
+    </section>
 
-            @if (addAttachmentVisible()) {
-              <div class="attachment-form">
-                <div class="attachment-form__grid">
-                  <div class="form-field">
-                    <label class="form-field__label">Nombre</label>
-                    <input pInputText [(ngModel)]="newAttachmentForm.nombre" placeholder="Nombre del adjunto" class="w-full" />
-                  </div>
-                  <div class="form-field">
-                    <label class="form-field__label">Tipo</label>
-                    <p-select
-                      [(ngModel)]="newAttachmentForm.tipo"
-                      [options]="tipoOptions"
-                      optionLabel="label"
-                      optionValue="value"
-                      appendTo="body"
-                      class="w-full"
-                    />
-                  </div>
-                </div>
-                <div class="form-field">
-                  <label class="form-field__label">URL</label>
-                  <input pInputText [(ngModel)]="newAttachmentForm.url" placeholder="https://..." class="w-full" />
-                </div>
-                <div class="flex justify-end gap-2 pt-1">
-                  <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="addAttachmentVisible.set(false)" />
-                  <p-button label="Guardar adjunto" icon="pi pi-check" (onClick)="addAttachment()" />
-                </div>
-              </div>
-            }
+  </div>
 
-            @if (attachments().length === 0 && !addAttachmentVisible()) {
-              <div class="empty-state">
-                <div class="empty-state__icon">
-                  <i class="pi pi-paperclip"></i>
-                </div>
-                <p class="empty-state__text">Sin adjuntos todavía</p>
-                <p class="empty-state__hint">Links, imágenes, PDFs y más</p>
-              </div>
-            }
+}
 
-            @if (attachments().length > 0) {
-              <div class="attachments-list">
-                @for (att of attachments(); track att.id) {
-                  <div class="attachment-item">
-                    <div class="attachment-item__icon attachment-item__icon--{{ att.tipo }}">
-                      @if (att.tipo === 'IMAGE') { <i class="pi pi-image"></i> }
-                      @else if (att.tipo === 'PDF') { <i class="pi pi-file-pdf"></i> }
-                      @else if (att.tipo === 'LINK') { <i class="pi pi-link"></i> }
-                      @else { <i class="pi pi-file"></i> }
-                    </div>
-                    <div class="attachment-item__info">
-                      <p class="attachment-item__name">{{ att.nombre }}</p>
-                      <a [href]="att.url" target="_blank" class="attachment-item__url">{{ att.url }}</a>
-                    </div>
-                    <p-tag [value]="att.tipo" severity="secondary" />
-                    <p-button
-                      *hasPermission="'tool-applications:delete'"
-                      icon="pi pi-trash"
-                      [rounded]="true"
-                      severity="danger"
-                      variant="text"
-                      pTooltip="Eliminar adjunto"
-                      tooltipPosition="top"
-                      (onClick)="deleteAttachment(att.id)"
-                    />
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        </p-tabpanel>
-
-      </p-tabpanels>
-    </p-tabs>
-  }
-
-  <ng-template #footer>
-    <p-button
-      label="Cerrar"
-      severity="secondary"
-      variant="outlined"
-      (onClick)="close()"
-    />
-  </ng-template>
+<!-- ── Modal JSON ────────────────────────────────────────────────────────── -->
+<p-dialog
+  [visible]="jsonModalVisible()"
+  (visibleChange)="jsonModalVisible.set($event)"
+  [modal]="true"
+  header="Datos estructurados"
+  [style]="{ width: '640px' }"
+>
+  <pre class="json-viewer">{{ application()?.structuredData | json }}</pre>
 </p-dialog>

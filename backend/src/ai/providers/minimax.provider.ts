@@ -13,7 +13,7 @@ interface MinimaxChatResponse {
 
 export class MinimaxProvider implements IAiProvider {
   readonly name = 'minimax';
-  private readonly baseUrl = 'https://api.minimax.chat/v1';
+  private readonly baseUrl = 'https://api.minimaxi.chat/v1';
 
   constructor(
     private readonly apiKey: string,
@@ -25,15 +25,15 @@ export class MinimaxProvider implements IAiProvider {
   }
 
   async chat(messages: AiMessage[], systemPrompt: string, maxTokens = 512): Promise<string> {
-    // Las claves sk-cp-* parecen requerir el endpoint propietario incluso sin GroupId
-    // O al menos ese es más estable. Intentamos con "user" como GroupId si no hay uno.
+    // sk-cp-* claves son OpenAI-compatible y SIEMPRE usan el endpoint OpenAI, ignoring GroupId
+    // Claves sin sk-cp-* usan el endpoint propietario si hay GroupId
     console.log('[MinimaxProvider:chat] systemPrompt:', systemPrompt.substring(0, 100) + '...');
     console.log('[MinimaxProvider:chat] messages count:', messages.length);
     console.log('[MinimaxProvider:chat] maxTokens:', maxTokens);
 
-    if (!this.groupId && this.apiKey.startsWith('sk-cp-')) {
-      console.log('[MinimaxProvider] Detected sk-cp-* key without GroupId, using fallback endpoint');
-      return this.chatWithBearerToken(messages, systemPrompt, maxTokens);
+    if (this.apiKey.startsWith('sk-cp-')) {
+      console.log('[MinimaxProvider] Detected sk-cp-* key, using OpenAI-compatible endpoint');
+      return this.chatOpenAiEndpoint(messages, systemPrompt, maxTokens);
     }
     return this.groupId
       ? this.chatProprietaryEndpoint(messages, systemPrompt, maxTokens)
@@ -48,10 +48,11 @@ export class MinimaxProvider implements IAiProvider {
     systemPrompt: string,
     maxTokens: number,
   ): Promise<string> {
+    console.log('[MinimaxProvider:OpenAI] Using endpoint: /v1/chat/completions');
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
-        Authorization: this.apiKey, // Solo la key, sin "Bearer"
+        Authorization: `Bearer ${this.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -66,12 +67,13 @@ export class MinimaxProvider implements IAiProvider {
 
     if (!response.ok) {
       const error = await response.text();
+      console.log('[MinimaxProvider:OpenAI] Error response:', error);
       throw new Error(`Minimax API error ${response.status}: ${error}`);
     }
 
     const data = (await response.json()) as MinimaxChatResponse;
     console.log('[MinimaxProvider:OpenAI] Response:', JSON.stringify(data));
-    const content = data.choices?.[0]?.message?.content ?? '';
+    const content = this.stripThinkBlocks(data.choices?.[0]?.message?.content ?? '');
     console.log('[MinimaxProvider:OpenAI] Extracted content:', content);
     return content;
   }
@@ -111,7 +113,10 @@ export class MinimaxProvider implements IAiProvider {
     }
 
     const data = (await response.json()) as MinimaxChatResponse;
-    return data.reply ?? '';
+    console.log('[MinimaxProvider:Proprietary] Response:', JSON.stringify(data));
+    const content = data.reply ?? '';
+    console.log('[MinimaxProvider:Proprietary] Extracted content:', content);
+    return content;
   }
 
   // ─── Fallback endpoint para sk-cp-* sin GroupId ────────────────────────────────
@@ -153,8 +158,12 @@ export class MinimaxProvider implements IAiProvider {
 
     const data = (await response.json()) as MinimaxChatResponse;
     console.log('[MinimaxProvider:Fallback] Response:', JSON.stringify(data));
-    const content = data.reply ?? '';
+    const content = this.stripThinkBlocks(data.reply ?? '');
     console.log('[MinimaxProvider:Fallback] Extracted content:', content);
     return content;
+  }
+
+  private stripThinkBlocks(text: string): string {
+    return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
   }
 }

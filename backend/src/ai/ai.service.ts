@@ -40,11 +40,19 @@ export class AiService {
     const tool = await this.loadToolForApplication(dto.toolApplicationId);
     const systemPrompt = this.buildAnalyzer(tool);
 
-    const raw = await this.provider.chat(dto.history, systemPrompt, 1024);
+    const transcript = dto.history
+      .map((m) => `${m.role === 'user' ? 'Usuario' : 'Facilitador IA'}: ${m.content}`)
+      .join('\n\n');
+
+    const raw = await this.provider.chat(
+      [{ role: 'user', content: `Aquí está la conversación completa para analizar:\n\n${transcript}\n\nGenerá el análisis en JSON ahora.` }],
+      systemPrompt,
+      1024,
+    );
 
     let analysis;
     try {
-      analysis = JSON.parse(raw);
+      analysis = JSON.parse(this.extractJson(raw));
     } catch {
       throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
     }
@@ -91,6 +99,15 @@ REGLAS:
 - Los insights son observaciones derivadas de las respuestas del usuario.
 - Las recomendaciones son acciones concretas para abordar la causa raíz.
 - Respondés en español.`;
+  }
+
+  private extractJson(raw: string): string {
+    const trimmed = raw.trim();
+    const codeBlock = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (codeBlock) return codeBlock[1].trim();
+    const jsonObject = trimmed.match(/(\{[\s\S]*\})/);
+    if (jsonObject) return jsonObject[1].trim();
+    return trimmed;
   }
 
   private validateHistory(history: AiMessage[]): void {

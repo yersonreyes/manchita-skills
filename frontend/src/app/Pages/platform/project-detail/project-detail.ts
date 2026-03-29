@@ -14,7 +14,6 @@ import { ToolApplicationService } from '@core/services/toolApplicationService/to
 import { UiDialogService } from '@core/services/ui-dialog.service';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { HasPermissionDirective } from '@shared/directives/has-permission.directive';
-import { ToolApplicationDetailComponent } from '../phase-detail/tool-application-detail/tool-application-detail';
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
 import { Dialog } from 'primeng/dialog';
@@ -44,7 +43,6 @@ interface SelectOption<T> {
     InputText,
     HasPermissionDirective,
     PageHeaderComponent,
-    ToolApplicationDetailComponent,
   ],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.sass',
@@ -85,9 +83,6 @@ export class ProjectDetailComponent implements OnInit {
     estado: 'PENDING' as ToolApplicationStatus,
   };
 
-  // ─── Dialog editar herramienta ────────────────────────────────────────────
-  selectedApplication = signal<ToolApplicationResDto | null>(null);
-  detailDialogVisible = signal(false);
 
   // ─── Opciones de selects ──────────────────────────────────────────────────
   readonly estadoOptions: SelectOption<PhaseStatus>[] = [
@@ -251,13 +246,12 @@ export class ProjectDetailComponent implements OnInit {
     }
   }
 
-  openEditTool(app: ToolApplicationResDto): void {
-    this.selectedApplication.set(app);
-    this.detailDialogVisible.set(true);
-  }
-
-  async onToolSaved(phaseId: number): Promise<void> {
-    await this.reloadPhaseTools(phaseId);
+  openEditTool(app: ToolApplicationResDto, phase: ProjectPhaseResDto): void {
+    void this.router.navigate([
+      '/platform/projects', this.projectId,
+      'phases', phase.id,
+      'applications', app.id,
+    ]);
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────

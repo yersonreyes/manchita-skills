@@ -48,6 +48,15 @@ export const PLATFORM_ROUTES: Routes = [
         data: { permissions: ['tool-applications:read'] },
       },
       {
+        path: 'projects/:id/phases/:phaseId/applications/:appId',
+        loadComponent: () =>
+          import('./phase-detail/tool-application-detail/tool-application-detail').then(
+            (m) => m.ToolApplicationDetailComponent,
+          ),
+        canActivate: [permissionGuard],
+        data: { permissions: ['tool-applications:read'] },
+      },
+      {
         path: '',
         redirectTo: 'userManagement',
         pathMatch: 'full',

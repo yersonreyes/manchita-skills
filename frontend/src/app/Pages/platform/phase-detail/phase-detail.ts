@@ -20,7 +20,6 @@ import { Select } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Tooltip } from 'primeng/tooltip';
-import { ToolApplicationDetailComponent } from './tool-application-detail/tool-application-detail';
 
 interface SelectOption<T> {
   label: string;
@@ -43,7 +42,6 @@ interface SelectOption<T> {
     Tooltip,
     HasPermissionDirective,
     PageHeaderComponent,
-    ToolApplicationDetailComponent,
   ],
   templateUrl: './phase-detail.html',
   styleUrl: './phase-detail.sass',
@@ -73,9 +71,6 @@ export class PhaseDetailComponent implements OnInit {
     estado: 'PENDING' as ToolApplicationStatus,
   };
 
-  // ─── Dialog detalle tool application ─────────────────────────────────────
-  selectedApplication = signal<ToolApplicationResDto | null>(null);
-  detailDialogVisible = signal(false);
 
   // ─── Opciones de selects ──────────────────────────────────────────────────
   readonly estadoOptions: SelectOption<ToolApplicationStatus>[] = [
@@ -156,12 +151,11 @@ export class PhaseDetailComponent implements OnInit {
   }
 
   openDetail(app: ToolApplicationResDto): void {
-    this.selectedApplication.set(app);
-    this.detailDialogVisible.set(true);
-  }
-
-  onApplicationSaved(): void {
-    void this.loadApplications();
+    void this.router.navigate([
+      '/platform/projects', this.projectId,
+      'phases', this.phaseId,
+      'applications', app.id,
+    ]);
   }
 
   goBack(): void {

@@ -1,6 +1,7 @@
-import { DatePipe } from '@angular/common';
-import { Component, OnChanges, inject, input, model, output, signal } from '@angular/core';
+import { DatePipe, JsonPipe } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AttachmentType, ToolApplicationStatus, UpdateToolApplicationReqDto } from '@core/services/toolApplicationService/tool-application.req.dto';
 import {
   ToolApplicationAttachmentResDto,
@@ -9,16 +10,16 @@ import {
 } from '@core/services/toolApplicationService/tool-application.res.dto';
 import { ToolApplicationService } from '@core/services/toolApplicationService/tool-application.service';
 import { UiDialogService } from '@core/services/ui-dialog.service';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { HasPermissionDirective } from '@shared/directives/has-permission.directive';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
-import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Tooltip } from 'primeng/tooltip';
 import { AiChatComponent } from './ai-chat/ai-chat';
+import { ToolRendererComponent } from './tools/tool-renderer.component';
 
 interface SelectOption<T> {
   label: string;
@@ -30,55 +31,50 @@ interface SelectOption<T> {
   standalone: true,
   imports: [
     DatePipe,
+    JsonPipe,
     FormsModule,
     Button,
     Dialog,
     InputText,
     Select,
-    TableModule,
     Tag,
     Tooltip,
-    Tabs,
-    TabList,
-    Tab,
-    TabPanels,
-    TabPanel,
     HasPermissionDirective,
+    PageHeaderComponent,
     AiChatComponent,
+    ToolRendererComponent,
   ],
   templateUrl: './tool-application-detail.html',
   styleUrl: './tool-application-detail.sass',
 })
-export class ToolApplicationDetailComponent implements OnChanges {
+export class ToolApplicationDetailComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly toolApplicationService = inject(ToolApplicationService);
   private readonly uiDialog = inject(UiDialogService);
 
-  // ─── Inputs / Outputs ─────────────────────────────────────────────────────
-  application = input<ToolApplicationResDto | null>(null);
-  visible = model<boolean>(false);
-  saved = output<void>();
-
-  // ─── Estado del componente ────────────────────────────────────────────────
-  editForm = {
-    titulo: '',
-    estado: 'PENDING' as ToolApplicationStatus,
-    structuredDataJson: '{}',
-  };
-  jsonError = signal<string | null>(null);
+  // ─── Estado ───────────────────────────────────────────────────────────────
+  application = signal<ToolApplicationResDto | null>(null);
+  loading = signal(false);
   saving = signal(false);
 
+  // ─── Edición header ───────────────────────────────────────────────────────
+  editTitulo = signal('');
+  editEstado = signal<ToolApplicationStatus>('PENDING');
+
+  // ─── Notas ────────────────────────────────────────────────────────────────
   notes = signal<ToolApplicationNoteResDto[]>([]);
   newNoteContent = signal('');
   editingNoteId = signal<number | null>(null);
   editingNoteContent = signal('');
 
+  // ─── Adjuntos ─────────────────────────────────────────────────────────────
   attachments = signal<ToolApplicationAttachmentResDto[]>([]);
-  newAttachmentForm = {
-    nombre: '',
-    url: '',
-    tipo: 'LINK' as AttachmentType,
-  };
   addAttachmentVisible = signal(false);
+  newAttachmentForm = { nombre: '', url: '', tipo: 'LINK' as AttachmentType };
+
+  // ─── JSON modal ───────────────────────────────────────────────────────────
+  jsonModalVisible = signal(false);
 
   // ─── Opciones ─────────────────────────────────────────────────────────────
   readonly estadoOptions: SelectOption<ToolApplicationStatus>[] = [
@@ -94,42 +90,41 @@ export class ToolApplicationDetailComponent implements OnChanges {
     { label: 'Otro', value: 'OTHER' },
   ];
 
+  // ─── Route params ─────────────────────────────────────────────────────────
+  private projectId = 0;
+  private phaseId = 0;
+  private appId = 0;
+
   // ─── Lifecycle ────────────────────────────────────────────────────────────
-  ngOnChanges(): void {
-    const app = this.application();
-    if (app) {
-      this.editForm = {
-        titulo: app.titulo,
-        estado: app.estado,
-        structuredDataJson: JSON.stringify(app.structuredData ?? {}, null, 2),
-      };
-      this.jsonError.set(null);
+  ngOnInit(): void {
+    this.projectId = Number(this.route.snapshot.paramMap.get('id'));
+    this.phaseId = Number(this.route.snapshot.paramMap.get('phaseId'));
+    this.appId = Number(this.route.snapshot.paramMap.get('appId'));
+    void this.loadApplication();
+  }
+
+  async loadApplication(): Promise<void> {
+    this.loading.set(true);
+    try {
+      const app = await this.toolApplicationService.getById(this.appId);
+      this.application.set(app);
+      this.editTitulo.set(app.titulo);
+      this.editEstado.set(app.estado);
       this.notes.set([...app.notes]);
       this.attachments.set([...app.attachments]);
-      this.newNoteContent.set('');
-      this.editingNoteId.set(null);
-      this.addAttachmentVisible.set(false);
-    }
-  }
-
-  // ─── Datos ────────────────────────────────────────────────────────────────
-  validateJson(): void {
-    try {
-      JSON.parse(this.editForm.structuredDataJson);
-      this.jsonError.set(null);
     } catch {
-      this.jsonError.set('JSON inválido — revisá la sintaxis');
+      // Error manejado por el builder
+    } finally {
+      this.loading.set(false);
     }
   }
 
+  // ─── Guardar cabecera ─────────────────────────────────────────────────────
   async saveData(): Promise<void> {
     const app = this.application();
     if (!app) return;
 
-    this.validateJson();
-    if (this.jsonError()) return;
-
-    if (!this.editForm.titulo.trim()) {
+    if (!this.editTitulo().trim()) {
       this.uiDialog.showWarn('Campo requerido', 'El título no puede estar vacío');
       return;
     }
@@ -137,13 +132,13 @@ export class ToolApplicationDetailComponent implements OnChanges {
     this.saving.set(true);
     try {
       const dto: UpdateToolApplicationReqDto = {
-        titulo: this.editForm.titulo.trim(),
-        estado: this.editForm.estado,
-        structuredData: JSON.parse(this.editForm.structuredDataJson) as Record<string, unknown>,
+        titulo: this.editTitulo().trim(),
+        estado: this.editEstado(),
+        structuredData: app.structuredData,
       };
-      await this.toolApplicationService.update(app.id, dto);
+      const updated = await this.toolApplicationService.update(app.id, dto);
+      this.application.set(updated);
       this.uiDialog.showSuccess('Guardado', 'Los cambios fueron guardados');
-      this.saved.emit();
     } catch {
       // Error manejado por el builder
     } finally {
@@ -251,11 +246,7 @@ export class ToolApplicationDetailComponent implements OnChanges {
     return map[estado];
   }
 
-  onAiSessionSaved(): void {
-    this.saved.emit();
-  }
-
-  close(): void {
-    this.visible.set(false);
+  goBack(): void {
+    void this.router.navigate(['/platform/projects', this.projectId, 'phases', this.phaseId]);
   }
 }
