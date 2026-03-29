@@ -173,9 +173,9 @@ import { Select } from 'primeng/select';
 
     .rep-score       { position: relative; flex-shrink: 0; width: 80px; height: 80px; }
     .rep-score__ring { width: 80px; height: 80px; }
-    .rep-score__inner { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 1px; }
+    .rep-score__inner { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 2px; }
     .rep-score__num  { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--p-text-color); line-height: 1; }
-    .rep-score__den  { font-size: 0.65rem; color: var(--p-text-muted-color); align-self: flex-end; margin-bottom: 4px; font-weight: 600; }
+    .rep-score__den  { font-size: 0.6rem; color: var(--p-text-muted-color); font-weight: 600; line-height: 1; margin-top: 6px; }
 
     .rep-hero__text    { flex: 1; display: flex; flex-direction: column; gap: 6px; }
     .rep-hero__eyebrow { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--p-primary-600); }
