@@ -11,10 +11,12 @@ import { FodaAnalyzeService } from './foda/foda-analyze.service';
 import { ProjectBriefController } from './project-brief/project-brief.controller';
 import { ProjectBriefChatService } from './project-brief/project-brief-chat.service';
 import { ProjectBriefGenerateService } from './project-brief/project-brief-generate.service';
+import { DiagnosticoIndustriaController } from './diagnostico-industria/diagnostico-industria.controller';
+import { DiagnosticoIndustriaAnalyzeService } from './diagnostico-industria/diagnostico-industria-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService],
 })
 export class ToolHubModule {}

@@ -4,6 +4,7 @@ import { DefaultToolComponent } from './default/default-tool.component';
 import { FodaToolComponent } from './foda/foda-tool.component';
 import { PersonaToolComponent } from './persona/persona-tool.component';
 import { BmcComponent } from './business-model-canvas/bmc.component';
+import { DiagnosticoIndustriaToolComponent } from './diagnostico-industria/diagnostico-industria-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -34,6 +35,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: BmcComponent,
     tabLabel: 'Business Model Canvas',
     tabIcon: 'pi-th-large',
+  },
+  'diagnostico-industria': {
+    component: DiagnosticoIndustriaToolComponent,
+    tabLabel: 'Diagnóstico de Industria',
+    tabIcon: 'pi-chart-bar',
   },
 };
 
