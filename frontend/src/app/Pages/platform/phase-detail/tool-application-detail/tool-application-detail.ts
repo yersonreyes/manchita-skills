@@ -1,5 +1,5 @@
-import { DatePipe, JsonPipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe, JsonPipe, NgComponentOutlet } from '@angular/common';
+import { Component, OnInit, Type, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AttachmentType, ToolApplicationStatus, UpdateToolApplicationReqDto } from '@core/services/toolApplicationService/tool-application.req.dto';
@@ -16,10 +16,10 @@ import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { Tag } from 'primeng/tag';
 import { Tooltip } from 'primeng/tooltip';
-import { AiChatComponent } from './ai-chat/ai-chat';
-import { ToolRendererComponent } from './tools/tool-renderer.component';
+import { ToolMeta, resolveToolMeta } from './tools/tool-registry';
 
 interface SelectOption<T> {
   label: string;
@@ -32,6 +32,7 @@ interface SelectOption<T> {
   imports: [
     DatePipe,
     JsonPipe,
+    NgComponentOutlet,
     FormsModule,
     Button,
     Dialog,
@@ -41,8 +42,11 @@ interface SelectOption<T> {
     Tooltip,
     HasPermissionDirective,
     PageHeaderComponent,
-    AiChatComponent,
-    ToolRendererComponent,
+    Tabs,
+    TabList,
+    Tab,
+    TabPanels,
+    TabPanel,
   ],
   templateUrl: './tool-application-detail.html',
   styleUrl: './tool-application-detail.sass',
@@ -57,6 +61,14 @@ export class ToolApplicationDetailComponent implements OnInit {
   application = signal<ToolApplicationResDto | null>(null);
   loading = signal(false);
   saving = signal(false);
+
+  // ─── Tool dinámica ────────────────────────────────────────────────────────
+  toolMeta = computed<ToolMeta>(() => resolveToolMeta(this.application()?.tool?.codigo));
+  toolComponent = computed<Type<unknown>>(() => this.toolMeta().component);
+  toolInputs = computed(() => ({
+    application: this.application(),
+    sessionSaved: () => this.loadApplication(),
+  }));
 
   // ─── Edición header ───────────────────────────────────────────────────────
   editTitulo = signal('');
