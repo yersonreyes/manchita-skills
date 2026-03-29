@@ -6,10 +6,12 @@ import { CincoPorquesChatService } from './cinco-porques/cinco-porques-chat.serv
 import { CincoPorquesAnalyzeService } from './cinco-porques/cinco-porques-analyze.service';
 import { BmcController } from './business-model-canvas/bmc.controller';
 import { BmcAnalyzeService } from './business-model-canvas/bmc-analyze.service';
+import { FodaController } from './foda/foda.controller';
+import { FodaAnalyzeService } from './foda/foda-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService],
 })
 export class ToolHubModule {}
