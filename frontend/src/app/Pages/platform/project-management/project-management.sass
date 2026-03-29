@@ -1,4 +1,5 @@
 @use '../../../sass/colors' as *
+@use 'sass:color'
 
 // ─── Wizard: step indicator ───────────────────────────────────────────────────
 
@@ -116,7 +117,7 @@
   transition: border-color 0.15s ease
 
   &:hover
-    border-color: darken($border-color, 8%)
+    border-color: color.adjust($border-color, $lightness: -8%)
 
 .wizard-member__avatar
   width: 2rem

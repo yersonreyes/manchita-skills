@@ -3,148 +3,258 @@ import { BmcBlocksDto } from '@core/services/bmcService/bmc.req.dto';
 import { BMC_BLOCKS, BmcBlockConfig } from './bmc-config';
 import { Tooltip } from 'primeng/tooltip';
 
+// Color zone per BMC section
+const BLOCK_ZONE: Record<string, string> = {
+  asociacionesClaves:    'zone-left',
+  actividadesClaves:     'zone-left',
+  recursosClaves:        'zone-left',
+  propuestaDeValor:      'zone-center',
+  relacionesConClientes: 'zone-right',
+  canales:               'zone-right',
+  segmentosDeClientes:   'zone-right',
+  estructuraDeCostos:    'zone-cost',
+  fuentesDeIngreso:      'zone-revenue',
+};
+
 @Component({
   selector: 'app-bmc-canvas',
   standalone: true,
   imports: [Tooltip],
   template: `
     <div class="bmc-canvas">
+
+      <!-- Zone labels -->
+      <div class="bmc-zones">
+        <span class="bmc-zone-label bmc-zone-label--left">Infraestructura</span>
+        <span class="bmc-zone-label bmc-zone-label--center">Valor</span>
+        <span class="bmc-zone-label bmc-zone-label--right">Mercado</span>
+      </div>
+
       <div class="bmc-grid">
         @for (block of blockConfigs; track block.key) {
           <div
-            class="bmc-cell"
+            class="bmc-cell {{ blockZone(block.key) }}"
             [class.bmc-cell--active]="activeBlock() === block.key"
             [class.bmc-cell--complete]="isComplete(block)"
             [class.bmc-cell--partial]="isPartial(block)"
             [attr.data-block]="block.key"
             (click)="blockSelected.emit(block.key)"
-            [pTooltip]="block.label + (block.required ? ' (requerido)' : '')"
+            [pTooltip]="block.label + (block.required ? ' ★' : '')"
             tooltipPosition="top"
           >
-            <i class="pi {{ block.icon }} bmc-cell__icon"></i>
-            <span class="bmc-cell__label">{{ block.labelShort }}</span>
-            <span class="bmc-cell__status">
-              @if (isComplete(block)) {
-                <i class="pi pi-check-circle"></i>
-              } @else if (isPartial(block)) {
-                <i class="pi pi-circle-fill"></i>
-              } @else {
-                <i class="pi pi-circle"></i>
-              }
-            </span>
+            <div class="bmc-cell__inner">
+              <span class="bmc-cell__label">{{ block.labelShort }}</span>
+              <div class="bmc-cell__dots">
+                @for (field of block.fields; track field.key) {
+                  <span
+                    class="bmc-cell__dot"
+                    [class.bmc-cell__dot--filled]="hasFieldValue(block.key, field.key)"
+                  ></span>
+                }
+              </div>
+            </div>
             @if (block.required) {
-              <span class="bmc-cell__req-dot"></span>
+              <span class="bmc-cell__star">★</span>
             }
           </div>
         }
       </div>
 
+      <!-- Progress -->
       <div class="bmc-progress">
-        <span class="bmc-progress__label">{{ completedCount() }}/9 bloques con datos</span>
-        <div class="bmc-progress__bar">
+        <div class="bmc-progress__track">
           <div class="bmc-progress__fill" [style.width.%]="completedCount() / 9 * 100"></div>
         </div>
+        <span class="bmc-progress__label">{{ completedCount() }}/9</span>
       </div>
+
     </div>
   `,
   styles: [`
     .bmc-canvas {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
       height: 100%;
+    }
+
+    .bmc-zones {
+      display: grid;
+      grid-template-columns: 2fr 1.4fr 2fr;
+      gap: 4px;
+      padding: 0 2px;
+    }
+
+    .bmc-zone-label {
+      font-size: 0.58rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-align: center;
+
+      &--left {
+        color: #92400e;
+        background: #fef3c7;
+      }
+      &--center {
+        color: #064e3b;
+        background: #d1fae5;
+      }
+      &--right {
+        color: #1e3a8a;
+        background: #dbeafe;
+      }
     }
 
     .bmc-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1.4fr 1fr 1fr;
-      grid-template-rows: 1fr 1fr 0.6fr;
-      gap: 4px;
+      grid-template-rows: 1fr 1fr 0.55fr;
+      gap: 3px;
       flex: 1;
       min-height: 0;
     }
 
-    [data-block="asociacionesClaves"]   { grid-row: 1 / 3; grid-column: 1; }
-    [data-block="actividadesClaves"]    { grid-row: 1;     grid-column: 2; }
-    [data-block="propuestaDeValor"]     { grid-row: 1 / 3; grid-column: 3; }
-    [data-block="relacionesConClientes"]{ grid-row: 1;     grid-column: 4; }
-    [data-block="segmentosDeClientes"]  { grid-row: 1 / 3; grid-column: 5; }
-    [data-block="recursosClaves"]       { grid-row: 2;     grid-column: 2; }
-    [data-block="canales"]              { grid-row: 2;     grid-column: 4; }
-    [data-block="estructuraDeCostos"]   { grid-row: 3;     grid-column: 1 / 4; }
-    [data-block="fuentesDeIngreso"]     { grid-row: 3;     grid-column: 4 / 6; }
+    [data-block="asociacionesClaves"]    { grid-row: 1 / 3; grid-column: 1; }
+    [data-block="actividadesClaves"]     { grid-row: 1;     grid-column: 2; }
+    [data-block="propuestaDeValor"]      { grid-row: 1 / 3; grid-column: 3; }
+    [data-block="relacionesConClientes"] { grid-row: 1;     grid-column: 4; }
+    [data-block="segmentosDeClientes"]   { grid-row: 1 / 3; grid-column: 5; }
+    [data-block="recursosClaves"]        { grid-row: 2;     grid-column: 2; }
+    [data-block="canales"]               { grid-row: 2;     grid-column: 4; }
+    [data-block="estructuraDeCostos"]    { grid-row: 3;     grid-column: 1 / 4; }
+    [data-block="fuentesDeIngreso"]      { grid-row: 3;     grid-column: 4 / 6; }
 
     .bmc-cell {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      padding: 6px 4px;
-      border: 1.5px solid var(--p-surface-200);
+      align-items: stretch;
+      justify-content: space-between;
+      padding: 7px 8px 6px;
       border-radius: 6px;
       cursor: pointer;
-      background: var(--p-surface-0);
-      transition: border-color 0.15s, background 0.15s;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
-      text-align: center;
+      border: 1.5px solid transparent;
       overflow: hidden;
 
-      &:hover {
-        border-color: var(--p-primary-300);
-        background: var(--p-primary-50);
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.18s;
       }
 
+      &:hover::before { opacity: 1; }
+
+      /* Zone colours */
+      &.zone-left {
+        background: #fffbeb;
+        border-color: #fde68a;
+        &:hover { background: #fef3c7; border-color: #f59e0b; }
+        .bmc-cell__label { color: #78350f; }
+        .bmc-cell__dot--filled { background: #d97706; }
+      }
+
+      &.zone-center {
+        background: #ecfdf5;
+        border-color: #6ee7b7;
+        &:hover { background: #d1fae5; border-color: #10b981; }
+        .bmc-cell__label { color: #064e3b; }
+        .bmc-cell__dot--filled { background: #059669; }
+      }
+
+      &.zone-right {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+        &:hover { background: #dbeafe; border-color: #3b82f6; }
+        .bmc-cell__label { color: #1e3a8a; }
+        .bmc-cell__dot--filled { background: #2563eb; }
+      }
+
+      &.zone-cost {
+        background: #fff7ed;
+        border-color: #fed7aa;
+        &:hover { background: #ffedd5; border-color: #f97316; }
+        .bmc-cell__label { color: #7c2d12; }
+        .bmc-cell__dot--filled { background: #ea580c; }
+      }
+
+      &.zone-revenue {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+        &:hover { background: #dcfce7; border-color: #22c55e; }
+        .bmc-cell__label { color: #14532d; }
+        .bmc-cell__dot--filled { background: #16a34a; }
+      }
+
+      /* Active state — strong accent */
       &--active {
         border-color: var(--p-primary-500) !important;
-        background: var(--p-primary-50) !important;
-        box-shadow: 0 0 0 2px var(--p-primary-200);
+        box-shadow: 0 0 0 2px color-mix(in srgb, var(--p-primary-500) 25%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--p-primary-500) 20%, transparent);
+        transform: scale(1.02);
+        z-index: 1;
+
+        .bmc-cell__label { color: var(--p-primary-700) !important; }
       }
 
-      &--complete .bmc-cell__status { color: var(--p-green-500); }
-      &--partial  .bmc-cell__status { color: var(--p-orange-400); }
-
-      &__icon {
-        font-size: 0.95rem;
-        color: var(--p-text-muted-color);
+      &__inner {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        justify-content: center;
+        align-items: center;
       }
 
       &__label {
-        font-size: 0.6rem;
-        font-weight: 600;
-        color: var(--p-text-secondary-color);
-        line-height: 1.2;
+        font-size: 0.58rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        line-height: 1.3;
+        text-align: center;
       }
 
-      &__status {
-        font-size: 0.6rem;
-        color: var(--p-surface-400);
+      &__dots {
+        display: flex;
+        gap: 3px;
+        justify-content: center;
       }
 
-      &__req-dot {
-        position: absolute;
-        top: 3px;
-        right: 3px;
+      &__dot {
         width: 5px;
         height: 5px;
         border-radius: 50%;
-        background: var(--p-primary-400);
+        background: rgba(0,0,0,0.15);
+        transition: background 0.2s;
+
+        &--filled {
+          /* overridden per zone */
+        }
+      }
+
+      &__star {
+        position: absolute;
+        top: 3px;
+        right: 4px;
+        font-size: 0.55rem;
+        color: var(--p-primary-500);
+        line-height: 1;
       }
     }
 
     .bmc-progress {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding-top: 4px;
+      align-items: center;
+      gap: 8px;
 
-      &__label {
-        font-size: 0.7rem;
-        color: var(--p-text-muted-color);
-      }
-
-      &__bar {
-        height: 4px;
+      &__track {
+        flex: 1;
+        height: 3px;
         background: var(--p-surface-200);
         border-radius: 2px;
         overflow: hidden;
@@ -152,9 +262,17 @@ import { Tooltip } from 'primeng/tooltip';
 
       &__fill {
         height: 100%;
-        background: var(--p-primary-500);
+        background: linear-gradient(90deg, var(--p-primary-400), var(--p-primary-600));
         border-radius: 2px;
-        transition: width 0.3s ease;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      &__label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--p-text-muted-color);
+        min-width: 24px;
+        text-align: right;
       }
     }
   `],
@@ -165,6 +283,15 @@ export class BmcCanvasComponent {
   blockSelected = output<string>();
 
   protected readonly blockConfigs = BMC_BLOCKS;
+
+  blockZone(key: string): string {
+    return BLOCK_ZONE[key] ?? 'zone-left';
+  }
+
+  hasFieldValue(blockKey: string, fieldKey: string): boolean {
+    const data = this.blocksData() as unknown as Record<string, Record<string, string>>;
+    return !!data[blockKey]?.[fieldKey]?.trim();
+  }
 
   isComplete(block: BmcBlockConfig): boolean {
     const data = this.blocksData() as unknown as Record<string, Record<string, string>>;

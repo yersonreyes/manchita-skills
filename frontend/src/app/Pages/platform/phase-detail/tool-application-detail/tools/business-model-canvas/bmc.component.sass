@@ -1,51 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap')
+
+// ─── Design Tokens ────────────────────────────────────────────────────────────
+$font-display: 'Syne', sans-serif
+$font-body: 'DM Sans', sans-serif
+
 .bmc-layout
   display: flex
   flex-direction: column
-  gap: 16px
+  gap: 14px
   height: 100%
+  font-family: $font-body
 
+// ─── Header ───────────────────────────────────────────────────────────────────
 .bmc-header
   display: flex
   align-items: center
   justify-content: space-between
   gap: 12px
   flex-shrink: 0
+  padding-bottom: 14px
+  border-bottom: 1px solid var(--p-surface-200)
 
-  &__info
+  &__left
     display: flex
     align-items: center
-    gap: 10px
+    gap: 12px
 
-  &__title
-    margin: 0
-    font-size: 1rem
-    font-weight: 600
-    color: var(--p-text-color)
+  &__badge
+    width: 36px
+    height: 36px
+    border-radius: 8px
+    background: linear-gradient(135deg, var(--p-primary-500), var(--p-primary-600))
     display: flex
     align-items: center
-    gap: 8px
+    justify-content: center
+    flex-shrink: 0
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--p-primary-500) 35%, transparent)
 
     i
-      color: var(--p-primary-500)
+      color: white
+      font-size: 0.9rem
 
-  &__saving,
-  &__saved
-    font-size: 0.75rem
+  &__title
+    font-family: $font-display
+    font-size: 0.95rem
+    font-weight: 700
+    color: var(--p-text-color)
+    margin: 0
+    letter-spacing: -0.01em
+
+  &__meta
     display: flex
     align-items: center
+    gap: 6px
+    margin-top: 1px
+
+  &__status
+    display: inline-flex
+    align-items: center
     gap: 4px
+    font-size: 0.7rem
+    font-weight: 500
 
-  &__saving
+    &--saving
+      color: var(--p-orange-500)
+
+    &--saved
+      color: var(--p-green-600)
+
+      i
+        font-size: 0.6rem
+
+  &__pulse
+    width: 6px
+    height: 6px
+    border-radius: 50%
+    background: var(--p-orange-400)
+    animation: pulse 1.2s ease-in-out infinite
+
+  &__sep
+    font-size: 0.7rem
+    color: var(--p-surface-400)
+
+  &__progress-text
+    font-size: 0.7rem
     color: var(--p-text-muted-color)
-
-  &__saved
-    color: var(--p-green-500)
 
   &__actions
     display: flex
     align-items: center
     gap: 8px
 
+@keyframes pulse
+  0%, 100%
+    opacity: 1
+    transform: scale(1)
+  50%
+    opacity: 0.4
+    transform: scale(0.8)
+
+// ─── Buttons ──────────────────────────────────────────────────────────────────
+.bmc-btn
+  display: inline-flex
+  align-items: center
+  gap: 6px
+  padding: 7px 14px
+  border-radius: 8px
+  font-family: $font-body
+  font-size: 0.8rem
+  font-weight: 500
+  cursor: pointer
+  transition: all 0.15s
+  border: none
+  white-space: nowrap
+  position: relative
+
+  i
+    font-size: 0.8rem
+
+  &__badge
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    min-width: 18px
+    height: 18px
+    padding: 0 4px
+    border-radius: 9px
+    background: var(--p-primary-500)
+    color: white
+    font-size: 0.65rem
+    font-weight: 700
+
+  &__spinner
+    width: 12px
+    height: 12px
+    border: 2px solid rgba(255,255,255,0.3)
+    border-top-color: white
+    border-radius: 50%
+    animation: spin 0.6s linear infinite
+    flex-shrink: 0
+
+  &--ghost
+    background: transparent
+    border: 1px solid var(--p-surface-300)
+    color: var(--p-text-secondary-color)
+
+    &:hover
+      background: var(--p-surface-100)
+      border-color: var(--p-surface-400)
+      color: var(--p-text-color)
+
+  &--primary
+    background: var(--p-primary-500)
+    color: white
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--p-primary-500) 40%, transparent)
+
+    &:hover:not(:disabled):not(.bmc-btn--disabled)
+      background: var(--p-primary-600)
+      transform: translateY(-1px)
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--p-primary-500) 50%, transparent)
+
+    &:active:not(:disabled):not(.bmc-btn--disabled)
+      transform: translateY(0)
+
+  &--disabled
+    opacity: 0.45
+    cursor: not-allowed
+    box-shadow: none !important
+    transform: none !important
+
+@keyframes spin
+  to
+    transform: rotate(360deg)
+
+// ─── Split layout ─────────────────────────────────────────────────────────────
 .bmc-split
   display: flex
   gap: 16px
@@ -53,7 +181,7 @@
   min-height: 0
 
   &__canvas
-    width: 40%
+    width: 42%
     flex-shrink: 0
     display: flex
     flex-direction: column
@@ -63,9 +191,10 @@
     min-width: 0
     overflow-y: auto
     border: 1px solid var(--p-surface-200)
-    border-radius: 8px
-    padding: 16px
+    border-radius: 12px
+    background: var(--p-surface-0)
 
+// ─── Report view ──────────────────────────────────────────────────────────────
 .bmc-report-view
   flex: 1
   min-height: 0

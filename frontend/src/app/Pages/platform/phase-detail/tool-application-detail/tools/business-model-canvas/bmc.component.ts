@@ -8,8 +8,7 @@ import { UiDialogService } from '@core/services/ui-dialog.service';
 import { BmcCanvasComponent } from './bmc-canvas.component';
 import { BmcBlockEditorComponent, BmcFieldChange } from './bmc-block-editor.component';
 import { BmcReportComponent } from './bmc-report.component';
-import { BMC_BLOCKS_MAP, REQUIRED_BLOCK_KEYS } from './bmc-config';
-import { Button } from 'primeng/button';
+import { BMC_BLOCKS, BMC_BLOCKS_MAP, REQUIRED_BLOCK_KEYS } from './bmc-config';
 import { Tooltip } from 'primeng/tooltip';
 
 const EMPTY_BLOCKS: BmcBlocksDto = {
@@ -27,7 +26,7 @@ const EMPTY_BLOCKS: BmcBlocksDto = {
 @Component({
   selector: 'app-bmc',
   standalone: true,
-  imports: [BmcCanvasComponent, BmcBlockEditorComponent, BmcReportComponent, Button, Tooltip],
+  imports: [BmcCanvasComponent, BmcBlockEditorComponent, BmcReportComponent, Tooltip],
   templateUrl: './bmc.component.html',
   styleUrl: './bmc.component.sass',
 })
@@ -61,6 +60,14 @@ export class BmcComponent implements OnChanges {
       const config = BMC_BLOCKS_MAP[key];
       return config && blockData && config.fields.some((f) => !!blockData[f.key]?.trim());
     });
+  });
+
+  filledBlocksCount = computed(() => {
+    const data = this.blocksAsData();
+    return BMC_BLOCKS.filter((b) => {
+      const blockData = data[b.key];
+      return blockData && b.fields.some((f) => !!blockData[f.key]?.trim());
+    }).length;
   });
 
   missingRequiredBlocks = computed(() => {

@@ -3,77 +3,135 @@ import { FormsModule } from '@angular/forms';
 import { BmcReportVersionDto } from '@core/services/bmcService/bmc.res.dto';
 import { BMC_BLOCKS_MAP } from './bmc-config';
 import { Select } from 'primeng/select';
-import { Tag } from 'primeng/tag';
 
 @Component({
   selector: 'app-bmc-report',
   standalone: true,
-  imports: [FormsModule, Select, Tag],
+  imports: [FormsModule, Select],
   template: `
     @if (reports().length === 0) {
-      <div class="report-empty">
-        <i class="pi pi-file-edit"></i>
-        <p>Todavía no generaste ningún informe. Completá los bloques requeridos y presioná "Generar Informe".</p>
+      <div class="rep-empty">
+        <div class="rep-empty__icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="23" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+            <path d="M16 24h16M24 16v16" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+          </svg>
+        </div>
+        <h4 class="rep-empty__title">Sin informes generados</h4>
+        <p class="rep-empty__desc">Completá los 4 bloques requeridos marcados con ★ y presioná "Generar Informe" para obtener un análisis estratégico de tu modelo de negocio.</p>
       </div>
     } @else {
-      <div class="report-container">
-        <div class="report-toolbar">
-          <p-select
-            [options]="versionOptions()"
-            [(ngModel)]="selectedVersion"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Seleccioná versión"
-            class="report-toolbar__select"
-          />
-          <span class="report-toolbar__count">{{ reports().length }} informe{{ reports().length > 1 ? 's' : '' }} generado{{ reports().length > 1 ? 's' : '' }}</span>
+      <div class="rep-container">
+
+        <!-- Version selector -->
+        <div class="rep-versions">
+          <div class="rep-versions__selector">
+            <span class="rep-versions__label">Versión</span>
+            <p-select
+              [options]="versionOptions()"
+              [ngModel]="selectedVersion()"
+              (ngModelChange)="selectedVersion.set($event)"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Más reciente"
+              styleClass="rep-select"
+            />
+          </div>
+          <span class="rep-versions__count">{{ reports().length }} análisis</span>
         </div>
 
         @if (currentReport(); as rv) {
-          <div class="report-content">
+          <div class="rep-content">
 
-            <!-- Executive Summary -->
-            <div class="report-section">
-              <div class="report-section__header">
-                <i class="pi pi-file-export"></i>
-                <h4>Resumen Ejecutivo</h4>
-                <p-tag
-                  [value]="'Coherencia: ' + rv.report.coherenceScore + '/10'"
-                  [severity]="coherenceSeverity(rv.report.coherenceScore)"
-                />
+            <!-- Score hero -->
+            <div class="rep-hero">
+              <div class="rep-score">
+                <svg class="rep-score__ring" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="34" fill="none" stroke="var(--p-surface-200)" stroke-width="6"/>
+                  <circle
+                    cx="40" cy="40" r="34" fill="none"
+                    [attr.stroke]="scoreColor(rv.report.coherenceScore)"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                    [attr.stroke-dasharray]="213.6"
+                    [attr.stroke-dashoffset]="213.6 * (1 - rv.report.coherenceScore / 10)"
+                    transform="rotate(-90 40 40)"
+                    style="transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1)"
+                  />
+                </svg>
+                <div class="rep-score__inner">
+                  <span class="rep-score__num">{{ rv.report.coherenceScore }}</span>
+                  <span class="rep-score__den">/10</span>
+                </div>
               </div>
-              <p class="report-section__text">{{ rv.report.executiveSummary }}</p>
+              <div class="rep-hero__text">
+                <div class="rep-hero__eyebrow">Coherencia del Modelo</div>
+                <p class="rep-hero__summary">{{ rv.report.executiveSummary }}</p>
+                <span class="rep-hero__date">{{ formatDate(rv.generatedAt) }}</span>
+              </div>
             </div>
 
-            <!-- Block Analysis -->
-            <div class="report-section">
-              <div class="report-section__header">
-                <i class="pi pi-th-large"></i>
-                <h4>Análisis por Bloque</h4>
+            <!-- Risks & Recommendations side-by-side -->
+            <div class="rep-highlights">
+              @if (rv.report.risks?.length) {
+                <div class="rep-card rep-card--risk">
+                  <div class="rep-card__header">
+                    <span class="rep-card__icon rep-card__icon--risk">⚠</span>
+                    <span class="rep-card__title">Riesgos Estratégicos</span>
+                  </div>
+                  <ul class="rep-card__list">
+                    @for (r of rv.report.risks; track $index) {
+                      <li>{{ r }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+              @if (rv.report.recommendations?.length) {
+                <div class="rep-card rep-card--rec">
+                  <div class="rep-card__header">
+                    <span class="rep-card__icon rep-card__icon--rec">→</span>
+                    <span class="rep-card__title">Recomendaciones</span>
+                  </div>
+                  <ol class="rep-card__list rep-card__list--ordered">
+                    @for (r of rv.report.recommendations; track $index) {
+                      <li>{{ r }}</li>
+                    }
+                  </ol>
+                </div>
+              }
+            </div>
+
+            <!-- Block analysis -->
+            <div class="rep-blocks">
+              <div class="rep-blocks__header">
+                <span class="rep-blocks__eyebrow">Análisis por Bloque</span>
               </div>
-              <div class="block-analysis">
+              <div class="rep-blocks__grid">
                 @for (entry of blockAnalysisEntries(rv); track entry.key) {
-                  <div class="block-analysis__item">
-                    <div class="block-analysis__block-header">
+                  <div class="rep-block">
+                    <div class="rep-block__name">
                       <i class="pi {{ blockIcon(entry.key) }}"></i>
-                      <strong>{{ blockLabel(entry.key) }}</strong>
+                      {{ blockLabel(entry.key) }}
                     </div>
                     @if (entry.analysis.strengths?.length) {
-                      <div class="block-analysis__group block-analysis__group--strengths">
-                        <span class="block-analysis__group-label"><i class="pi pi-check"></i> Fortalezas</span>
-                        <ul>@for (s of entry.analysis.strengths; track $index) { <li>{{ s }}</li> }</ul>
+                      <div class="rep-block__group rep-block__group--s">
+                        @for (item of entry.analysis.strengths; track $index) {
+                          <span class="rep-block__item">{{ item }}</span>
+                        }
                       </div>
                     }
                     @if (entry.analysis.weaknesses?.length) {
-                      <div class="block-analysis__group block-analysis__group--weaknesses">
-                        <span class="block-analysis__group-label"><i class="pi pi-times"></i> Debilidades</span>
-                        <ul>@for (w of entry.analysis.weaknesses; track $index) { <li>{{ w }}</li> }</ul>
+                      <div class="rep-block__group rep-block__group--w">
+                        @for (item of entry.analysis.weaknesses; track $index) {
+                          <span class="rep-block__item">{{ item }}</span>
+                        }
                       </div>
                     }
                     @if (entry.analysis.suggestions?.length) {
-                      <div class="block-analysis__group block-analysis__group--suggestions">
-                        <span class="block-analysis__group-label"><i class="pi pi-lightbulb"></i> Sugerencias</span>
-                        <ul>@for (s of entry.analysis.suggestions; track $index) { <li>{{ s }}</li> }</ul>
+                      <div class="rep-block__group rep-block__group--sg">
+                        @for (item of entry.analysis.suggestions; track $index) {
+                          <span class="rep-block__item">{{ item }}</span>
+                        }
                       </div>
                     }
                   </div>
@@ -81,164 +139,317 @@ import { Tag } from 'primeng/tag';
               </div>
             </div>
 
-            <!-- Risks -->
-            @if (rv.report.risks?.length) {
-              <div class="report-section">
-                <div class="report-section__header">
-                  <i class="pi pi-exclamation-triangle"></i>
-                  <h4>Riesgos Estratégicos</h4>
-                </div>
-                <ul class="report-list report-list--risks">
-                  @for (r of rv.report.risks; track $index) { <li>{{ r }}</li> }
-                </ul>
-              </div>
-            }
-
-            <!-- Recommendations -->
-            @if (rv.report.recommendations?.length) {
-              <div class="report-section">
-                <div class="report-section__header">
-                  <i class="pi pi-check-square"></i>
-                  <h4>Recomendaciones</h4>
-                </div>
-                <ul class="report-list report-list--recommendations">
-                  @for (r of rv.report.recommendations; track $index) { <li>{{ r }}</li> }
-                </ul>
-              </div>
-            }
-
           </div>
         }
+
       </div>
     }
   `,
   styles: [`
-    .report-empty {
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap');
+
+    :host { display: flex; flex-direction: column; height: 100%; font-family: 'DM Sans', sans-serif; }
+
+    /* ── Empty state ── */
+    .rep-empty {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100%;
       gap: 12px;
-      color: var(--p-text-muted-color);
+      padding: 48px 32px;
       text-align: center;
-      padding: 40px;
+      color: var(--p-text-muted-color);
 
-      i { font-size: 2.5rem; }
-      p { font-size: 0.875rem; max-width: 320px; }
+      &__icon { margin-bottom: 4px; }
+
+      &__title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--p-text-secondary-color);
+        margin: 0;
+      }
+
+      &__desc {
+        font-size: 0.82rem;
+        line-height: 1.6;
+        margin: 0;
+        max-width: 340px;
+        color: var(--p-text-muted-color);
+      }
     }
 
-    .report-container {
+    /* ── Container ── */
+    .rep-container {
       display: flex;
       flex-direction: column;
       gap: 16px;
       height: 100%;
     }
 
-    .report-toolbar {
+    /* ── Version selector ── */
+    .rep-versions {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
+      flex-shrink: 0;
 
-      &__select { flex: 1; }
-      &__count { font-size: 0.75rem; color: var(--p-text-muted-color); white-space: nowrap; }
+      &__selector {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+      }
+
+      &__label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--p-text-muted-color);
+        white-space: nowrap;
+      }
+
+      &__count {
+        font-size: 0.72rem;
+        color: var(--p-text-muted-color);
+        white-space: nowrap;
+      }
     }
 
-    .report-content {
+    ::ng-deep .rep-select {
+      width: 100%;
+    }
+
+    /* ── Content ── */
+    .rep-content {
       display: flex;
       flex-direction: column;
       gap: 20px;
       overflow-y: auto;
       flex: 1;
+      padding-right: 2px;
     }
 
-    .report-section {
+    /* ── Hero / Score ── */
+    .rep-hero {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      background: linear-gradient(135deg, var(--p-surface-50) 0%, var(--p-surface-0) 100%);
+      border: 1px solid var(--p-surface-200);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .rep-score {
+      position: relative;
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+
+      &__ring {
+        width: 80px;
+        height: 80px;
+      }
+
+      &__inner {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+      }
+
+      &__num {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--p-text-color);
+        line-height: 1;
+      }
+
+      &__den {
+        font-size: 0.65rem;
+        color: var(--p-text-muted-color);
+        align-self: flex-end;
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+    }
+
+    .rep-hero {
+      &__text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      &__eyebrow {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--p-primary-600);
+      }
+
+      &__summary {
+        font-size: 0.82rem;
+        line-height: 1.6;
+        color: var(--p-text-secondary-color);
+        margin: 0;
+      }
+
+      &__date {
+        font-size: 0.68rem;
+        color: var(--p-text-muted-color);
+        margin-top: 2px;
+      }
+    }
+
+    /* ── Highlights ── */
+    .rep-highlights {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .rep-card {
+      border-radius: 10px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+
+      &--risk {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+      }
+
+      &--rec {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+      }
 
       &__header {
         display: flex;
         align-items: center;
         gap: 8px;
-
-        i { color: var(--p-primary-500); font-size: 1rem; }
-        h4 { margin: 0; font-size: 0.9rem; font-weight: 600; flex: 1; }
       }
 
-      &__text {
-        font-size: 0.875rem;
-        line-height: 1.6;
-        color: var(--p-text-secondary-color);
+      &__icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        flex-shrink: 0;
+
+        &--risk { background: #fed7aa; color: #c2410c; }
+        &--rec  { background: #bbf7d0; color: #15803d; }
+      }
+
+      &__title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--p-text-color);
+        font-family: 'Syne', sans-serif;
+      }
+
+      &__list {
         margin: 0;
+        padding-left: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        li {
+          font-size: 0.78rem;
+          line-height: 1.5;
+          color: var(--p-text-secondary-color);
+        }
+
+        &--ordered { padding-left: 20px; }
       }
     }
 
-    .block-analysis {
+    /* ── Block analysis ── */
+    .rep-blocks {
       display: flex;
       flex-direction: column;
       gap: 12px;
 
-      &__item {
-        border: 1px solid var(--p-surface-200);
-        border-radius: 8px;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      &__block-header {
+      &__header {
         display: flex;
         align-items: center;
-        gap: 6px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--p-text-color);
+        gap: 10px;
 
-        i { color: var(--p-primary-500); font-size: 0.85rem; }
+        &::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: var(--p-surface-200);
+        }
+      }
+
+      &__eyebrow {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--p-text-muted-color);
+        white-space: nowrap;
+      }
+
+      &__grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+    }
+
+    .rep-block {
+      border: 1px solid var(--p-surface-200);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--p-surface-0);
+
+      &__name {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--p-text-color);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-family: 'Syne', sans-serif;
+
+        i { font-size: 0.68rem; color: var(--p-primary-500); }
       }
 
       &__group {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 3px;
 
-        ul {
-          margin: 0;
-          padding-left: 16px;
-          font-size: 0.8rem;
-          color: var(--p-text-secondary-color);
-          li { line-height: 1.5; }
-        }
-
-        &--strengths  .block-analysis__group-label { color: var(--p-green-600); }
-        &--weaknesses .block-analysis__group-label { color: var(--p-red-600); }
-        &--suggestions .block-analysis__group-label { color: var(--p-blue-600); }
+        &--s { border-left: 2px solid #10b981; padding-left: 7px; }
+        &--w { border-left: 2px solid #ef4444; padding-left: 7px; }
+        &--sg { border-left: 2px solid #3b82f6; padding-left: 7px; }
       }
 
-      &__group-label {
+      &__item {
         font-size: 0.72rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-
-        i { font-size: 0.65rem; }
+        line-height: 1.4;
+        color: var(--p-text-secondary-color);
       }
-    }
-
-    .report-list {
-      margin: 0;
-      padding-left: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-
-      li { font-size: 0.875rem; color: var(--p-text-secondary-color); line-height: 1.5; }
-
-      &--risks li::marker { color: var(--p-orange-500); }
-      &--recommendations li::marker { color: var(--p-primary-500); }
     }
   `],
 })
@@ -249,16 +460,16 @@ export class BmcReportComponent {
 
   versionOptions = computed(() =>
     this.reports().map((r) => ({
-      label: `Versión ${r.version} — ${new Date(r.generatedAt).toLocaleString('es-AR')}`,
+      label: `v${r.version} — ${new Date(r.generatedAt).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' })}`,
       value: r.version,
     }))
   );
 
   currentReport = computed<BmcReportVersionDto | null>(() => {
-    const version = this.selectedVersion();
     const list = this.reports();
+    const version = this.selectedVersion();
     if (!list.length) return null;
-    if (version === null) return list[0]; // más reciente
+    if (version === null) return list[0];
     return list.find((r) => r.version === version) ?? list[0];
   });
 
@@ -274,10 +485,14 @@ export class BmcReportComponent {
     return BMC_BLOCKS_MAP[key]?.icon ?? 'pi-box';
   }
 
-  coherenceSeverity(score: number): 'success' | 'info' | 'warn' | 'danger' {
-    if (score >= 8) return 'success';
-    if (score >= 6) return 'info';
-    if (score >= 4) return 'warn';
-    return 'danger';
+  scoreColor(score: number): string {
+    if (score >= 8) return '#10b981';
+    if (score >= 6) return '#3b82f6';
+    if (score >= 4) return '#f59e0b';
+    return '#ef4444';
+  }
+
+  formatDate(iso: string): string {
+    return new Date(iso).toLocaleString('es-AR', { dateStyle: 'long', timeStyle: 'short' });
   }
 }

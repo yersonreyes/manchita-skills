@@ -2,48 +2,64 @@
 
   <!-- Header -->
   <div class="bmc-header">
-    <div class="bmc-header__info">
-      <h3 class="bmc-header__title">
+    <div class="bmc-header__left">
+      <div class="bmc-header__badge">
         <i class="pi pi-th-large"></i>
-        Business Model Canvas
-      </h3>
-      @if (saving()) {
-        <span class="bmc-header__saving"><i class="pi pi-spin pi-spinner"></i> Guardando...</span>
-      } @else {
-        <span class="bmc-header__saved"><i class="pi pi-check"></i> Guardado</span>
-      }
+      </div>
+      <div>
+        <h3 class="bmc-header__title">Business Model Canvas</h3>
+        <div class="bmc-header__meta">
+          @if (saving()) {
+            <span class="bmc-header__status bmc-header__status--saving">
+              <span class="bmc-header__pulse"></span>
+              Guardando
+            </span>
+          } @else {
+            <span class="bmc-header__status bmc-header__status--saved">
+              <i class="pi pi-check"></i>
+              Guardado
+            </span>
+          }
+          <span class="bmc-header__sep">·</span>
+          <span class="bmc-header__progress-text">{{ filledBlocksCount() }} de 9 bloques completados</span>
+        </div>
+      </div>
     </div>
     <div class="bmc-header__actions">
       @if (reports().length > 0) {
-        <p-button
-          [label]="showReport() ? 'Ver Canvas' : 'Ver Informes (' + reports().length + ')'"
-          [icon]="showReport() ? 'pi pi-th-large' : 'pi pi-file-export'"
-          severity="secondary"
-          variant="outlined"
-          size="small"
-          (onClick)="toggleReport()"
-        />
+        <button class="bmc-btn bmc-btn--ghost" (click)="toggleReport()">
+          <i class="pi {{ showReport() ? 'pi-th-large' : 'pi-file-export' }}"></i>
+          {{ showReport() ? 'Ver Canvas' : 'Informes' }}
+          @if (!showReport() && reports().length > 0) {
+            <span class="bmc-btn__badge">{{ reports().length }}</span>
+          }
+        </button>
       }
-      <p-button
-        [label]="analyzing() ? 'Analizando...' : 'Generar Informe'"
-        icon="pi pi-sparkles"
-        [loading]="analyzing()"
+      <button
+        class="bmc-btn bmc-btn--primary"
+        [class.bmc-btn--disabled]="!canGenerate() || analyzing()"
         [disabled]="!canGenerate() || analyzing()"
-        [pTooltip]="canGenerate() ? '' : 'Completá al menos un campo en: ' + missingRequiredBlocks().join(', ')"
+        [pTooltip]="canGenerate() ? '' : 'Requeridos: ' + missingRequiredBlocks().join(', ')"
         tooltipPosition="left"
-        (onClick)="generateReport()"
-      />
+        (click)="generateReport()"
+      >
+        @if (analyzing()) {
+          <span class="bmc-btn__spinner"></span>
+          Analizando
+        } @else {
+          <i class="pi pi-sparkles"></i>
+          Generar Informe
+        }
+      </button>
     </div>
   </div>
 
   <!-- Body -->
   @if (showReport()) {
-    <!-- Vista de informes -->
     <div class="bmc-report-view">
       <app-bmc-report [reports]="reports()" />
     </div>
   } @else {
-    <!-- Split view: Canvas + Editor -->
     <div class="bmc-split">
       <div class="bmc-split__canvas">
         <app-bmc-canvas
