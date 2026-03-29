@@ -8,10 +8,13 @@ import { BmcController } from './business-model-canvas/bmc.controller';
 import { BmcAnalyzeService } from './business-model-canvas/bmc-analyze.service';
 import { FodaController } from './foda/foda.controller';
 import { FodaAnalyzeService } from './foda/foda-analyze.service';
+import { ProjectBriefController } from './project-brief/project-brief.controller';
+import { ProjectBriefChatService } from './project-brief/project-brief-chat.service';
+import { ProjectBriefGenerateService } from './project-brief/project-brief-generate.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService],
 })
 export class ToolHubModule {}

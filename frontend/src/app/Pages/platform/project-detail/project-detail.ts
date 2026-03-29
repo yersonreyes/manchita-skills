@@ -6,6 +6,7 @@ import { DesignPhaseResDto, ToolResDto } from '@core/services/catalogService/cat
 import { PhaseStatus, CreateProjectPhaseReqDto } from '@core/services/projectPhaseService/project-phase.req.dto';
 import { ProjectPhaseResDto } from '@core/services/projectPhaseService/project-phase.res.dto';
 import { ProjectPhaseService } from '@core/services/projectPhaseService/project-phase.service';
+import { AiMessageDto, ProjectBriefService } from '@core/services/projectBriefService/project-brief.service';
 import { EtapaProyecto, TipoProyecto } from '@core/services/projectService/project.req.dto';
 import { ProjectResDto } from '@core/services/projectService/project.res.dto';
 import { ProjectService } from '@core/services/projectService/project.service';
@@ -58,6 +59,7 @@ export class ProjectDetailComponent implements OnInit {
   private readonly toolApplicationService = inject(ToolApplicationService);
   private readonly catalogService = inject(CatalogService);
   private readonly uiDialog = inject(UiDialogService);
+  private readonly projectBriefService = inject(ProjectBriefService);
 
   projectId = 0;
 
@@ -106,6 +108,15 @@ export class ProjectDetailComponent implements OnInit {
     { label: 'Crecimiento (escalando)', value: 'CRECIMIENTO' },
     { label: 'Madurez (operación estable)', value: 'MADUREZ' },
   ];
+
+  // ─── Dialog AI context generator ──────────────────────────────────────────
+  briefAiDialogVisible = signal(false);
+  briefAiMessages = signal<AiMessageDto[]>([]);
+  briefAiInput = signal('');
+  briefAiSending = signal(false);
+  briefAiGenerating = signal(false);
+  briefAiGeneratedContext = signal('');
+  briefAiTurnCount = signal(0);
 
   // ─── Dialog agregar herramienta ───────────────────────────────────────────
   addToolDialogVisible = signal(false);
@@ -170,6 +181,88 @@ export class ProjectDetailComponent implements OnInit {
     } finally {
       this.savingBrief.set(false);
     }
+  }
+
+  openBriefAiDialog(): void {
+    this.briefAiMessages.set([]);
+    this.briefAiInput.set('');
+    this.briefAiGeneratedContext.set('');
+    this.briefAiTurnCount.set(0);
+    this.briefAiDialogVisible.set(true);
+    void this.startBriefAiConversation();
+  }
+
+  private getProjectBriefContext() {
+    return {
+      nombre: this.project()?.nombre ?? '',
+      tipo: this.briefForm.tipo,
+      etapa: this.briefForm.etapa,
+      sector: this.briefForm.sector.trim() || null,
+    };
+  }
+
+  private async startBriefAiConversation(): Promise<void> {
+    this.briefAiSending.set(true);
+    try {
+      const res = await this.projectBriefService.chat({
+        history: [],
+        userMessage: 'Hola, ayudame a definir el contexto de mi proyecto.',
+        projectContext: this.getProjectBriefContext(),
+      });
+      this.briefAiMessages.set([
+        { role: 'user', content: 'Hola, ayudame a definir el contexto de mi proyecto.' },
+        { role: 'assistant', content: res.assistantMessage },
+      ]);
+      this.briefAiTurnCount.set(res.turnCount);
+    } catch {
+      // Error manejado por el builder
+    } finally {
+      this.briefAiSending.set(false);
+    }
+  }
+
+  async sendBriefAiMessage(): Promise<void> {
+    const text = this.briefAiInput().trim();
+    if (!text || this.briefAiSending()) return;
+
+    const history = this.briefAiMessages();
+    this.briefAiMessages.update((msgs) => [...msgs, { role: 'user', content: text }]);
+    this.briefAiInput.set('');
+    this.briefAiSending.set(true);
+
+    try {
+      const res = await this.projectBriefService.chat({
+        history,
+        userMessage: text,
+        projectContext: this.getProjectBriefContext(),
+      });
+      this.briefAiMessages.update((msgs) => [...msgs, { role: 'assistant', content: res.assistantMessage }]);
+      this.briefAiTurnCount.set(res.turnCount);
+    } catch {
+      // Error manejado por el builder
+    } finally {
+      this.briefAiSending.set(false);
+    }
+  }
+
+  async generateBriefContext(): Promise<void> {
+    this.briefAiGenerating.set(true);
+    try {
+      const res = await this.projectBriefService.generate({
+        history: this.briefAiMessages(),
+        projectContext: this.getProjectBriefContext(),
+      });
+      this.briefAiGeneratedContext.set(res.contexto);
+    } catch {
+      // Error manejado por el builder
+    } finally {
+      this.briefAiGenerating.set(false);
+    }
+  }
+
+  useBriefAiContext(): void {
+    this.briefForm.contexto = this.briefAiGeneratedContext();
+    this.briefAiDialogVisible.set(false);
   }
 
   async loadPhases(): Promise<void> {

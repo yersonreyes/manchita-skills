@@ -93,6 +93,13 @@
 
       <div class="brief-form__actions">
         <p-button
+          label="Generar contexto con IA"
+          icon="pi pi-sparkles"
+          severity="secondary"
+          variant="outlined"
+          (onClick)="openBriefAiDialog()"
+        />
+        <p-button
           label="Guardar brief"
           icon="pi pi-check"
           [loading]="savingBrief()"
@@ -264,6 +271,109 @@
   <ng-template #footer>
     <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="addToolDialogVisible.set(false)" />
     <p-button label="Agregar" icon="pi pi-check" (onClick)="submitAddTool()" />
+  </ng-template>
+</p-dialog>
+
+<!-- ─── Dialog generar contexto con IA ──────────────────────────────────── -->
+<p-dialog
+  [(visible)]="briefAiDialogVisible"
+  [modal]="true"
+  header="Generar contexto con IA"
+  [style]="{ width: '560px', maxWidth: '95vw' }"
+  [closable]="true"
+  [draggable]="false"
+>
+  <div class="brief-ai-dialog">
+    <!-- Mensajes -->
+    <div class="brief-ai-messages" #messagesContainer>
+      @for (msg of briefAiMessages(); track $index) {
+        <div class="brief-ai-message" [class.brief-ai-message--user]="msg.role === 'user'" [class.brief-ai-message--assistant]="msg.role === 'assistant'">
+          @if (msg.role === 'assistant') {
+            <div class="brief-ai-message__avatar">
+              <i class="pi pi-sparkles"></i>
+            </div>
+          }
+          <div class="brief-ai-message__bubble">{{ msg.content }}</div>
+        </div>
+      }
+      @if (briefAiSending()) {
+        <div class="brief-ai-message brief-ai-message--assistant">
+          <div class="brief-ai-message__avatar">
+            <i class="pi pi-spin pi-spinner"></i>
+          </div>
+          <div class="brief-ai-message__bubble brief-ai-message__bubble--typing">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Contexto generado -->
+    @if (briefAiGeneratedContext()) {
+      <div class="brief-ai-result">
+        <div class="brief-ai-result__label">
+          <i class="pi pi-check-circle"></i>
+          Contexto generado
+        </div>
+        <p class="brief-ai-result__text">{{ briefAiGeneratedContext() }}</p>
+      </div>
+    }
+
+    <!-- Input -->
+    @if (!briefAiGeneratedContext()) {
+      <div class="brief-ai-input">
+        <input
+          pInputText
+          [ngModel]="briefAiInput()"
+          (ngModelChange)="briefAiInput.set($event)"
+          placeholder="Escribí tu respuesta..."
+          class="w-full"
+          (keydown.enter)="sendBriefAiMessage()"
+          [disabled]="briefAiSending()"
+        />
+        <p-button
+          icon="pi pi-send"
+          [rounded]="true"
+          [disabled]="!briefAiInput().trim() || briefAiSending()"
+          (onClick)="sendBriefAiMessage()"
+        />
+      </div>
+    }
+  </div>
+
+  <ng-template #footer>
+    @if (briefAiGeneratedContext()) {
+      <p-button
+        label="Volver a generar"
+        icon="pi pi-refresh"
+        severity="secondary"
+        variant="outlined"
+        [loading]="briefAiGenerating()"
+        (onClick)="briefAiGeneratedContext.set('')"
+      />
+      <p-button
+        label="Usar este contexto"
+        icon="pi pi-check"
+        (onClick)="useBriefAiContext()"
+      />
+    } @else {
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="briefAiDialogVisible.set(false)"
+      />
+      <p-button
+        label="Generar contexto"
+        icon="pi pi-sparkles"
+        [loading]="briefAiGenerating()"
+        [disabled]="briefAiTurnCount() < 2"
+        (onClick)="generateBriefContext()"
+        pTooltip="Respondé al menos 2 preguntas para generar el contexto"
+        [tooltipDisabled]="briefAiTurnCount() >= 2"
+        tooltipPosition="top"
+      />
+    }
   </ng-template>
 </p-dialog>
 
