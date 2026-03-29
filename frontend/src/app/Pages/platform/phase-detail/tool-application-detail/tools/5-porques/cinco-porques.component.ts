@@ -35,7 +35,7 @@ export class CincoPorquesComponent implements OnChanges {
   // ─── Computed ─────────────────────────────────────────────────────────────
   hasSession = computed(() => !!this.aiSession());
   isAnalyzed = computed(() => this.aiSession()?.status === 'analyzed');
-  canRequestAnalysis = computed(() => (this.aiSession()?.turnCount ?? 0) >= 1);
+  canRequestAnalysis = computed(() => (this.aiSession()?.turnCount ?? 0) >= 3);
   messages = computed(() => this.aiSession()?.messages ?? []);
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────

@@ -149,12 +149,12 @@
             (ngModelChange)="userInput.set($event)"
             placeholder="Escribí tu respuesta..."
             class="chat-input__field"
-            [disabled]="sending()"
-            (keydown.enter)="!sending() && userInput().trim() && sendMessage()"
+            [disabled]="sending() || analyzing()"
+            (keydown.enter)="!sending() && !analyzing() && userInput().trim() && sendMessage()"
           />
           <p-button
             icon="pi pi-send"
-            [disabled]="!userInput().trim() || sending()"
+            [disabled]="!userInput().trim() || sending() || analyzing()"
             [loading]="sending()"
             pTooltip="Enviar (Enter)"
             tooltipPosition="top"
@@ -177,7 +177,7 @@
             @if ((aiSession()?.turnCount ?? 0) < 5) {
               <p class="analyze-trigger__hint">
                 <i class="pi pi-info-circle"></i>
-                Recomendado después de 5 intercambios ({{ aiSession()?.turnCount ?? 0 }} hasta ahora)
+                Recomendado después de 5 intercambios · {{ aiSession()?.turnCount ?? 0 }} hasta ahora
               </p>
             }
           </div>

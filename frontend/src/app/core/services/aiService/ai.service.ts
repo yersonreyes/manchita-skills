@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class AiService {
   private readonly http = inject(HttpPromiseBuilderService);
-  private readonly base = `${environment.apiBaseUrl}/ai`;
+  private readonly base = `${environment.apiBaseUrl}/tool-hub/cinco-porques`;
 
   sendMessage(dto: AiChatReqDto): Promise<AiChatResDto> {
     return this.http

@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { PermissionGuard } from './auth/guards/permission.guard';
 import { AiModule } from './ai/ai.module';
+import { ToolHubModule } from './tool-hub/tool-hub.module';
 import { AssetsModule } from './assets/assets.module';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
@@ -27,6 +28,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     AssetsModule,
     AiModule,
+    ToolHubModule,
 
     // ─── Módulos de Dominio ─────────────────────────────────────────────────
     CatalogModule,
