@@ -3,6 +3,7 @@ import { CincoPorquesComponent } from './5-porques/cinco-porques.component';
 import { DefaultToolComponent } from './default/default-tool.component';
 import { FodaToolComponent } from './foda/foda-tool.component';
 import { PersonaToolComponent } from './persona/persona-tool.component';
+import { BmcComponent } from './business-model-canvas/bmc.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -28,6 +29,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: PersonaToolComponent,
     tabLabel: 'Persona',
     tabIcon: 'pi-user',
+  },
+  'business-model-canvas': {
+    component: BmcComponent,
+    tabLabel: 'Business Model Canvas',
+    tabIcon: 'pi-th-large',
   },
 };
 

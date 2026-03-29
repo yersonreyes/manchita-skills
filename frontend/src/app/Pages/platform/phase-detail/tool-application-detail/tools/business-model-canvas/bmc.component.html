@@ -1,0 +1,65 @@
+<div class="bmc-layout">
+
+  <!-- Header -->
+  <div class="bmc-header">
+    <div class="bmc-header__info">
+      <h3 class="bmc-header__title">
+        <i class="pi pi-th-large"></i>
+        Business Model Canvas
+      </h3>
+      @if (saving()) {
+        <span class="bmc-header__saving"><i class="pi pi-spin pi-spinner"></i> Guardando...</span>
+      } @else {
+        <span class="bmc-header__saved"><i class="pi pi-check"></i> Guardado</span>
+      }
+    </div>
+    <div class="bmc-header__actions">
+      @if (reports().length > 0) {
+        <p-button
+          [label]="showReport() ? 'Ver Canvas' : 'Ver Informes (' + reports().length + ')'"
+          [icon]="showReport() ? 'pi pi-th-large' : 'pi pi-file-export'"
+          severity="secondary"
+          variant="outlined"
+          size="small"
+          (onClick)="toggleReport()"
+        />
+      }
+      <p-button
+        [label]="analyzing() ? 'Analizando...' : 'Generar Informe'"
+        icon="pi pi-sparkles"
+        [loading]="analyzing()"
+        [disabled]="!canGenerate() || analyzing()"
+        [pTooltip]="canGenerate() ? '' : 'Completá al menos un campo en: ' + missingRequiredBlocks().join(', ')"
+        tooltipPosition="left"
+        (onClick)="generateReport()"
+      />
+    </div>
+  </div>
+
+  <!-- Body -->
+  @if (showReport()) {
+    <!-- Vista de informes -->
+    <div class="bmc-report-view">
+      <app-bmc-report [reports]="reports()" />
+    </div>
+  } @else {
+    <!-- Split view: Canvas + Editor -->
+    <div class="bmc-split">
+      <div class="bmc-split__canvas">
+        <app-bmc-canvas
+          [blocksData]="blocks()"
+          [activeBlock]="activeBlockKey()"
+          (blockSelected)="onBlockSelected($event)"
+        />
+      </div>
+      <div class="bmc-split__editor">
+        <app-bmc-block-editor
+          [blockConfig]="activeBlockConfig()"
+          [blockData]="blocksAsData()"
+          (fieldChanged)="onFieldChanged($event)"
+        />
+      </div>
+    </div>
+  }
+
+</div>
