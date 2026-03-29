@@ -52,35 +52,35 @@ interface Quadrant {
       border-radius: 0.75rem;
       padding: 1rem;
       border: 1px solid transparent;
-
-      &--strengths {
-        background-color: #f0fdf4;
-        border-color: #bbf7d0;
-        .foda__quadrant-header { color: #15803d; }
-        .foda__item::before { background-color: #22c55e; }
-      }
-
-      &--opportunities {
-        background-color: #eff6ff;
-        border-color: #bfdbfe;
-        .foda__quadrant-header { color: #1d4ed8; }
-        .foda__item::before { background-color: #3b82f6; }
-      }
-
-      &--weaknesses {
-        background-color: #fff7ed;
-        border-color: #fed7aa;
-        .foda__quadrant-header { color: #c2410c; }
-        .foda__item::before { background-color: #f97316; }
-      }
-
-      &--threats {
-        background-color: #fef2f2;
-        border-color: #fecaca;
-        .foda__quadrant-header { color: #b91c1c; }
-        .foda__item::before { background-color: #ef4444; }
-      }
     }
+
+    .foda__quadrant--strengths {
+      background-color: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+    .foda__quadrant--strengths .foda__quadrant-header { color: #15803d; }
+    .foda__quadrant--strengths .foda__item::before { background-color: #22c55e; }
+
+    .foda__quadrant--opportunities {
+      background-color: #eff6ff;
+      border-color: #bfdbfe;
+    }
+    .foda__quadrant--opportunities .foda__quadrant-header { color: #1d4ed8; }
+    .foda__quadrant--opportunities .foda__item::before { background-color: #3b82f6; }
+
+    .foda__quadrant--weaknesses {
+      background-color: #fff7ed;
+      border-color: #fed7aa;
+    }
+    .foda__quadrant--weaknesses .foda__quadrant-header { color: #c2410c; }
+    .foda__quadrant--weaknesses .foda__item::before { background-color: #f97316; }
+
+    .foda__quadrant--threats {
+      background-color: #fef2f2;
+      border-color: #fecaca;
+    }
+    .foda__quadrant--threats .foda__quadrant-header { color: #b91c1c; }
+    .foda__quadrant--threats .foda__item::before { background-color: #ef4444; }
 
     .foda__quadrant-header {
       display: flex;

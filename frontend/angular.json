@@ -29,6 +29,7 @@
               }
             ],
             "styles": [
+              "primeicons/primeicons.css",
               "src/tailwind.css",
               "src/styles.sass"
             ],

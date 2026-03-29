@@ -71,50 +71,23 @@ const BLOCK_ZONE: Record<string, string> = {
     </div>
   `,
   styles: [`
-    .bmc-canvas {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      height: 100%;
-    }
+    .bmc-canvas { display: flex; flex-direction: column; gap: 8px; height: 100%; }
 
-    .bmc-zones {
-      display: grid;
-      grid-template-columns: 2fr 1.4fr 2fr;
-      gap: 4px;
-      padding: 0 2px;
-    }
+    .bmc-zones { display: grid; grid-template-columns: 2fr 1.4fr 2fr; gap: 4px; padding: 0 2px; }
 
     .bmc-zone-label {
-      font-size: 0.58rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 2px 6px;
-      border-radius: 4px;
-      text-align: center;
-
-      &--left {
-        color: #92400e;
-        background: #fef3c7;
-      }
-      &--center {
-        color: #064e3b;
-        background: #d1fae5;
-      }
-      &--right {
-        color: #1e3a8a;
-        background: #dbeafe;
-      }
+      font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 6px; border-radius: 4px; text-align: center;
     }
+    .bmc-zone-label--left   { color: #92400e; background: #fef3c7; }
+    .bmc-zone-label--center { color: #064e3b; background: #d1fae5; }
+    .bmc-zone-label--right  { color: #1e3a8a; background: #dbeafe; }
 
     .bmc-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1.4fr 1fr 1fr;
       grid-template-rows: 1fr 1fr 0.55fr;
-      gap: 3px;
-      flex: 1;
-      min-height: 0;
+      gap: 3px; flex: 1; min-height: 0;
     }
 
     [data-block="asociacionesClaves"]    { grid-row: 1 / 3; grid-column: 1; }
@@ -128,153 +101,57 @@ const BLOCK_ZONE: Record<string, string> = {
     [data-block="fuentesDeIngreso"]      { grid-row: 3;     grid-column: 4 / 6; }
 
     .bmc-cell {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: space-between;
-      padding: 7px 8px 6px;
-      border-radius: 6px;
-      cursor: pointer;
+      display: flex; flex-direction: column; align-items: stretch; justify-content: space-between;
+      padding: 7px 8px 6px; border-radius: 6px; cursor: pointer;
       transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      border: 1.5px solid transparent;
-      overflow: hidden;
-
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        opacity: 0;
-        transition: opacity 0.18s;
-      }
-
-      &:hover::before { opacity: 1; }
-
-      /* Zone colours */
-      &.zone-left {
-        background: #fffbeb;
-        border-color: #fde68a;
-        &:hover { background: #fef3c7; border-color: #f59e0b; }
-        .bmc-cell__label { color: #78350f; }
-        .bmc-cell__dot--filled { background: #d97706; }
-      }
-
-      &.zone-center {
-        background: #ecfdf5;
-        border-color: #6ee7b7;
-        &:hover { background: #d1fae5; border-color: #10b981; }
-        .bmc-cell__label { color: #064e3b; }
-        .bmc-cell__dot--filled { background: #059669; }
-      }
-
-      &.zone-right {
-        background: #eff6ff;
-        border-color: #bfdbfe;
-        &:hover { background: #dbeafe; border-color: #3b82f6; }
-        .bmc-cell__label { color: #1e3a8a; }
-        .bmc-cell__dot--filled { background: #2563eb; }
-      }
-
-      &.zone-cost {
-        background: #fff7ed;
-        border-color: #fed7aa;
-        &:hover { background: #ffedd5; border-color: #f97316; }
-        .bmc-cell__label { color: #7c2d12; }
-        .bmc-cell__dot--filled { background: #ea580c; }
-      }
-
-      &.zone-revenue {
-        background: #f0fdf4;
-        border-color: #bbf7d0;
-        &:hover { background: #dcfce7; border-color: #22c55e; }
-        .bmc-cell__label { color: #14532d; }
-        .bmc-cell__dot--filled { background: #16a34a; }
-      }
-
-      /* Active state — strong accent */
-      &--active {
-        border-color: var(--p-primary-500) !important;
-        box-shadow: 0 0 0 2px color-mix(in srgb, var(--p-primary-500) 25%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--p-primary-500) 20%, transparent);
-        transform: scale(1.02);
-        z-index: 1;
-
-        .bmc-cell__label { color: var(--p-primary-700) !important; }
-      }
-
-      &__inner {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        flex: 1;
-        justify-content: center;
-        align-items: center;
-      }
-
-      &__label {
-        font-size: 0.58rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        line-height: 1.3;
-        text-align: center;
-      }
-
-      &__dots {
-        display: flex;
-        gap: 3px;
-        justify-content: center;
-      }
-
-      &__dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: rgba(0,0,0,0.15);
-        transition: background 0.2s;
-
-        &--filled {
-          /* overridden per zone */
-        }
-      }
-
-      &__star {
-        position: absolute;
-        top: 3px;
-        right: 4px;
-        font-size: 0.55rem;
-        color: var(--p-primary-500);
-        line-height: 1;
-      }
+      position: relative; border: 1.5px solid transparent; overflow: hidden;
     }
+    .bmc-cell::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.18s; }
+    .bmc-cell:hover::before { opacity: 1; }
 
-    .bmc-progress {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .bmc-cell.zone-left  { background: #fffbeb; border-color: #fde68a; }
+    .bmc-cell.zone-left:hover { background: #fef3c7; border-color: #f59e0b; }
+    .bmc-cell.zone-left .bmc-cell__label { color: #78350f; }
+    .bmc-cell.zone-left .bmc-cell__dot--filled { background: #d97706; }
 
-      &__track {
-        flex: 1;
-        height: 3px;
-        background: var(--p-surface-200);
-        border-radius: 2px;
-        overflow: hidden;
-      }
+    .bmc-cell.zone-center { background: #ecfdf5; border-color: #6ee7b7; }
+    .bmc-cell.zone-center:hover { background: #d1fae5; border-color: #10b981; }
+    .bmc-cell.zone-center .bmc-cell__label { color: #064e3b; }
+    .bmc-cell.zone-center .bmc-cell__dot--filled { background: #059669; }
 
-      &__fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--p-primary-400), var(--p-primary-600));
-        border-radius: 2px;
-        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      }
+    .bmc-cell.zone-right { background: #eff6ff; border-color: #bfdbfe; }
+    .bmc-cell.zone-right:hover { background: #dbeafe; border-color: #3b82f6; }
+    .bmc-cell.zone-right .bmc-cell__label { color: #1e3a8a; }
+    .bmc-cell.zone-right .bmc-cell__dot--filled { background: #2563eb; }
 
-      &__label {
-        font-size: 0.65rem;
-        font-weight: 600;
-        color: var(--p-text-muted-color);
-        min-width: 24px;
-        text-align: right;
-      }
+    .bmc-cell.zone-cost { background: #fff7ed; border-color: #fed7aa; }
+    .bmc-cell.zone-cost:hover { background: #ffedd5; border-color: #f97316; }
+    .bmc-cell.zone-cost .bmc-cell__label { color: #7c2d12; }
+    .bmc-cell.zone-cost .bmc-cell__dot--filled { background: #ea580c; }
+
+    .bmc-cell.zone-revenue { background: #f0fdf4; border-color: #bbf7d0; }
+    .bmc-cell.zone-revenue:hover { background: #dcfce7; border-color: #22c55e; }
+    .bmc-cell.zone-revenue .bmc-cell__label { color: #14532d; }
+    .bmc-cell.zone-revenue .bmc-cell__dot--filled { background: #16a34a; }
+
+    .bmc-cell--active {
+      border-color: var(--p-primary-500) !important;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--p-primary-500) 25%, transparent),
+                  inset 0 0 0 1px color-mix(in srgb, var(--p-primary-500) 20%, transparent);
+      transform: scale(1.02); z-index: 1;
     }
+    .bmc-cell--active .bmc-cell__label { color: var(--p-primary-700) !important; }
+
+    .bmc-cell__inner { display: flex; flex-direction: column; gap: 5px; flex: 1; justify-content: center; align-items: center; }
+    .bmc-cell__label { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.3; text-align: center; }
+    .bmc-cell__dots  { display: flex; gap: 3px; justify-content: center; }
+    .bmc-cell__dot   { width: 5px; height: 5px; border-radius: 50%; background: rgba(0,0,0,0.15); transition: background 0.2s; }
+    .bmc-cell__star  { position: absolute; top: 3px; right: 4px; font-size: 0.55rem; color: var(--p-primary-500); line-height: 1; }
+
+    .bmc-progress       { display: flex; align-items: center; gap: 8px; }
+    .bmc-progress__track { flex: 1; height: 3px; background: var(--p-surface-200); border-radius: 2px; overflow: hidden; }
+    .bmc-progress__fill  { height: 100%; background: linear-gradient(90deg, var(--p-primary-400), var(--p-primary-600)); border-radius: 2px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .bmc-progress__label { font-size: 0.65rem; font-weight: 600; color: var(--p-text-muted-color); min-width: 24px; text-align: right; }
   `],
 })
 export class BmcCanvasComponent {

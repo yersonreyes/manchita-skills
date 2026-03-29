@@ -187,23 +187,21 @@ interface PersonaData {
       border: 1px solid #f3f4f6;
       border-radius: 0.75rem;
       padding: 1rem;
-
-      &--goals {
-        border-color: #bbf7d0;
-        background-color: #f0fdf4;
-
-        .persona__section-title { color: #15803d; }
-        .persona__list-item::before { background-color: #22c55e; }
-      }
-
-      &--frustrations {
-        border-color: #fecaca;
-        background-color: #fef2f2;
-
-        .persona__section-title { color: #b91c1c; }
-        .persona__list-item::before { background-color: #ef4444; }
-      }
     }
+
+    .persona__section--goals {
+      border-color: #bbf7d0;
+      background-color: #f0fdf4;
+    }
+    .persona__section--goals .persona__section-title { color: #15803d; }
+    .persona__section--goals .persona__list-item::before { background-color: #22c55e; }
+
+    .persona__section--frustrations {
+      border-color: #fecaca;
+      background-color: #fef2f2;
+    }
+    .persona__section--frustrations .persona__section-title { color: #b91c1c; }
+    .persona__section--frustrations .persona__list-item::before { background-color: #ef4444; }
 
     .persona__list {
       list-style: none;
