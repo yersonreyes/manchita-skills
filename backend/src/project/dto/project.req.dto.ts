@@ -7,7 +7,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { ProjectMemberRole, ProjectStatus } from '@prisma/client';
+import { EtapaProyecto, ProjectMemberRole, ProjectStatus, TipoProyecto } from '@prisma/client';
 
 export class CreateProjectRequestDto {
   @ApiProperty({ example: 'Rediseño App Móvil' })
@@ -18,6 +18,26 @@ export class CreateProjectRequestDto {
   @IsString()
   @IsOptional()
   descripcion?: string | null;
+
+  @ApiProperty({ enum: TipoProyecto, required: false })
+  @IsEnum(TipoProyecto)
+  @IsOptional()
+  tipo?: TipoProyecto;
+
+  @ApiProperty({ enum: EtapaProyecto, required: false })
+  @IsEnum(EtapaProyecto)
+  @IsOptional()
+  etapa?: EtapaProyecto;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  sector?: string | null;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  contexto?: string | null;
 
   @ApiProperty({ enum: ProjectStatus, required: false, default: ProjectStatus.DRAFT })
   @IsEnum(ProjectStatus)
@@ -40,6 +60,26 @@ export class UpdateProjectRequestDto {
   @IsString()
   @IsOptional()
   descripcion?: string | null;
+
+  @ApiProperty({ enum: TipoProyecto, required: false })
+  @IsEnum(TipoProyecto)
+  @IsOptional()
+  tipo?: TipoProyecto | null;
+
+  @ApiProperty({ enum: EtapaProyecto, required: false })
+  @IsEnum(EtapaProyecto)
+  @IsOptional()
+  etapa?: EtapaProyecto | null;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  sector?: string | null;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  contexto?: string | null;
 
   @ApiProperty({ enum: ProjectStatus, required: false })
   @IsEnum(ProjectStatus)

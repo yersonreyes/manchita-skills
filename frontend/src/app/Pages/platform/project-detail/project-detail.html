@@ -17,6 +17,92 @@
   />
 </app-page-header>
 
+<!-- ─── Brief del Proyecto ───────────────────────────────────────────────── -->
+<p-card styleClass="brief-card">
+  <div class="brief-header" (click)="briefExpanded.set(!briefExpanded())">
+    <div class="brief-header__left">
+      <div class="brief-header__icon">
+        <i class="pi pi-align-left"></i>
+      </div>
+      <div>
+        <span class="brief-header__title">Brief del Proyecto</span>
+        <span class="brief-header__subtitle">
+          @if (project()?.tipo || project()?.etapa || project()?.sector || project()?.contexto) {
+            Contexto configurado — las herramientas de IA lo usarán en sus análisis
+          } @else {
+            Sin contexto — completalo para mejorar los análisis de IA
+          }
+        </span>
+      </div>
+    </div>
+    <i class="pi" [class.pi-chevron-down]="!briefExpanded()" [class.pi-chevron-up]="briefExpanded()"></i>
+  </div>
+
+  @if (briefExpanded()) {
+    <div class="brief-form">
+      <div class="brief-form__row">
+        <div class="brief-form__field">
+          <label class="brief-form__label">Tipo de proyecto</label>
+          <p-select
+            [(ngModel)]="briefForm.tipo"
+            [options]="tipoOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccioná el tipo..."
+            [showClear]="true"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+        <div class="brief-form__field">
+          <label class="brief-form__label">Etapa actual</label>
+          <p-select
+            [(ngModel)]="briefForm.etapa"
+            [options]="etapaOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccioná la etapa..."
+            [showClear]="true"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+      </div>
+
+      <div class="brief-form__field">
+        <label class="brief-form__label">Sector / Industria</label>
+        <input
+          pInputText
+          [(ngModel)]="briefForm.sector"
+          placeholder="Ej: Tecnología educativa, Salud preventiva, Retail..."
+          class="w-full"
+        />
+      </div>
+
+      <div class="brief-form__field">
+        <label class="brief-form__label">Contexto general</label>
+        <textarea
+          pTextarea
+          [(ngModel)]="briefForm.contexto"
+          [rows]="4"
+          placeholder="Describí el problema que resolvés, quién es tu usuario objetivo y cuál es el objetivo principal del proyecto..."
+          class="w-full"
+          [autoResize]="true"
+        ></textarea>
+      </div>
+
+      <div class="brief-form__actions">
+        <p-button
+          label="Guardar brief"
+          icon="pi pi-check"
+          [loading]="savingBrief()"
+          (onClick)="saveBrief()"
+        />
+      </div>
+    </div>
+  }
+</p-card>
+
 @if (loading()) {
   <p-card>
     <div class="flex justify-center py-12">

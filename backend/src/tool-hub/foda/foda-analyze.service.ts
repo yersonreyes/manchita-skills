@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { FodaAnalyzeReqDto, FodaItemsDto } from './dto/foda-analyze.req.dto';
 import { FodaAnalyzeResDto, FodaReportDto } from './dto/foda-analyze.res.dto';
+import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
 
 @Injectable()
 export class FodaAnalyzeService {
@@ -12,8 +13,8 @@ export class FodaAnalyzeService {
   ) {}
 
   async execute(dto: FodaAnalyzeReqDto, currentVersion: number): Promise<FodaAnalyzeResDto> {
-    const tool = await this.loadTool(dto.toolApplicationId);
-    const systemPrompt = this.buildSystemPrompt(tool);
+    const { tool, project } = await this.loadContext(dto.toolApplicationId);
+    const systemPrompt = this.buildSystemPrompt(tool, project);
     const itemsText = this.formatItems(dto.items);
 
     const raw = await this.aiService.chat(
@@ -36,12 +37,17 @@ export class FodaAnalyzeService {
     };
   }
 
-  private buildSystemPrompt(tool: { nombre: string; descripcion: string; comoSeUsa: string | null }): string {
+  private buildSystemPrompt(
+    tool: { nombre: string; descripcion: string; comoSeUsa: string | null },
+    project: ProjectBriefContext,
+  ): string {
+    const projectSection = buildProjectContextSection(project);
+
     return `Sos un consultor estratégico experto en análisis FODA (Fortalezas, Oportunidades, Debilidades, Amenazas).
 
 CONTEXTO DE LA HERRAMIENTA:
 - Descripción: ${tool.descripcion}
-${tool.comoSeUsa ? `- Cómo se usa: ${tool.comoSeUsa}` : ''}
+${tool.comoSeUsa ? `- Cómo se usa: ${tool.comoSeUsa}` : ''}${projectSection}
 
 TU TAREA:
 Analizá el FODA que se te proporciona y generá un informe estructurado en JSON con EXACTAMENTE este formato:
@@ -97,14 +103,14 @@ ${format(items.amenazas)}`.trim();
     return trimmed;
   }
 
-  private async loadTool(toolApplicationId: number) {
+  private async loadContext(toolApplicationId: number) {
     const app = await this.prisma.toolApplication.findUnique({
       where: { id: toolApplicationId },
-      include: { tool: true },
+      include: { tool: true, projectPhase: { include: { project: true } } },
     });
 
     if (!app) throw new NotFoundException('Tool application no encontrada');
 
-    return app.tool;
+    return { tool: app.tool, project: app.projectPhase.project };
   }
 }

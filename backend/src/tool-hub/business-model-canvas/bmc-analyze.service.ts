@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { BmcAnalyzeReqDto, BmcBlocksDto } from './dto/bmc.req.dto';
 import { BmcAnalyzeResDto, BmcReportDto } from './dto/bmc.res.dto';
+import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
 
 @Injectable()
 export class BmcAnalyzeService {
@@ -12,8 +13,8 @@ export class BmcAnalyzeService {
   ) {}
 
   async execute(dto: BmcAnalyzeReqDto, currentVersion: number): Promise<BmcAnalyzeResDto> {
-    const tool = await this.loadTool(dto.toolApplicationId);
-    const systemPrompt = this.buildSystemPrompt(tool);
+    const { tool, project } = await this.loadContext(dto.toolApplicationId);
+    const systemPrompt = this.buildSystemPrompt(tool, project);
     const blocksText = this.formatBlocks(dto.blocks);
 
     const raw = await this.aiService.chat(
@@ -36,12 +37,17 @@ export class BmcAnalyzeService {
     };
   }
 
-  private buildSystemPrompt(tool: { nombre: string; descripcion: string; comoSeUsa: string | null }): string {
+  private buildSystemPrompt(
+    tool: { nombre: string; descripcion: string; comoSeUsa: string | null },
+    project: ProjectBriefContext,
+  ): string {
+    const projectSection = buildProjectContextSection(project);
+
     return `Sos un consultor estratégico experto en modelos de negocio. Te han presentado un Business Model Canvas completo.
 
 CONTEXTO DE LA HERRAMIENTA:
 - Descripción: ${tool.descripcion}
-${tool.comoSeUsa ? `- Cómo se usa: ${tool.comoSeUsa}` : ''}
+${tool.comoSeUsa ? `- Cómo se usa: ${tool.comoSeUsa}` : ''}${projectSection}
 
 TU TAREA:
 Analizá el Business Model Canvas que se te proporciona y generá un informe estructurado en JSON con EXACTAMENTE este formato:
@@ -132,14 +138,14 @@ REGLAS:
     return trimmed;
   }
 
-  private async loadTool(toolApplicationId: number) {
+  private async loadContext(toolApplicationId: number) {
     const app = await this.prisma.toolApplication.findUnique({
       where: { id: toolApplicationId },
-      include: { tool: true },
+      include: { tool: true, projectPhase: { include: { project: true } } },
     });
 
     if (!app) throw new NotFoundException('Tool application no encontrada');
 
-    return app.tool;
+    return { tool: app.tool, project: app.projectPhase.project };
   }
 }

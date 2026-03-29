@@ -1,3 +1,74 @@
+// ─── Brief del Proyecto ──────────────────────────────────────────────────────
+
+::ng-deep .brief-card
+  margin-bottom: 1.25rem
+
+.brief-header
+  display: flex
+  align-items: center
+  justify-content: space-between
+  cursor: pointer
+  user-select: none
+  gap: 12px
+
+  &__left
+    display: flex
+    align-items: center
+    gap: 10px
+
+  &__icon
+    width: 36px
+    height: 36px
+    border-radius: 8px
+    background: var(--p-primary-50, #eff6ff)
+    color: var(--p-primary-600, #0284c7)
+    display: flex
+    align-items: center
+    justify-content: center
+    font-size: 0.875rem
+    flex-shrink: 0
+
+  &__title
+    display: block
+    font-family: 'Syne', sans-serif
+    font-size: 0.9375rem
+    font-weight: 700
+    color: var(--p-text-color)
+    line-height: 1.2
+
+  &__subtitle
+    display: block
+    font-size: 0.72rem
+    color: var(--p-text-muted-color)
+    margin-top: 2px
+
+.brief-form
+  display: flex
+  flex-direction: column
+  gap: 16px
+  margin-top: 16px
+  padding-top: 16px
+  border-top: 1px solid var(--p-surface-200)
+
+  &__row
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 12px
+
+  &__field
+    display: flex
+    flex-direction: column
+    gap: 6px
+
+  &__label
+    font-size: 0.8125rem
+    font-weight: 600
+    color: var(--p-text-secondary-color)
+
+  &__actions
+    display: flex
+    justify-content: flex-end
+
 // ─── Phase List ──────────────────────────────────────────────────────────────
 
 .phases-list

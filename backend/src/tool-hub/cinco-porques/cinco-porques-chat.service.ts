@@ -4,6 +4,7 @@ import { AiService } from '../../ai/ai.service';
 import { CincoPorquesChatReqDto } from './dto/cinco-porques.req.dto';
 import { CincoPorquesChatResDto } from './dto/cinco-porques.res.dto';
 import { AiMessage } from '../../ai/providers/ai-provider.interface';
+import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
 
 @Injectable()
 export class CincoPorquesChatService {
@@ -13,8 +14,8 @@ export class CincoPorquesChatService {
   ) {}
 
   async execute(dto: CincoPorquesChatReqDto): Promise<CincoPorquesChatResDto> {
-    const tool = await this.loadTool(dto.toolApplicationId);
-    const systemPrompt = this.buildSystemPrompt(tool);
+    const { tool, project } = await this.loadContext(dto.toolApplicationId);
+    const systemPrompt = this.buildSystemPrompt(tool, project);
 
     const messages: AiMessage[] = [
       ...dto.history,
@@ -27,12 +28,17 @@ export class CincoPorquesChatService {
     return { assistantMessage, turnCount };
   }
 
-  private buildSystemPrompt(tool: { nombre: string; descripcion: string; comoSeUsa: string | null }): string {
+  private buildSystemPrompt(
+    tool: { nombre: string; descripcion: string; comoSeUsa: string | null },
+    project: ProjectBriefContext,
+  ): string {
+    const projectSection = buildProjectContextSection(project);
+
     return `Sos un facilitador experto en Design Thinking aplicando la técnica "${tool.nombre}".
 
 CONTEXTO DE LA HERRAMIENTA:
 - Descripción: ${tool.descripcion}
-${tool.comoSeUsa ? `- Cómo se usa: ${tool.comoSeUsa}` : ''}
+${tool.comoSeUsa ? `- Cómo se usa: ${tool.comoSeUsa}` : ''}${projectSection}
 
 TU ROL:
 - Actuás exclusivamente como questioner: hacés UNA sola pregunta por turno.
@@ -44,14 +50,14 @@ TU ROL:
 - Tu respuesta es únicamente la pregunta, sin saludos, prefacios ni conclusiones.`;
   }
 
-  private async loadTool(toolApplicationId: number) {
+  private async loadContext(toolApplicationId: number) {
     const app = await this.prisma.toolApplication.findUnique({
       where: { id: toolApplicationId },
-      include: { tool: true },
+      include: { tool: true, projectPhase: { include: { project: true } } },
     });
 
     if (!app) throw new NotFoundException('Tool application no encontrada');
 
-    return app.tool;
+    return { tool: app.tool, project: app.projectPhase.project };
   }
 }

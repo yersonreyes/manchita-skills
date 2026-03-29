@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { CincoPorquesAnalyzeReqDto } from './dto/cinco-porques.req.dto';
 import { CincoPorquesAnalyzeResDto } from './dto/cinco-porques.res.dto';
+import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
 
 @Injectable()
 export class CincoPorquesAnalyzeService {
@@ -12,8 +13,8 @@ export class CincoPorquesAnalyzeService {
   ) {}
 
   async execute(dto: CincoPorquesAnalyzeReqDto): Promise<CincoPorquesAnalyzeResDto> {
-    const tool = await this.loadTool(dto.toolApplicationId);
-    const systemPrompt = this.buildSystemPrompt(tool);
+    const { tool, project } = await this.loadContext(dto.toolApplicationId);
+    const systemPrompt = this.buildSystemPrompt(tool, project);
 
     const transcript = dto.history
       .map((m) => `${m.role === 'user' ? 'Usuario' : 'Facilitador IA'}: ${m.content}`)
@@ -35,12 +36,17 @@ export class CincoPorquesAnalyzeService {
     return { analysis };
   }
 
-  private buildSystemPrompt(tool: { nombre: string; descripcion: string; comoSeUsa: string | null }): string {
+  private buildSystemPrompt(
+    tool: { nombre: string; descripcion: string; comoSeUsa: string | null },
+    project: ProjectBriefContext,
+  ): string {
+    const projectSection = buildProjectContextSection(project);
+
     return `Sos un analista experto en Design Thinking. Has facilitado una sesión de "${tool.nombre}" con un equipo.
 
 CONTEXTO DE LA HERRAMIENTA:
 - Descripción: ${tool.descripcion}
-${tool.comoSeUsa ? `- Cómo se usa: ${tool.comoSeUsa}` : ''}
+${tool.comoSeUsa ? `- Cómo se usa: ${tool.comoSeUsa}` : ''}${projectSection}
 
 TU TAREA:
 Analizá la conversación completa que se te proporciona y producí un análisis estructurado en JSON con EXACTAMENTE este formato:
@@ -68,14 +74,14 @@ REGLAS:
     return trimmed;
   }
 
-  private async loadTool(toolApplicationId: number) {
+  private async loadContext(toolApplicationId: number) {
     const app = await this.prisma.toolApplication.findUnique({
       where: { id: toolApplicationId },
-      include: { tool: true },
+      include: { tool: true, projectPhase: { include: { project: true } } },
     });
 
     if (!app) throw new NotFoundException('Tool application no encontrada');
 
-    return app.tool;
+    return { tool: app.tool, project: app.projectPhase.project };
   }
 }

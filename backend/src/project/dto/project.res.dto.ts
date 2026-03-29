@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EtapaProyecto, TipoProyecto } from '@prisma/client';
 
 export class ProjectDto {
   @ApiProperty()
@@ -9,6 +10,18 @@ export class ProjectDto {
 
   @ApiProperty({ required: false })
   descripcion?: string | null;
+
+  @ApiProperty({ enum: TipoProyecto, required: false })
+  tipo?: TipoProyecto | null;
+
+  @ApiProperty({ enum: EtapaProyecto, required: false })
+  etapa?: EtapaProyecto | null;
+
+  @ApiProperty({ required: false })
+  sector?: string | null;
+
+  @ApiProperty({ required: false })
+  contexto?: string | null;
 
   @ApiProperty()
   estado: string;

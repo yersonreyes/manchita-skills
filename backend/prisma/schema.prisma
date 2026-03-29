@@ -44,6 +44,26 @@ enum AttachmentType {
   OTHER
 }
 
+enum TipoProyecto {
+  STARTUP
+  PRODUCTO_DIGITAL
+  INVESTIGACION_UX
+  PROYECTO_INTERNO
+  SERVICIO
+  PROCESO
+  OTRO
+}
+
+enum EtapaProyecto {
+  IDEA
+  EXPLORACION
+  VALIDACION
+  DESARROLLO
+  LANZAMIENTO
+  CRECIMIENTO
+  MADUREZ
+}
+
 // ─── USUARIO ─────────────────────────────────────────────────────────────────
 
 model User {
@@ -241,6 +261,10 @@ model Project {
   id          Int           @id @default(autoincrement())
   nombre      String
   descripcion String?       @db.Text
+  tipo        TipoProyecto?
+  etapa       EtapaProyecto?
+  sector      String?
+  contexto    String?        @db.Text
   estado      ProjectStatus @default(DRAFT)
   ownerId     Int
   activo      Boolean       @default(true)

@@ -6,6 +6,7 @@ import { DesignPhaseResDto, ToolResDto } from '@core/services/catalogService/cat
 import { PhaseStatus, CreateProjectPhaseReqDto } from '@core/services/projectPhaseService/project-phase.req.dto';
 import { ProjectPhaseResDto } from '@core/services/projectPhaseService/project-phase.res.dto';
 import { ProjectPhaseService } from '@core/services/projectPhaseService/project-phase.service';
+import { EtapaProyecto, TipoProyecto } from '@core/services/projectService/project.req.dto';
 import { ProjectResDto } from '@core/services/projectService/project.res.dto';
 import { ProjectService } from '@core/services/projectService/project.service';
 import { CreateToolApplicationReqDto, ToolApplicationStatus } from '@core/services/toolApplicationService/tool-application.req.dto';
@@ -21,6 +22,7 @@ import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { Tag } from 'primeng/tag';
+import { Textarea } from 'primeng/textarea';
 import { Tooltip } from 'primeng/tooltip';
 
 interface SelectOption<T> {
@@ -41,6 +43,7 @@ interface SelectOption<T> {
     Select,
     InputNumber,
     InputText,
+    Textarea,
     HasPermissionDirective,
     PageHeaderComponent,
   ],
@@ -73,6 +76,36 @@ export class ProjectDetailComponent implements OnInit {
     orden: 1,
     estado: 'NOT_STARTED' as PhaseStatus,
   };
+
+  // ─── Brief del proyecto ───────────────────────────────────────────────────
+  briefExpanded = signal(false);
+  savingBrief = signal(false);
+  briefForm = {
+    tipo: null as TipoProyecto | null,
+    etapa: null as EtapaProyecto | null,
+    sector: '',
+    contexto: '',
+  };
+
+  readonly tipoOptions: SelectOption<TipoProyecto>[] = [
+    { label: 'Startup / Emprendimiento', value: 'STARTUP' },
+    { label: 'Producto digital', value: 'PRODUCTO_DIGITAL' },
+    { label: 'Investigación UX', value: 'INVESTIGACION_UX' },
+    { label: 'Proyecto interno', value: 'PROYECTO_INTERNO' },
+    { label: 'Servicio', value: 'SERVICIO' },
+    { label: 'Rediseño de proceso', value: 'PROCESO' },
+    { label: 'Otro', value: 'OTRO' },
+  ];
+
+  readonly etapaOptions: SelectOption<EtapaProyecto>[] = [
+    { label: 'Idea (concepto sin validar)', value: 'IDEA' },
+    { label: 'Exploración (investigando el problema)', value: 'EXPLORACION' },
+    { label: 'Validación (probando la solución)', value: 'VALIDACION' },
+    { label: 'Desarrollo (construyendo)', value: 'DESARROLLO' },
+    { label: 'Lanzamiento (saliendo al mercado)', value: 'LANZAMIENTO' },
+    { label: 'Crecimiento (escalando)', value: 'CRECIMIENTO' },
+    { label: 'Madurez (operación estable)', value: 'MADUREZ' },
+  ];
 
   // ─── Dialog agregar herramienta ───────────────────────────────────────────
   addToolDialogVisible = signal(false);
@@ -110,8 +143,32 @@ export class ProjectDetailComponent implements OnInit {
     try {
       const project = await this.projectService.getById(this.projectId);
       this.project.set(project);
+      this.briefForm = {
+        tipo: project.tipo ?? null,
+        etapa: project.etapa ?? null,
+        sector: project.sector ?? '',
+        contexto: project.contexto ?? '',
+      };
     } catch {
       // Error manejado por el builder
+    }
+  }
+
+  async saveBrief(): Promise<void> {
+    this.savingBrief.set(true);
+    try {
+      const updated = await this.projectService.update(this.projectId, {
+        tipo: this.briefForm.tipo,
+        etapa: this.briefForm.etapa,
+        sector: this.briefForm.sector.trim() || null,
+        contexto: this.briefForm.contexto.trim() || null,
+      });
+      this.project.set(updated);
+      this.uiDialog.showSuccess('Brief guardado', 'El contexto del proyecto fue actualizado.');
+    } catch {
+      // Error manejado por el builder
+    } finally {
+      this.savingBrief.set(false);
     }
   }
 

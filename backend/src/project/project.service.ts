@@ -37,6 +37,10 @@ export class ProjectService {
       data: {
         nombre,
         descripcion: dto.descripcion?.trim() ?? null,
+        tipo: dto.tipo ?? null,
+        etapa: dto.etapa ?? null,
+        sector: dto.sector?.trim() ?? null,
+        contexto: dto.contexto?.trim() ?? null,
         estado: dto.estado ?? 'DRAFT',
         ownerId,
         activo: dto.activo ?? true,
@@ -89,6 +93,10 @@ export class ProjectService {
 
     if (dto.nombre !== undefined) data.nombre = dto.nombre.trim();
     if (dto.descripcion !== undefined) data.descripcion = dto.descripcion?.trim() ?? null;
+    if (dto.tipo !== undefined) data.tipo = dto.tipo ?? null;
+    if (dto.etapa !== undefined) data.etapa = dto.etapa ?? null;
+    if (dto.sector !== undefined) data.sector = dto.sector?.trim() ?? null;
+    if (dto.contexto !== undefined) data.contexto = dto.contexto?.trim() ?? null;
     if (dto.estado !== undefined) data.estado = dto.estado;
     if (dto.activo !== undefined) data.activo = dto.activo;
 
