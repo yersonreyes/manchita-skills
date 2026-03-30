@@ -70,20 +70,55 @@ const TOOL_CATEGORIES = [
   { codigo: 'deliver-tecnicas', nombre: 'Tecnicas', phaseCodigo: 'deliver', descripcion: 'Tecnicas de validacion' },
 ];
 
-const TOOLS: { codigo: string; nombre: string; descripcion: string }[] = [
+const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: string; cuandoUsarlo?: string; ejemplo?: string }[] = [
   // Discover > Empresa
-  { codigo: '5-porques', nombre: 'Los 5 Porqués', descripcion: 'Técnica de análisis causal que consiste en preguntar "por qué" cinco veces para llegar a la raíz de un problema.' },
+  {
+    codigo: '5-porques',
+    nombre: 'Los 5 Porqués',
+    descripcion: 'Técnica de análisis causal que consiste en preguntar "por qué" cinco veces para llegar a la raíz de un problema.',
+    comoSeUsa: `Describí el problema inicial con claridad. Luego respondé "¿por qué ocurre esto?" y usá esa respuesta como punto de partida para el siguiente "¿por qué?". Repetí el proceso hasta llegar a una causa que ya no tenga otro "por qué" detrás — generalmente en 3 a 5 iteraciones.`,
+    cuandoUsarlo: `Cuando tenés un problema recurrente y las soluciones que probaste no funcionan. También cuando el equipo debate sobre síntomas en lugar de causas reales. No es ideal para problemas complejos con múltiples causas simultáneas — en esos casos combinarlo con un diagrama de Ishikawa.`,
+    ejemplo: `Problema: "Los usuarios abandonan el checkout". ¿Por qué? → Formulario muy largo. ¿Por qué? → Pedimos datos que no usamos. ¿Por qué? → Nunca cuestionamos el formulario original. ¿Por qué? → No hay proceso de revisión de flujos. Causa raíz: falta de cultura de revisión de UX periódica.`,
+  },
   { codigo: 'analogos-antilogos', nombre: 'Análogos y Antilogos', descripcion: 'Herramienta para identificar referentes positivos (análogos) y negativos (antilogos) que inspiren o adviertan sobre el diseño.' },
-  { codigo: 'business-model-canvas', nombre: 'Business Model Canvas', descripcion: 'Herramienta estratégica de visualización y diseño de modelos de negocio en 9 bloques interdependientes.' },
-  { codigo: 'diagnostico-industria', nombre: 'Diagnóstico de la Industria', descripcion: 'Análisis del entorno competitivo y las fuerzas que afectan a la industria.' },
+  {
+    codigo: 'business-model-canvas',
+    nombre: 'Business Model Canvas',
+    descripcion: 'Herramienta estratégica de visualización y diseño de modelos de negocio en 9 bloques interdependientes.',
+    comoSeUsa: `Completá los 9 bloques empezando por la Propuesta de Valor — es el centro de todo. Luego definí a quién le llegás (Segmentos y Canales) y cómo generás dinero (Fuentes de Ingreso). Finalmente completá los bloques de operación (Recursos, Actividades, Socios) y costos. No necesitás completar todos para generar el análisis.`,
+    cuandoUsarlo: `Cuando querés visualizar y comunicar cómo funciona tu modelo de negocio completo en una sola página. Ideal para validar hipótesis de negocio, preparar una presentación a inversores, o detectar incoherencias entre cómo operás y cómo generás valor.`,
+    ejemplo: `Una app de idiomas: Propuesta de valor (aprendizaje gamificado en 10 minutos diarios), Segmento (adultos 25-40 con poco tiempo), Canal (app store + redes), Ingreso (suscripción mensual), Recursos (tecnología + contenido), Costo (desarrollo y marketing de adquisición).`,
+  },
+  {
+    codigo: 'diagnostico-industria',
+    nombre: 'Diagnóstico de la Industria',
+    descripcion: 'Análisis del entorno competitivo y las fuerzas que afectan a la industria.',
+    comoSeUsa: `Completá cada fuerza de Porter con observaciones concretas de tu industria — con 2 o 3 puntos por fuerza es suficiente. Podés dejar fuerzas vacías si no tenés información: la IA inferirá del contexto disponible. La sección de Tendencias es opcional pero enriquece mucho el análisis.`,
+    cuandoUsarlo: `Antes de definir el posicionamiento estratégico, al evaluar si vale la pena entrar a un mercado, o cuando querés entender por qué la competencia está ganando. Ideal en etapas de Exploración o Validación, antes de comprometer recursos significativos.`,
+    ejemplo: `Una fintech B2B: Rivalidad alta (Mercado Pago y Naranja X dominan), Nuevos entrantes bajos (regulación del BCRA como barrera), Clientes con alto poder (las pymes negocian condiciones), Sustitutos medios (el efectivo sigue siendo competencia). Resultado: industria moderadamente atractiva para nichos desatendidos.`,
+  },
   { codigo: 'diagrama-sistema', nombre: 'Diagrama de Sistema', descripcion: 'Representación visual de los componentes de un sistema y sus interrelaciones.' },
-  { codigo: 'foda', nombre: 'FODA (SWOT)', descripcion: 'Análisis de Fortalezas, Oportunidades, Debilidades y Amenazas para evaluar la posición estratégica.' },
+  {
+    codigo: 'foda',
+    nombre: 'FODA (SWOT)',
+    descripcion: 'Análisis de Fortalezas, Oportunidades, Debilidades y Amenazas para evaluar la posición estratégica.',
+    comoSeUsa: `Listá en cada cuadrante los factores que corresponden: fortalezas y debilidades son internas al proyecto, oportunidades y amenazas son externas. No necesitás llenarlo todo — con 2 cuadrantes ya podés generar el análisis IA. Agregá ítems concretos y específicos, evitá generalidades.`,
+    cuandoUsarlo: `Cuando necesitás una foto clara de la situación estratégica antes de tomar decisiones. Ideal al inicio de un proyecto, al evaluar un pivote, o cuando el equipo siente que "algo no está funcionando" pero no sabe exactamente qué.`,
+    ejemplo: `Un startup de delivery lo usa antes de lanzar: fortalezas (equipo tech propio, precio competitivo), oportunidades (crecimiento del e-commerce local), debilidades (sin marca conocida), amenazas (PedidosYa y Rappi dominando el mercado).`,
+  },
   { codigo: 'in-out', nombre: 'Diagrama In/Out', descripcion: 'Herramienta para definir el alcance del proyecto identificando qué está dentro y fuera del scope.' },
 
   // Discover > Cliente/Mercado
   { codigo: 'customer-journey-map', nombre: 'Customer Journey Map', descripcion: 'Mapa visual del recorrido completo del cliente a través de todos los puntos de contacto con el producto o servicio.' },
   { codigo: 'mapa-empatia', nombre: 'Mapa de Empatía', descripcion: 'Herramienta para comprender profundamente al usuario: qué piensa, siente, ve, oye, dice y hace.' },
-  { codigo: 'persona', nombre: 'User Persona', descripcion: 'Representación arquetípica de un usuario objetivo basada en datos reales de investigación.' },
+  {
+    codigo: 'persona',
+    nombre: 'User Persona',
+    descripcion: 'Representación arquetípica de un usuario objetivo basada en datos reales de investigación.',
+    comoSeUsa: `Completá cada sección basándote en datos reales: entrevistas, encuestas, analytics — no en suposiciones. Una persona bien construida tiene tensiones internas (lo que quiere vs. lo que teme) que la hacen creíble. Si no tenés investigación previa, usala como hipótesis inicial para validar.`,
+    cuandoUsarlo: `Antes de diseñar cualquier solución, cuando el equipo tiene visiones distintas sobre quién es el usuario, o cuando las decisiones de diseño generan debates sin resolución. Una persona compartida da un criterio de decisión común: "¿esto sirve a María?"`,
+    ejemplo: `María, 34 años, gerente de proyectos en una consultora. Objetivo: terminar su trabajo antes de las 18hs para buscar a sus hijos. Frustración: las herramientas de gestión son lentas y requieren mucha configuración. Comportamiento: usa el celular para todo, prefiere voz a texto cuando puede.`,
+  },
   { codigo: 'role-play', nombre: 'Role Play', descripcion: 'Técnica de simulación donde los participantes actúan roles para entender experiencias y perspectivas del usuario.' },
   { codigo: 'stakeholder-map', nombre: 'Stakeholder Map', descripcion: 'Mapa visual que identifica y clasifica a todos los actores involucrados en el proyecto según su influencia e interés.' },
 
@@ -382,7 +417,7 @@ async function seedCatalog() {
   for (const tool of TOOLS) {
     await prisma.tool.upsert({
       where: { codigo: tool.codigo },
-      update: { nombre: tool.nombre, descripcion: tool.descripcion },
+      update: { nombre: tool.nombre, descripcion: tool.descripcion, comoSeUsa: tool.comoSeUsa, cuandoUsarlo: tool.cuandoUsarlo, ejemplo: tool.ejemplo },
       create: tool,
     });
   }

@@ -19,6 +19,7 @@ import { Select } from 'primeng/select';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { Tooltip } from 'primeng/tooltip';
 import { ToolMeta, resolveToolMeta } from './tools/tool-registry';
+import { ToolGuideComponent } from './tool-guide/tool-guide.component';
 
 interface SelectOption<T> {
   label: string;
@@ -45,6 +46,7 @@ interface SelectOption<T> {
     Tab,
     TabPanels,
     TabPanel,
+    ToolGuideComponent,
   ],
   templateUrl: './tool-application-detail.html',
   styleUrl: './tool-application-detail.sass',

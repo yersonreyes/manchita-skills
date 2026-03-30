@@ -23,6 +23,10 @@
         <i class="pi {{ toolMeta().tabIcon }}"></i>
         {{ toolMeta().tabLabel }}
       </p-tab>
+      <p-tab value="guia">
+        <i class="pi pi-book"></i>
+        Guía
+      </p-tab>
       <p-tab value="detalles">
         <i class="pi pi-sliders-h"></i>
         Detalles
@@ -41,6 +45,13 @@
             [ngComponentOutlet]="toolComponent()"
             [ngComponentOutletInputs]="toolInputs()"
           />
+        </div>
+      </p-tabpanel>
+
+      <!-- ── Tab Guía ──────────────────────────────────────────────────────── -->
+      <p-tabpanel value="guia">
+        <div class="tab-content">
+          <app-tool-guide [tool]="application()!.tool" />
         </div>
       </p-tabpanel>
 
