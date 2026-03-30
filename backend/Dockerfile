@@ -3,7 +3,7 @@ FROM node:20-alpine AS base
 WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma
-RUN npm ci
+RUN npm install
 COPY tsconfig*.json nest-cli.json ./
 COPY src ./src
 RUN npx prisma generate
