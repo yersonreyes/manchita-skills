@@ -5,6 +5,7 @@ import { FodaToolComponent } from './foda/foda-tool.component';
 import { PersonaToolComponent } from './persona/persona-tool.component';
 import { BmcComponent } from './business-model-canvas/bmc.component';
 import { DiagnosticoIndustriaToolComponent } from './diagnostico-industria/diagnostico-industria-tool.component';
+import { AnalogosAntilogosToolComponent } from './analogos-antilogos/analogos-antilogos-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -40,6 +41,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: DiagnosticoIndustriaToolComponent,
     tabLabel: 'Diagnóstico de Industria',
     tabIcon: 'pi-chart-bar',
+  },
+  'analogos-antilogos': {
+    component: AnalogosAntilogosToolComponent,
+    tabLabel: 'Análogos y Antilogos',
+    tabIcon: 'pi-arrows-h',
   },
 };
 

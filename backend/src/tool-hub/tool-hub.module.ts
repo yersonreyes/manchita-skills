@@ -13,10 +13,12 @@ import { ProjectBriefChatService } from './project-brief/project-brief-chat.serv
 import { ProjectBriefGenerateService } from './project-brief/project-brief-generate.service';
 import { DiagnosticoIndustriaController } from './diagnostico-industria/diagnostico-industria.controller';
 import { DiagnosticoIndustriaAnalyzeService } from './diagnostico-industria/diagnostico-industria-analyze.service';
+import { AnalogosAntilogosController } from './analogos-antilogos/analogos-antilogos.controller';
+import { AnalogosAntilogosAnalyzeService } from './analogos-antilogos/analogos-antilogos-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService],
 })
 export class ToolHubModule {}

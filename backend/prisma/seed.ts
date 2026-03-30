@@ -80,7 +80,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     cuandoUsarlo: `Cuando tenés un problema recurrente y las soluciones que probaste no funcionan. También cuando el equipo debate sobre síntomas en lugar de causas reales. No es ideal para problemas complejos con múltiples causas simultáneas — en esos casos combinarlo con un diagrama de Ishikawa.`,
     ejemplo: `Problema: "Los usuarios abandonan el checkout". ¿Por qué? → Formulario muy largo. ¿Por qué? → Pedimos datos que no usamos. ¿Por qué? → Nunca cuestionamos el formulario original. ¿Por qué? → No hay proceso de revisión de flujos. Causa raíz: falta de cultura de revisión de UX periódica.`,
   },
-  { codigo: 'analogos-antilogos', nombre: 'Análogos y Antilogos', descripcion: 'Herramienta para identificar referentes positivos (análogos) y negativos (antilogos) que inspiren o adviertan sobre el diseño.' },
+  {
+    codigo: 'analogos-antilogos',
+    nombre: 'Análogos y Antilogos',
+    descripcion: 'Herramienta para identificar referentes positivos (análogos) y negativos (antilogos) que inspiren o adviertan sobre el diseño.',
+    comoSeUsa: `Para Análogos: (1) Definí el problema claramente. (2) Identificá industrias diferentes que enfrenten problemas similares. (3) Investigá soluciones exitosas en esos sectores. (4) Analizá el mecanismo subyacente — no copies la solución, entendé el principio. (5) Adaptá ese principio a tu contexto. Para Antilogos: (1) Identificá casos de fracaso en otros contextos. (2) Analizá por qué fallaron y qué condiciones causaron el fracaso. (3) Identificá los errores específicos. (4) Diseñá salvaguardas contra esos errores en tu solución.`,
+    cuandoUsarlo: `Cuando hay bloqueos creativos y el equipo necesita inspiración externa. Para innovación disruptiva en industrias nuevas. En workshops de ideación. Cuando necesitás validar una idea contra precedentes de éxito o fracaso. No usar cuando el problema ya tiene soluciones obvias o el tiempo disponible es muy limitado para investigar.`,
+    ejemplo: `Empresa de logística urbana. Análogo — Aviación (sistema de slots): adaptación → citas de entrega en ventanas de 30 minutos. Análogo — Streaming CDN: adaptación → hubs de distribución locales por barrio. Antilogo — Amazon Fresh (entregas fallidas en primeras horas): error a evitar → no prometer ventanas demasiado precisas sin capacidad operativa. Antilogo — Groupon (descuentos insostenibles): error a evitar → no depender del precio como único diferenciador.`,
+  },
   {
     codigo: 'business-model-canvas',
     nombre: 'Business Model Canvas',

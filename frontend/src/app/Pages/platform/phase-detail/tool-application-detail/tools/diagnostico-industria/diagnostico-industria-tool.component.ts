@@ -106,7 +106,7 @@ import {
               <div class="diag__force-header">
                 <i class="pi pi-chart-line" style="color: #6b7280"></i>
                 <span class="diag__force-label" style="color: #374151">Tendencias y contexto del sector</span>
-                @if (inputs().tendencias?.trim()) {
+                @if (inputs().tendencias.trim()) {
                   <span class="diag__force-check" style="color: #6b7280">
                     <i class="pi pi-check-circle"></i>
                   </span>
@@ -256,10 +256,11 @@ import {
       flex-direction: column;
       gap: 6px;
 
-      &--trends {
-        background: var(--p-surface-50, #f9fafb);
-        border-color: var(--p-surface-200);
-      }
+    }
+
+    .diag__force--trends {
+      background: var(--p-surface-50, #f9fafb);
+      border-color: var(--p-surface-200);
     }
 
     .diag__force-header {

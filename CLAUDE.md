@@ -196,3 +196,11 @@ Copy `backend/.env.example` to `backend/.env` and configure:
 - `PASSWORD_RESET_URL` — frontend URL for password reset emails
 
 See `SETUP.md` at the root for the full initial setup walkthrough.
+
+## Skills (Auto-load based on context)
+
+When you detect any of these contexts, IMMEDIATELY read the corresponding skill file BEFORE writing any code.
+
+| Context | Read this file |
+| ------- | -------------- |
+| Implementar o agregar una herramienta del catálogo Double Diamond | `~/.claude/skills/manchita-tool-builder/SKILL.md` |
