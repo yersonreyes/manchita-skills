@@ -9,4 +9,4 @@ RUN npx prisma generate
 RUN npx nest build
 RUN ls -la dist/
 EXPOSE 3000
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]
