@@ -1,27 +1,58 @@
-import { Component, Injector, effect, inject, input } from '@angular/core';
+import { Component, Injector, ViewEncapsulation, effect, inject, input, output } from '@angular/core';
 import {
   Edge,
+  EdgeDrawnEvent,
+  NgDiagramBackgroundComponent,
   NgDiagramComponent,
   NgDiagramNodeTemplateMap,
+  SelectionMovedEvent,
+  SelectionRemovedEvent,
   SimpleNode,
   initializeModel,
   provideNgDiagram,
 } from 'ng-diagram';
-import { ACTOR_TIPOS, CONEXION_TIPOS, SistemaData } from './diagrama-sistema.types';
+import { ACTOR_TIPOS, CONEXION_TIPOS, SistemaActor, SistemaConexion, SistemaData } from './diagrama-sistema.types';
 import { DiagramaSistemaNodoComponent, SistemaNodoData } from './diagrama-sistema-node.component';
+
+export interface DiagramaEdgeDrawnEvent {
+  fromId: string;
+  toId: string;
+  edgeId: string;
+}
+
+export interface DiagramaNodeMovedEvent {
+  id: string;
+  x: number;
+  y: number;
+}
+
+export interface DiagramaSelectionRemovedEvent {
+  nodeIds: string[];
+  edgeIds: string[];
+}
 
 @Component({
   selector: 'app-diagrama-sistema-diagram',
   standalone: true,
-  imports: [NgDiagramComponent],
+  imports: [NgDiagramComponent, NgDiagramBackgroundComponent],
   providers: [provideNgDiagram()],
+  encapsulation: ViewEncapsulation.None,
   template: `
     <div class="ds-diagram-wrap">
+      <div class="ds-diagram-hint">
+        <i class="pi pi-info-circle"></i>
+        Arrastrá nodos · Conectá desde un puerto · <kbd>Delete</kbd> para eliminar
+      </div>
       <ng-diagram
-        style="display:block;width:100%;height:100%;"
         [model]="model"
+        [config]="diagramConfig"
         [nodeTemplateMap]="nodeTemplateMap"
-      />
+        (edgeDrawn)="onEdgeDrawn($event)"
+        (selectionMoved)="onSelectionMoved($event)"
+        (selectionRemoved)="onSelectionRemoved($event)"
+      >
+        <ng-diagram-background type="dots" />
+      </ng-diagram>
     </div>
   `,
   styles: [`
@@ -37,43 +68,128 @@ import { DiagramaSistemaNodoComponent, SistemaNodoData } from './diagrama-sistem
       border-radius: 10px;
       overflow: hidden;
       background: #fafbfc;
+      position: relative;
+    }
+
+    .ds-diagram-wrap > ng-diagram {
+      width: 100%;
+      height: 100%;
+    }
+
+    .ds-diagram-hint {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      font-size: 0.7rem;
+      color: var(--p-text-muted-color);
+      background: rgba(249,250,251,0.9);
+      border-bottom: 1px solid var(--p-surface-200);
+      pointer-events: none;
+    }
+
+    .ds-diagram-hint .pi { font-size: 0.7rem; opacity: 0.6; }
+
+    kbd {
+      font-size: 0.65rem;
+      background: var(--p-surface-200);
+      border-radius: 3px;
+      padding: 1px 4px;
+      border: 1px solid var(--p-surface-300);
+      font-family: monospace;
     }
   `],
 })
 export class DiagramaSistemaDiagramComponent {
   data = input<SistemaData>({ alcance: '', actores: [], conexiones: [] });
 
-  private readonly injector = inject(Injector);
+  edgeDrawn = output<DiagramaEdgeDrawnEvent>();
+  nodeMoved = output<DiagramaNodeMovedEvent[]>();
+  selectionRemoved = output<DiagramaSelectionRemovedEvent>();
 
+  private readonly injector = inject(Injector);
   model = initializeModel(undefined, this.injector);
+
+  readonly diagramConfig = {
+    zoom: {
+      max: 1.5,
+      zoomToFit: {
+        padding: 40,
+        onInit: true,
+      },
+    },
+  };
 
   readonly nodeTemplateMap: NgDiagramNodeTemplateMap = new NgDiagramNodeTemplateMap([
     ['sistema-node', DiagramaSistemaNodoComponent],
   ]);
 
+  /**
+   * Build the model only ONCE when the component mounts.
+   * Since the component lives inside an @if(activeView()==='diagram'),
+   * it's destroyed/recreated on every view switch — so modelInitialized
+   * resets naturally. Diagram events emit to the parent for persistence,
+   * but we never rebuild the model from data changes (which would destroy
+   * ng-diagram's internal port measurements and break linking).
+   */
+  private modelInitialized = false;
+
   constructor() {
     effect(() => {
-      this.model.updateNodes(this.buildNodes(this.data()));
-      this.model.updateEdges(this.buildEdges(this.data()));
+      const data = this.data(); // read signal so effect re-runs on mount
+      if (this.modelInitialized) return;
+      this.model.updateNodes(this.buildNodes(data));
+      this.model.updateEdges(this.buildEdges(data));
+      this.modelInitialized = true;
+    });
+  }
+
+  onEdgeDrawn(event: EdgeDrawnEvent): void {
+    this.edgeDrawn.emit({
+      fromId: event.source.id,
+      toId: event.target.id,
+      edgeId: event.edge.id,
+    });
+  }
+
+  onSelectionMoved(event: SelectionMovedEvent): void {
+    const moved: DiagramaNodeMovedEvent[] = event.nodes.map(n => ({
+      id: n.id,
+      x: n.position.x,
+      y: n.position.y,
+    }));
+    this.nodeMoved.emit(moved);
+  }
+
+  onSelectionRemoved(event: SelectionRemovedEvent): void {
+    this.selectionRemoved.emit({
+      nodeIds: event.deletedNodes.map(n => n.id),
+      edgeIds: event.deletedEdges.map(e => e.id),
     });
   }
 
   private buildNodes(data: SistemaData): SimpleNode<SistemaNodoData>[] {
     const nodes: SimpleNode<SistemaNodoData>[] = [];
     const cx = 300;
-    const cy = 220;
+    const cy = 200;
     const radius = Math.max(160, data.actores.length * 38);
 
     data.actores.forEach((actor, i) => {
-      const angle = (2 * Math.PI * i) / Math.max(data.actores.length, 1) - Math.PI / 2;
       const meta = ACTOR_TIPOS.find(t => t.value === actor.tipo) ?? ACTOR_TIPOS[0];
+      // Use saved position if available, otherwise radial layout
+      const angle = (2 * Math.PI * i) / Math.max(data.actores.length, 1) - Math.PI / 2;
+      const x = actor.x ?? cx + radius * Math.cos(angle);
+      const y = actor.y ?? cy + radius * Math.sin(angle);
+
       nodes.push({
         id: actor.id,
         type: 'sistema-node',
-        position: {
-          x: cx + radius * Math.cos(angle),
-          y: cy + radius * Math.sin(angle),
-        },
+        position: { x, y },
         autoSize: true,
         data: {
           label: actor.nombre || meta.label,

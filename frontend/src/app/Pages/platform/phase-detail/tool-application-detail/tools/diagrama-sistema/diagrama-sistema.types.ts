@@ -7,6 +7,8 @@ export interface SistemaActor {
   nombre: string;
   tipo: ActorTipo;
   frontera: FronteraPos;
+  x?: number;
+  y?: number;
 }
 
 export interface SistemaConexion {

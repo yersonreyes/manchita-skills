@@ -4,7 +4,7 @@ import { ToolApplicationResDto } from '@core/services/toolApplicationService/too
 import { ToolApplicationService } from '@core/services/toolApplicationService/tool-application.service';
 import { UiDialogService } from '@core/services/ui-dialog.service';
 import { DiagramaSistemaService } from '@core/services/diagramaSistemaService/diagrama-sistema.service';
-import { DiagramaSistemaDiagramComponent } from './diagrama-sistema-diagram.component';
+import { DiagramaSistemaDiagramComponent, DiagramaEdgeDrawnEvent, DiagramaNodeMovedEvent, DiagramaSelectionRemovedEvent } from './diagrama-sistema-diagram.component';
 import { DiagramaSistemaReportComponent } from './diagrama-sistema-report.component';
 import {
   ACTOR_TIPOS,
@@ -87,7 +87,12 @@ type ActiveView = 'form' | 'diagram' | 'report';
 
         <!-- ── Diagrama ──────────────────────────────────────────────────── -->
         @if (activeView() === 'diagram') {
-          <app-diagrama-sistema-diagram [data]="data()" />
+          <app-diagrama-sistema-diagram
+            [data]="data()"
+            (edgeDrawn)="onDiagramEdgeDrawn($event)"
+            (nodeMoved)="onDiagramNodeMoved($event)"
+            (selectionRemoved)="onDiagramSelectionRemoved($event)"
+          />
         }
 
         <!-- ── Informe ───────────────────────────────────────────────────── -->
@@ -626,7 +631,12 @@ export class DiagramaSistemaToolComponent implements OnChanges {
     const storedData = raw['data'] as SistemaData | undefined;
     const storedReports = (raw['reports'] as SistemaReportVersionDto[]) ?? [];
 
-    this.data.set(storedData ? { ...EMPTY_SISTEMA, ...storedData } : { ...EMPTY_SISTEMA });
+    // Skip data.set() while on diagram view — the diagram owns its own model
+    // and re-setting data would trigger an effect that rebuilds the ng-diagram model,
+    // destroying port measurements and breaking linking interactions.
+    if (this.activeView() !== 'diagram') {
+      this.data.set(storedData ? { ...EMPTY_SISTEMA, ...storedData } : { ...EMPTY_SISTEMA });
+    }
     this.reports.set(storedReports);
   }
 
@@ -738,6 +748,42 @@ export class DiagramaSistemaToolComponent implements OnChanges {
       ...this.data(),
       conexiones: this.data().conexiones.map(c => c.id === id ? { ...c, descripcion } : c),
     });
+    this.scheduleSave();
+  }
+
+  // ─── Diagram events (bidirectional sync) ─────────────────────────────────
+
+  onDiagramEdgeDrawn(event: DiagramaEdgeDrawnEvent): void {
+    const actores = this.data().actores;
+    if (!actores.find(a => a.id === event.fromId) || !actores.find(a => a.id === event.toId)) return;
+    const newConexion: SistemaConexion = {
+      id: event.edgeId,
+      fromId: event.fromId,
+      toId: event.toId,
+      tipo: 'relacion',
+      descripcion: '',
+    };
+    this.data.set({ ...this.data(), conexiones: [...this.data().conexiones, newConexion] });
+    this.scheduleSave();
+  }
+
+  onDiagramNodeMoved(events: DiagramaNodeMovedEvent[]): void {
+    const actores = this.data().actores.map(a => {
+      const moved = events.find(e => e.id === a.id);
+      return moved ? { ...a, x: moved.x, y: moved.y } : a;
+    });
+    this.data.set({ ...this.data(), actores });
+    this.scheduleSave();
+  }
+
+  onDiagramSelectionRemoved(event: DiagramaSelectionRemovedEvent): void {
+    const nodeIdsSet = new Set(event.nodeIds);
+    const edgeIdsSet = new Set(event.edgeIds);
+    const actores = this.data().actores.filter(a => !nodeIdsSet.has(a.id));
+    const conexiones = this.data().conexiones.filter(
+      c => !edgeIdsSet.has(c.id) && !nodeIdsSet.has(c.fromId) && !nodeIdsSet.has(c.toId),
+    );
+    this.data.set({ ...this.data(), actores, conexiones });
     this.scheduleSave();
   }
 
