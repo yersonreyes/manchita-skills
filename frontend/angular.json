@@ -30,6 +30,7 @@
             ],
             "styles": [
               "primeicons/primeicons.css",
+              "ng-diagram/styles.css",
               "src/tailwind.css",
               "src/styles.sass"
             ],

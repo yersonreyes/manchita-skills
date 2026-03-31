@@ -15,10 +15,12 @@ import { DiagnosticoIndustriaController } from './diagnostico-industria/diagnost
 import { DiagnosticoIndustriaAnalyzeService } from './diagnostico-industria/diagnostico-industria-analyze.service';
 import { AnalogosAntilogosController } from './analogos-antilogos/analogos-antilogos.controller';
 import { AnalogosAntilogosAnalyzeService } from './analogos-antilogos/analogos-antilogos-analyze.service';
+import { InOutController } from './in-out/in-out.controller';
+import { InOutAnalyzeService } from './in-out/in-out-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService],
 })
 export class ToolHubModule {}

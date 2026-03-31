@@ -113,7 +113,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     cuandoUsarlo: `Cuando necesitás una foto clara de la situación estratégica antes de tomar decisiones. Ideal al inicio de un proyecto, al evaluar un pivote, o cuando el equipo siente que "algo no está funcionando" pero no sabe exactamente qué.`,
     ejemplo: `Un startup de delivery lo usa antes de lanzar: fortalezas (equipo tech propio, precio competitivo), oportunidades (crecimiento del e-commerce local), debilidades (sin marca conocida), amenazas (PedidosYa y Rappi dominando el mercado).`,
   },
-  { codigo: 'in-out', nombre: 'Diagrama In/Out', descripcion: 'Herramienta para definir el alcance del proyecto identificando qué está dentro y fuera del scope.' },
+  {
+    codigo: 'in-out',
+    nombre: 'Diagrama In/Out',
+    descripcion: 'Herramienta visual para definir los límites, flujos y transformaciones de un sistema, producto o proceso. Muestra qué entra (inputs), cómo se transforma (proceso), y qué sale (outputs).',
+    comoSeUsa: '1. Define el sistema a analizar. 2. Identifica los inputs: información, recursos, materiales y factores externos. 3. Define el proceso central de transformación. 4. Identifica los outputs: productos/servicios, datos, feedback y desperdicios. 5. Valida con stakeholders que el diagrama refleja la realidad.',
+    cuandoUsarlo: 'En la fase Discover para entender el flujo actual de un sistema. En Define para delimitar el scope del problema. En Develop para diseñar nuevos procesos. Ideal para comunicar cómo funciona un sistema a stakeholders, identificar gaps o ineficiencias, y definir el alcance de un producto o servicio.',
+    ejemplo: 'Una empresa SaaS analiza su onboarding: INPUTS (usuario registrado, datos de empresa, preferencias) → PROCESO (bienvenida, tutorial, setup, primera acción) → OUTPUTS (usuario activo, dashboard personalizado, datos de telemetría). El análisis revela que se ignoran inputs externos (competidores, referencias) y outputs negativos (usuarios que abandonan en el step 2).',
+  },
 
   // Discover > Cliente/Mercado
   { codigo: 'customer-journey-map', nombre: 'Customer Journey Map', descripcion: 'Mapa visual del recorrido completo del cliente a través de todos los puntos de contacto con el producto o servicio.' },
