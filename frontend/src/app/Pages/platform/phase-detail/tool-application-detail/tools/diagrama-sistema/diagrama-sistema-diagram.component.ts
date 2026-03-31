@@ -1,9 +1,10 @@
-import { Component, Injector, ViewEncapsulation, effect, inject, input, output } from '@angular/core';
+import { Component, DestroyRef, Injector, ViewEncapsulation, effect, inject, input, output } from '@angular/core';
 import {
   Edge,
   EdgeDrawnEvent,
   NgDiagramBackgroundComponent,
   NgDiagramComponent,
+  NgDiagramModelService,
   NgDiagramNodeTemplateMap,
   SelectionMovedEvent,
   SelectionRemovedEvent,
@@ -11,8 +12,10 @@ import {
   initializeModel,
   provideNgDiagram,
 } from 'ng-diagram';
-import { ACTOR_TIPOS, CONEXION_TIPOS, SistemaActor, SistemaConexion, SistemaData } from './diagrama-sistema.types';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ACTOR_TIPOS, CONEXION_TIPOS, SistemaData } from './diagrama-sistema.types';
 import { DiagramaSistemaNodoComponent, SistemaNodoData } from './diagrama-sistema-node.component';
+import { DiagramaNodeEditService, NodeFieldUpdate } from './diagrama-node-edit.service';
 
 export interface DiagramaEdgeDrawnEvent {
   fromId: string;
@@ -35,13 +38,13 @@ export interface DiagramaSelectionRemovedEvent {
   selector: 'app-diagrama-sistema-diagram',
   standalone: true,
   imports: [NgDiagramComponent, NgDiagramBackgroundComponent],
-  providers: [provideNgDiagram()],
+  providers: [provideNgDiagram(), DiagramaNodeEditService],
   encapsulation: ViewEncapsulation.None,
   template: `
     <div class="ds-diagram-wrap">
       <div class="ds-diagram-hint">
         <i class="pi pi-info-circle"></i>
-        Arrastrá nodos · Conectá desde un puerto · <kbd>Delete</kbd> para eliminar
+        Arrastrá nodos · Conectá desde un puerto · <kbd>Doble click</kbd> para editar · <kbd>Delete</kbd> para eliminar
       </div>
       <ng-diagram
         [model]="model"
@@ -53,6 +56,13 @@ export interface DiagramaSelectionRemovedEvent {
       >
         <ng-diagram-background type="dots" />
       </ng-diagram>
+      <button
+        class="ds-diagram-add-btn"
+        (click)="onAddActorClick()"
+        title="Agregar actor al diagrama"
+      >
+        <i class="pi pi-plus"></i> Actor
+      </button>
     </div>
   `,
   styles: [`
@@ -103,6 +113,35 @@ export interface DiagramaSelectionRemovedEvent {
       border: 1px solid var(--p-surface-300);
       font-family: monospace;
     }
+
+    .ds-diagram-add-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--p-surface-300);
+      background: white;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--p-text-color);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.15s;
+    }
+
+    .ds-diagram-add-btn .pi { font-size: 0.75rem; }
+
+    .ds-diagram-add-btn:hover {
+      background: var(--p-primary-50, #eff6ff);
+      border-color: var(--p-primary-300, #93c5fd);
+      color: var(--p-primary-700, #1d4ed8);
+    }
   `],
 })
 export class DiagramaSistemaDiagramComponent {
@@ -111,8 +150,15 @@ export class DiagramaSistemaDiagramComponent {
   edgeDrawn = output<DiagramaEdgeDrawnEvent>();
   nodeMoved = output<DiagramaNodeMovedEvent[]>();
   selectionRemoved = output<DiagramaSelectionRemovedEvent>();
+  nodeFieldUpdated = output<NodeFieldUpdate>();
+  nodeDeleteRequested = output<string>();
+  actorAddRequested = output<void>();
 
   private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly nodeEditService = inject(DiagramaNodeEditService);
+  private readonly modelService = inject(NgDiagramModelService);
+
   model = initializeModel(undefined, this.injector);
 
   readonly diagramConfig = {
@@ -129,24 +175,53 @@ export class DiagramaSistemaDiagramComponent {
     ['sistema-node', DiagramaSistemaNodoComponent],
   ]);
 
-  /**
-   * Build the model only ONCE when the component mounts.
-   * Since the component lives inside an @if(activeView()==='diagram'),
-   * it's destroyed/recreated on every view switch — so modelInitialized
-   * resets naturally. Diagram events emit to the parent for persistence,
-   * but we never rebuild the model from data changes (which would destroy
-   * ng-diagram's internal port measurements and break linking).
-   */
   private modelInitialized = false;
 
   constructor() {
+    // Build model once on mount
     effect(() => {
-      const data = this.data(); // read signal so effect re-runs on mount
+      const data = this.data();
       if (this.modelInitialized) return;
       this.model.updateNodes(this.buildNodes(data));
       this.model.updateEdges(this.buildEdges(data));
       this.modelInitialized = true;
     });
+
+    // Subscribe to node edit events from custom nodes
+    this.nodeEditService.nodeUpdated
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(update => this.nodeFieldUpdated.emit(update));
+
+    this.nodeEditService.nodeDeleted
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(id => {
+        this.modelService.deleteNodes([id]);
+        this.nodeDeleteRequested.emit(id);
+      });
+  }
+
+  onAddActorClick(): void {
+    this.actorAddRequested.emit();
+  }
+
+  addNodeToModel(nodeData: { id: string; label: string; tipo: string; frontera: string; x: number; y: number }): void {
+    const meta = ACTOR_TIPOS.find(t => t.value === nodeData.tipo) ?? ACTOR_TIPOS[0];
+    const node: SimpleNode<SistemaNodoData> = {
+      id: nodeData.id,
+      type: 'sistema-node',
+      position: { x: nodeData.x, y: nodeData.y },
+      autoSize: true,
+      data: {
+        label: nodeData.label || meta.label,
+        tipo: nodeData.tipo as any,
+        frontera: nodeData.frontera as any,
+        color: meta.color,
+        bg: meta.bg,
+        border: meta.border,
+        icon: meta.icon,
+      },
+    };
+    this.modelService.addNodes([node]);
   }
 
   onEdgeDrawn(event: EdgeDrawnEvent): void {
@@ -181,7 +256,6 @@ export class DiagramaSistemaDiagramComponent {
 
     data.actores.forEach((actor, i) => {
       const meta = ACTOR_TIPOS.find(t => t.value === actor.tipo) ?? ACTOR_TIPOS[0];
-      // Use saved position if available, otherwise radial layout
       const angle = (2 * Math.PI * i) / Math.max(data.actores.length, 1) - Math.PI / 2;
       const x = actor.x ?? cx + radius * Math.cos(angle);
       const y = actor.y ?? cy + radius * Math.sin(angle);
