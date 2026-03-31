@@ -7,6 +7,7 @@ import { BmcComponent } from './business-model-canvas/bmc.component';
 import { DiagnosticoIndustriaToolComponent } from './diagnostico-industria/diagnostico-industria-tool.component';
 import { AnalogosAntilogosToolComponent } from './analogos-antilogos/analogos-antilogos-tool.component';
 import { InOutToolComponent } from './in-out/in-out-tool.component';
+import { DiagramaSistemaToolComponent } from './diagrama-sistema/diagrama-sistema-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -52,6 +53,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: InOutToolComponent,
     tabLabel: 'Diagrama In/Out',
     tabIcon: 'pi-sitemap',
+  },
+  'diagrama-sistema': {
+    component: DiagramaSistemaToolComponent,
+    tabLabel: 'Diagrama de Sistema',
+    tabIcon: 'pi-share-alt',
   },
 };
 

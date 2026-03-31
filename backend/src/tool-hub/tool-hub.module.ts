@@ -17,10 +17,12 @@ import { AnalogosAntilogosController } from './analogos-antilogos/analogos-antil
 import { AnalogosAntilogosAnalyzeService } from './analogos-antilogos/analogos-antilogos-analyze.service';
 import { InOutController } from './in-out/in-out.controller';
 import { InOutAnalyzeService } from './in-out/in-out-analyze.service';
+import { DiagramaSistemaController } from './diagrama-sistema/diagrama-sistema.controller';
+import { DiagramaSistemaAnalyzeService } from './diagrama-sistema/diagrama-sistema-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService],
 })
 export class ToolHubModule {}

@@ -104,7 +104,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     cuandoUsarlo: `Antes de definir el posicionamiento estratégico, al evaluar si vale la pena entrar a un mercado, o cuando querés entender por qué la competencia está ganando. Ideal en etapas de Exploración o Validación, antes de comprometer recursos significativos.`,
     ejemplo: `Una fintech B2B: Rivalidad alta (Mercado Pago y Naranja X dominan), Nuevos entrantes bajos (regulación del BCRA como barrera), Clientes con alto poder (las pymes negocian condiciones), Sustitutos medios (el efectivo sigue siendo competencia). Resultado: industria moderadamente atractiva para nichos desatendidos.`,
   },
-  { codigo: 'diagrama-sistema', nombre: 'Diagrama de Sistema', descripcion: 'Representación visual de los componentes de un sistema y sus interrelaciones.' },
+  {
+    codigo: 'diagrama-sistema',
+    nombre: 'Diagrama de Sistema',
+    descripcion: 'Representación visual de los actores, relaciones, flujos e interdependencias que conforman un ecosistema o sistema. Permite entender la complejidad más allá de sus partes individuales, capturando interacciones dinámicas, bucles de retroalimentación y puntos de palanca.',
+    comoSeUsa: `Definí el alcance del sistema que querés mapear. Luego agregá los actores principales (personas, organizaciones, sistemas) indicando si están dentro o fuera de la frontera del sistema. Conectá los actores mediante relaciones, flujos (dinero, información, productos) o vínculos de regulación. Identificá bucles de retroalimentación: ¿qué ciclos se refuerzan o equilibran? Finalmente, buscá puntos de palanca donde un pequeño cambio tendría gran impacto. Usá "Analizar" para que la IA identifique actores clave, flujos críticos y recomendaciones estratégicas.`,
+    cuandoUsarlo: `Antes de diseñar soluciones complejas con múltiples stakeholders. Para mapear el ecosistema y entender el contexto completo en la etapa de Discover. Para verificar que una solución considera todas las interacciones relevantes del sistema. Ideal en workshops con stakeholders para construir entendimiento compartido, o cuando el problema parece no tener solución obvia por la complejidad de actores involucrados.`,
+    ejemplo: `Una fintech quiere lanzar crédito para freelancers. Actores: Gobierno (regulación), Bancos, Fintech (nosotros), Fondos de inversión, Freelancers, Plataformas (Upwork/Fiverr), Crédito informal. Conexiones: Gobierno regula a Bancos y Fintech; Freelancers obtienen ingresos de Plataformas; Bancos excluyen a Freelancers por falta de historial. Punto de palanca: integración con plataformas para acceder a datos de ingresos reales.`,
+  },
   {
     codigo: 'foda',
     nombre: 'FODA (SWOT)',
