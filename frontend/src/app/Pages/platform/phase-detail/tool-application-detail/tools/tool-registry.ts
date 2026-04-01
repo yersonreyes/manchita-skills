@@ -17,6 +17,7 @@ import { BusquedaMediosToolComponent } from './busqueda-medios/busqueda-medios-t
 import { BuzzReportToolComponent } from './buzz-report/buzz-report-tool.component';
 import { EntrevistaCualitativaToolComponent } from './entrevista-cualitativa/entrevista-cualitativa-tool.component';
 import { EntrevistaExpertoToolComponent } from './entrevista-experto/entrevista-experto-tool.component';
+import { FocusGroupToolComponent } from './focus-group/focus-group-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -112,6 +113,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: EntrevistaExpertoToolComponent,
     tabLabel: 'Entrevista con Experto',
     tabIcon: 'pi-graduation-cap',
+  },
+  'focus-group': {
+    component: FocusGroupToolComponent,
+    tabLabel: 'Focus Group',
+    tabIcon: 'pi-users',
   },
 };
 

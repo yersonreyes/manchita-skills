@@ -22,7 +22,6 @@ import { Dialog } from 'primeng/dialog';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
-import { Tag } from 'primeng/tag';
 import { Textarea } from 'primeng/textarea';
 import { Tooltip } from 'primeng/tooltip';
 
@@ -39,7 +38,6 @@ interface SelectOption<T> {
     Button,
     Card,
     Dialog,
-    Tag,
     Tooltip,
     Select,
     InputNumber,
