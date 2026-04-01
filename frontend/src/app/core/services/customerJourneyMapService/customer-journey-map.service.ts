@@ -4,7 +4,7 @@ import { environment } from '../../../../environments/environment';
 import {
   CustomerJourneyMapData,
   CustomerJourneyMapAnalyzeResDto,
-} from '../../Pages/platform/phase-detail/tool-application-detail/tools/customer-journey-map/customer-journey-map.types';
+} from '../../../Pages/platform/phase-detail/tool-application-detail/tools/customer-journey-map/customer-journey-map.types';
 
 export interface CustomerJourneyMapAnalyzeReqDto {
   toolApplicationId: number;
