@@ -172,8 +172,22 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
   },
 
   // Define > Investigación
-  { codigo: 'benchmarking', nombre: 'Benchmarking', descripcion: 'Proceso de analizar productos, servicios o procesos de competidores o empresas líderes para comparar y aprender.' },
-  { codigo: 'busqueda-medios', nombre: 'Búsqueda de Medios', descripcion: 'Investigación sistemática en medios de comunicación para recopilar información relevante sobre el contexto del proyecto.' },
+  {
+    codigo: 'benchmarking',
+    nombre: 'Benchmarking',
+    descripcion: 'Proceso de analizar productos, servicios o procesos de competidores o empresas líderes para comparar, aprender e identificar oportunidades de diferenciación. Permite entender dónde estás parado en el mercado y qué puedes aprender de otros — no para copiar, sino para entender por qué ciertas soluciones funcionan.',
+    comoSeUsa: '1. Definí qué vas a comparar (features, UX, pricing, onboarding, etc.). 2. Seleccioná 3-5 competidores target, incluyendo líderes de otras industrias. 3. Definí los criterios de evaluación como filas de la matriz. 4. Completá los valores para tu producto y cada competidor. 5. Analizá brechas, ventajas y oportunidades de diferenciación.',
+    cuandoUsarlo: 'Antes de definir el roadmap de producto para entender el landscape competitivo. En procesos de redesign o al entrar a un nuevo mercado. Para validar la propuesta de valor. Ideal en la fase Define para informar decisiones de producto.',
+    ejemplo: 'Una fintech compara apps de inversión: CRITERIOS (Onboarding, UI, Educación integrada, Gamificación) × COMPETIDORES (Robinhood, Fintual). Robinhood lidera en UX y gamificación pero no tiene educación. Fintual tiene educación pero UI más compleja. OPORTUNIDAD: crear una app que combine la simplicidad de Robinhood con la educación de Fintual.',
+  },
+  {
+    codigo: 'busqueda-medios',
+    nombre: 'Búsqueda de Medios',
+    descripcion: 'Investigación sistemática en medios de comunicación para recopilar información relevante sobre el contexto del proyecto.',
+    comoSeUsa: '1. Definí el tema central de investigación. 2. Formulá queries de búsqueda para Google, redes sociales y portales especializados. 3. Registrá los hallazgos más relevantes clasificándolos por tipo de medio (noticia, blog, podcast, etc.). 4. Para cada hallazgo, anotá la fuente y el insight clave. 5. Sintetizá tendencias, narrativas dominantes y gaps de cobertura. 6. Evaluá el sentiment general del discurso en los medios.',
+    cuandoUsarlo: 'Al inicio de la fase de investigación para entender el contexto mediático del problema. Útil para mapear el discurso público, identificar narrativas dominantes y detectar gaps de información. Complementa las entrevistas con datos de fuentes secundarias. Ideal antes de definir el brief creativo o la estrategia de comunicación.',
+    ejemplo: 'Investigando "movilidad urbana sustentable": QUERIES: "bicicletas eléctricas Argentina 2024", "microtransporte CABA". HALLAZGOS: artículo en La Nación sobre boom de e-bikes (insight: crecimiento 40% YoY), podcast sobre infraestructura ciclista en Latinoamérica. TENDENCIAS: electrificación del transporte personal, rechazo a autos en zonas céntricas. GAP: poca cobertura sobre accesibilidad económica para sectores de bajos ingresos.',
+  },
   { codigo: 'buzz-report', nombre: 'Buzz Report', descripcion: 'Informe de menciones y conversaciones en medios digitales y redes sociales sobre un tema o marca.' },
   { codigo: 'cliente-misterioso', nombre: 'Cliente Misterioso', descripcion: 'Técnica de investigación encubierta donde se evalúa la experiencia del cliente de forma anónima.' },
   { codigo: 'entrevista-cualitativa', nombre: 'Entrevista Cualitativa', descripcion: 'Conversación estructurada o semi-estructurada para obtener insights profundos sobre experiencias y necesidades del usuario.' },

@@ -12,6 +12,8 @@ import { StakeholderMapToolComponent } from './stakeholder-map/stakeholder-map-t
 import { RolePlayToolComponent } from './role-play/role-play-tool.component';
 import { MapaEmpatiaToolComponent } from './mapa-empatia/mapa-empatia-tool.component';
 import { CustomerJourneyMapToolComponent } from './customer-journey-map/customer-journey-map-tool.component';
+import { BenchmarkingToolComponent } from './benchmarking/benchmarking-tool.component';
+import { BusquedaMediosToolComponent } from './busqueda-medios/busqueda-medios-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -82,6 +84,16 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: CustomerJourneyMapToolComponent,
     tabLabel: 'Customer Journey Map',
     tabIcon: 'pi-map',
+  },
+  'benchmarking': {
+    component: BenchmarkingToolComponent,
+    tabLabel: 'Benchmarking',
+    tabIcon: 'pi-chart-bar',
+  },
+  'busqueda-medios': {
+    component: BusquedaMediosToolComponent,
+    tabLabel: 'Búsqueda de Medios',
+    tabIcon: 'pi-search',
   },
 };
 
