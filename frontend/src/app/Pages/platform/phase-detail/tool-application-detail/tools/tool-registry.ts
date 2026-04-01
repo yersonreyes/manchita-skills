@@ -14,6 +14,9 @@ import { MapaEmpatiaToolComponent } from './mapa-empatia/mapa-empatia-tool.compo
 import { CustomerJourneyMapToolComponent } from './customer-journey-map/customer-journey-map-tool.component';
 import { BenchmarkingToolComponent } from './benchmarking/benchmarking-tool.component';
 import { BusquedaMediosToolComponent } from './busqueda-medios/busqueda-medios-tool.component';
+import { BuzzReportToolComponent } from './buzz-report/buzz-report-tool.component';
+import { EntrevistaCualitativaToolComponent } from './entrevista-cualitativa/entrevista-cualitativa-tool.component';
+import { EntrevistaExpertoToolComponent } from './entrevista-experto/entrevista-experto-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -94,6 +97,21 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: BusquedaMediosToolComponent,
     tabLabel: 'Búsqueda de Medios',
     tabIcon: 'pi-search',
+  },
+  'buzz-report': {
+    component: BuzzReportToolComponent,
+    tabLabel: 'Buzz Report',
+    tabIcon: 'pi-bell',
+  },
+  'entrevista-cualitativa': {
+    component: EntrevistaCualitativaToolComponent,
+    tabLabel: 'Entrevista Cualitativa',
+    tabIcon: 'pi-microphone',
+  },
+  'entrevista-experto': {
+    component: EntrevistaExpertoToolComponent,
+    tabLabel: 'Entrevista con Experto',
+    tabIcon: 'pi-graduation-cap',
   },
 };
 

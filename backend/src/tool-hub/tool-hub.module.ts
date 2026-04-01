@@ -34,10 +34,16 @@ import { BenchmarkingController } from './benchmarking/benchmarking.controller';
 import { BenchmarkingAnalyzeService } from './benchmarking/benchmarking-analyze.service';
 import { BusquedaMediosController } from './busqueda-medios/busqueda-medios.controller';
 import { BusquedaMediosAnalyzeService } from './busqueda-medios/busqueda-medios-analyze.service';
+import { BuzzReportController } from './buzz-report/buzz-report.controller';
+import { BuzzReportAnalyzeService } from './buzz-report/buzz-report-analyze.service';
+import { EntrevistaCualitativaController } from './entrevista-cualitativa/entrevista-cualitativa.controller';
+import { EntrevistaCualitativaAnalyzeService } from './entrevista-cualitativa/entrevista-cualitativa-analyze.service';
+import { EntrevistaExpertoController } from './entrevista-experto/entrevista-experto.controller';
+import { EntrevistaExpertoAnalyzeService } from './entrevista-experto/entrevista-experto-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController, RolePlayController, PersonaController, MapaEmpatiaController, CustomerJourneyMapController, BenchmarkingController, BusquedaMediosController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService, RolePlayChatService, RolePlayAnalyzeService, PersonaAnalyzeService, MapaEmpatiaAnalyzeService, CustomerJourneyMapAnalyzeService, BenchmarkingAnalyzeService, BusquedaMediosAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController, RolePlayController, PersonaController, MapaEmpatiaController, CustomerJourneyMapController, BenchmarkingController, BusquedaMediosController, BuzzReportController, EntrevistaCualitativaController, EntrevistaExpertoController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService, RolePlayChatService, RolePlayAnalyzeService, PersonaAnalyzeService, MapaEmpatiaAnalyzeService, CustomerJourneyMapAnalyzeService, BenchmarkingAnalyzeService, BusquedaMediosAnalyzeService, BuzzReportAnalyzeService, EntrevistaCualitativaAnalyzeService, EntrevistaExpertoAnalyzeService],
 })
 export class ToolHubModule {}

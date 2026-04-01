@@ -187,30 +187,22 @@
             </div>
           } @else {
             @for (app of getPhaseTools(phase.id); track app.id) {
-              <div class="tool-row" (click)="openEditTool(app, phase)">
-                <div class="tool-row__status-dot tool-row__status-dot--{{ app.estado }}"></div>
-                <div class="tool-row__info">
-                  <p class="tool-row__title">{{ app.titulo }}</p>
-                  <p class="tool-row__tool-name">
-                    <i class="pi pi-wrench"></i>
-                    {{ app.tool.nombre }}
-                  </p>
+              <div class="tool-chip tool-chip--{{ app.estado }}" (click)="openEditTool(app, phase)">
+                <div class="tool-chip__bar"></div>
+                <div class="tool-chip__content">
+                  <span class="tool-chip__title">{{ app.titulo }}</span>
+                  <span class="tool-chip__type">{{ app.tool.nombre }}</span>
                 </div>
-                <div class="tool-row__actions" (click)="$event.stopPropagation()">
-                  <p-tag
-                    [value]="getToolEstadoLabel(app.estado)"
-                    [severity]="getToolEstadoSeverity(app.estado)"
-                  />
-                  <p-button
+                <div class="tool-chip__end" (click)="$event.stopPropagation()">
+                  <span class="tool-chip__status">{{ getToolEstadoLabel(app.estado) }}</span>
+                  <button
                     *hasPermission="'tool-applications:update'"
-                    icon="pi pi-pencil"
-                    [rounded]="true"
-                    severity="secondary"
-                    variant="text"
-                    pTooltip="Editar herramienta"
-                    tooltipPosition="top"
-                    (onClick)="openEditTool(app, phase)"
-                  />
+                    class="tool-chip__edit"
+                    (click)="openEditTool(app, phase)"
+                    title="Editar"
+                  >
+                    <i class="pi pi-arrow-right"></i>
+                  </button>
                 </div>
               </div>
             }
