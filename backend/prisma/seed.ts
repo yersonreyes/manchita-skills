@@ -141,7 +141,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     ejemplo: `María, 34 años, gerente de proyectos en una consultora. Objetivo: terminar su trabajo antes de las 18hs para buscar a sus hijos. Frustración: las herramientas de gestión son lentas y requieren mucha configuración. Comportamiento: usa el celular para todo, prefiere voz a texto cuando puede.`,
   },
   { codigo: 'role-play', nombre: 'Role Play', descripcion: 'Técnica de simulación donde los participantes actúan roles para entender experiencias y perspectivas del usuario.' },
-  { codigo: 'stakeholder-map', nombre: 'Stakeholder Map', descripcion: 'Mapa visual que identifica y clasifica a todos los actores involucrados en el proyecto según su influencia e interés.' },
+  {
+    codigo: 'stakeholder-map',
+    nombre: 'Stakeholder Map',
+    descripcion: 'Mapa visual que identifica y clasifica a todos los actores involucrados en el proyecto según su influencia e interés, usando la matriz Poder/Interés con cuatro cuadrantes: Manage Closely, Keep Satisfied, Keep Informed y Monitor.',
+    comoSeUsa: '1. Brainstorming inicial: listá todos los stakeholders potenciales sin limitarte. 2. Investigá: ¿quiénes son, qué les importa, qué poder tienen? 3. Clasificá cada actor por influencia (alto/bajo) e interés (alto/bajo) en la matriz. 4. Identificá relaciones entre actores y posibles alianzas o conflictos. 5. Definí estrategia para cada cuadrante: Manage Closely (involucrar activamente en decisiones), Keep Satisfied (mantener satisfechos, evitar sorpresas), Keep Informed (informar regularmente, escuchar feedback), Monitor (observar, mínimo esfuerzo). 6. Revisá periódicamente porque los stakeholders cambian.',
+    cuandoUsarlo: 'Al inicio de cualquier proyecto nuevo para mapear el ecosistema. Para planificar comunicación y gestión de relaciones. En proyectos con múltiples dependencias internas/externas. Cuando hay conflictos de interés potenciales. En productos con ecosistemas complejos (SaaS, marketplace, plataformas). Antes de presentar a clientes o stakeholders clave.',
+    ejemplo: 'Una empresa de salud lanza una app de telemedicina. MANAGE CLOSELY: Pacientes y Médicos (gatekeepers de adopción). KEEP SATISFIED: Inversionistas y Proveedores de tecnología. KEEP INFORMED: Familiares de pacientes y Seguros médicos. MONITOR: Medios y Comunidades online. Hallazgo clave: los médicos son los gatekeepers críticos — sin ellos la app no funciona; los reguladores tienen alto poder aunque bajo interés operativo.',
+  },
 
   // Define > Investigación
   { codigo: 'benchmarking', nombre: 'Benchmarking', descripcion: 'Proceso de analizar productos, servicios o procesos de competidores o empresas líderes para comparar y aprender.' },

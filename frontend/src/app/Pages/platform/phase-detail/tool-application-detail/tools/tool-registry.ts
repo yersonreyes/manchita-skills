@@ -8,6 +8,7 @@ import { DiagnosticoIndustriaToolComponent } from './diagnostico-industria/diagn
 import { AnalogosAntilogosToolComponent } from './analogos-antilogos/analogos-antilogos-tool.component';
 import { InOutToolComponent } from './in-out/in-out-tool.component';
 import { DiagramaSistemaToolComponent } from './diagrama-sistema/diagrama-sistema-tool.component';
+import { StakeholderMapToolComponent } from './stakeholder-map/stakeholder-map-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -58,6 +59,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: DiagramaSistemaToolComponent,
     tabLabel: 'Diagrama de Sistema',
     tabIcon: 'pi-share-alt',
+  },
+  'stakeholder-map': {
+    component: StakeholderMapToolComponent,
+    tabLabel: 'Stakeholder Map',
+    tabIcon: 'pi-users',
   },
 };
 

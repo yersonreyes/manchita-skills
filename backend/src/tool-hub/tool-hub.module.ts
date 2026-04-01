@@ -19,10 +19,12 @@ import { InOutController } from './in-out/in-out.controller';
 import { InOutAnalyzeService } from './in-out/in-out-analyze.service';
 import { DiagramaSistemaController } from './diagrama-sistema/diagrama-sistema.controller';
 import { DiagramaSistemaAnalyzeService } from './diagrama-sistema/diagrama-sistema-analyze.service';
+import { StakeholderMapController } from './stakeholder-map/stakeholder-map.controller';
+import { StakeholderMapAnalyzeService } from './stakeholder-map/stakeholder-map-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService],
 })
 export class ToolHubModule {}
