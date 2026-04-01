@@ -225,15 +225,29 @@
 <p-dialog
   [(visible)]="addToolDialogVisible"
   [modal]="true"
-  [header]="'Agregar herramienta — ' + (targetPhase()?.phase?.nombre ?? '')"
-  [style]="{ width: '480px' }"
+  [style]="{ width: '520px' }"
   [closable]="true"
+  [draggable]="false"
 >
-  <div class="flex flex-col gap-4 pt-2">
+  <ng-template #header>
+    <div class="add-tool-header">
+      <div class="add-tool-header__icon">
+        <i class="pi pi-hammer"></i>
+      </div>
+      <div class="add-tool-header__text">
+        <p class="add-tool-header__title">Agregar herramienta</p>
+        <p class="add-tool-header__sub">{{ targetPhase()?.phase?.nombre ?? 'Fase' }}</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-col gap-5 pt-1">
+
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-gray-700">Herramienta <span class="text-red-400">*</span></label>
+      <label class="add-tool-label">Herramienta <span class="text-red-400">*</span></label>
       <p-select
         [(ngModel)]="addToolForm.toolId"
+        (ngModelChange)="selectedToolId.set($event)"
         [options]="tools()"
         optionLabel="nombre"
         optionValue="id"
@@ -245,32 +259,53 @@
       />
     </div>
 
+    @if (selectedTool()) {
+      <div class="tool-preview">
+        <p class="tool-preview__name">
+          <i class="pi pi-box"></i>
+          {{ selectedTool()!.nombre }}
+        </p>
+        <p class="tool-preview__desc">{{ selectedTool()!.descripcion }}</p>
+        @if (selectedTool()!.cuandoUsarlo) {
+          <div class="tool-preview__when">
+            <i class="pi pi-clock"></i>
+            <span>{{ selectedTool()!.cuandoUsarlo }}</span>
+          </div>
+        }
+      </div>
+    }
+
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-gray-700">Título <span class="text-red-400">*</span></label>
+      <label class="add-tool-label">Título <span class="text-red-400">*</span></label>
       <input
         pInputText
         [(ngModel)]="addToolForm.titulo"
-        placeholder="Ej: Mapa de empatía del usuario"
+        [placeholder]="selectedTool() ? 'Ej: ' + selectedTool()!.nombre + ' del proyecto' : 'Ej: Mapa de empatía del usuario principal'"
         class="w-full"
       />
     </div>
 
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-gray-700">Estado inicial</label>
-      <p-select
-        [(ngModel)]="addToolForm.estado"
-        [options]="toolEstadoOptions"
-        optionLabel="label"
-        optionValue="value"
-        appendTo="body"
-        class="w-full"
-      />
+      <label class="add-tool-label">Estado inicial</label>
+      <div class="estado-pills">
+        @for (opt of toolEstadoOptions; track opt.value) {
+          <button
+            class="estado-pill estado-pill--{{ opt.value }}"
+            [class.estado-pill--active]="addToolForm.estado === opt.value"
+            (click)="addToolForm.estado = opt.value"
+            type="button"
+          >
+            {{ opt.label }}
+          </button>
+        }
+      </div>
     </div>
+
   </div>
 
   <ng-template #footer>
     <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="addToolDialogVisible.set(false)" />
-    <p-button label="Agregar" icon="pi pi-check" (onClick)="submitAddTool()" />
+    <p-button label="Agregar" icon="pi pi-arrow-right" iconPos="right" (onClick)="submitAddTool()" />
   </ng-template>
 </p-dialog>
 

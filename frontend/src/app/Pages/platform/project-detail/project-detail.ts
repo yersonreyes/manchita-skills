@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CatalogService } from '@core/services/catalogService/catalog.service';
@@ -121,6 +121,8 @@ export class ProjectDetailComponent implements OnInit {
   // ─── Dialog agregar herramienta ───────────────────────────────────────────
   addToolDialogVisible = signal(false);
   targetPhase = signal<ProjectPhaseResDto | null>(null);
+  selectedToolId = signal<number | null>(null);
+  selectedTool = computed(() => this.tools().find(t => t.id === this.selectedToolId()) ?? null);
   addToolForm = {
     toolId: null as number | null,
     titulo: '',
@@ -365,6 +367,7 @@ export class ProjectDetailComponent implements OnInit {
   openAddToolDialog(phase: ProjectPhaseResDto): void {
     this.targetPhase.set(phase);
     this.addToolForm = { toolId: null, titulo: '', estado: 'PENDING' };
+    this.selectedToolId.set(null);
     this.addToolDialogVisible.set(true);
   }
 

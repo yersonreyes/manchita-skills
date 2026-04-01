@@ -24,10 +24,16 @@ import { StakeholderMapAnalyzeService } from './stakeholder-map/stakeholder-map-
 import { RolePlayController } from './role-play/role-play.controller';
 import { RolePlayChatService } from './role-play/role-play-chat.service';
 import { RolePlayAnalyzeService } from './role-play/role-play-analyze.service';
+import { PersonaController } from './persona/persona.controller';
+import { PersonaAnalyzeService } from './persona/persona-analyze.service';
+import { MapaEmpatiaController } from './mapa-empatia/mapa-empatia.controller';
+import { MapaEmpatiaAnalyzeService } from './mapa-empatia/mapa-empatia-analyze.service';
+import { CustomerJourneyMapController } from './customer-journey-map/customer-journey-map.controller';
+import { CustomerJourneyMapAnalyzeService } from './customer-journey-map/customer-journey-map-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController, RolePlayController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService, RolePlayChatService, RolePlayAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController, RolePlayController, PersonaController, MapaEmpatiaController, CustomerJourneyMapController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService, RolePlayChatService, RolePlayAnalyzeService, PersonaAnalyzeService, MapaEmpatiaAnalyzeService, CustomerJourneyMapAnalyzeService],
 })
 export class ToolHubModule {}

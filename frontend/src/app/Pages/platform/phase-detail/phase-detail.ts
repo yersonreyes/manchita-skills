@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CatalogService } from '@core/services/catalogService/catalog.service';
@@ -70,6 +70,8 @@ export class PhaseDetailComponent implements OnInit {
     titulo: '',
     estado: 'PENDING' as ToolApplicationStatus,
   };
+  selectedToolId = signal<number | null>(null);
+  selectedTool = computed(() => this.tools().find(t => t.id === this.selectedToolId()) ?? null);
 
 
   // ─── Opciones de selects ──────────────────────────────────────────────────
@@ -121,6 +123,7 @@ export class PhaseDetailComponent implements OnInit {
   // ─── Acciones ─────────────────────────────────────────────────────────────
   openCreateDialog(): void {
     this.createForm = { toolId: null, titulo: '', estado: 'PENDING' };
+    this.selectedToolId.set(null);
     this.createDialogVisible.set(true);
   }
 

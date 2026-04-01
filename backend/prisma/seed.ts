@@ -130,8 +130,22 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
   },
 
   // Discover > Cliente/Mercado
-  { codigo: 'customer-journey-map', nombre: 'Customer Journey Map', descripcion: 'Mapa visual del recorrido completo del cliente a través de todos los puntos de contacto con el producto o servicio.' },
-  { codigo: 'mapa-empatia', nombre: 'Mapa de Empatía', descripcion: 'Herramienta para comprender profundamente al usuario: qué piensa, siente, ve, oye, dice y hace.' },
+  {
+    codigo: 'customer-journey-map',
+    nombre: 'Customer Journey Map',
+    descripcion: 'Representación visual de la experiencia de un usuario a lo largo del tiempo, desde que descubre un producto o servicio hasta que lo usa y más allá. Captura etapas, acciones, emociones, touchpoints, pain points y oportunidades de mejora desde la perspectiva del usuario.',
+    comoSeUsa: '1. Definí el escenario: ¿qué journey específico vas a mapear? 2. Elegí un personaje o Persona concreta, no un usuario genérico. 3. Identificá las etapas del viaje (típicamente 4-7). 4. Para cada etapa completá: acciones del usuario, emociones, touchpoints, pain points y oportunidades. 5. Identificá los "momentos de la verdad" — puntos donde el usuario decide continuar o abandonar. 6. Derivá oportunidades priorizadas por impacto.',
+    cuandoUsarlo: 'En la fase Discover para entender la experiencia actual del usuario con productos similares. En Define para identificar el problema específico a resolver. En Develop para diseñar soluciones que encajen en el journey. Ideal cuando querés entender por qué los usuarios abandonan un proceso, identificar gaps entre canales, o comunicar la experiencia del usuario al equipo.',
+    ejemplo: 'Una tienda online mapea el journey de María comprando por primera vez: DESCUBRIMIENTO (ve ads en IG, curiosa) → CONSIDERACIÓN (visita el sitio, compara, emocionada pero no sabe si el producto cabe en su espacio) → DECISIÓN (intenta comprar, se frustra con el shipping costoso, abandona) → POST-COMPRA (recibe, satisfecha). Momento de la verdad: checkout con shipping inesperado. Oportunidad: mostrar costo de envío upfront en la página de producto.',
+  },
+  {
+    codigo: 'mapa-empatia',
+    nombre: 'Mapa de Empatía',
+    descripcion: 'Herramienta visual creada por Dave Gray que captura lo que el usuario ve, oye, piensa, siente, dice y hace en un momento específico, revelando tensiones y oportunidades de diseño.',
+    comoSeUsa: '1. Seleccioná un escenario específico (no "todos los usuarios", sino un momento concreto). 2. Usá datos reales de entrevistas u observaciones. 3. Completá los 6 cuadrantes: Ve, Oye, Piensa, Siente, Dice y Hace. 4. Buscá patrones y tensiones, especialmente entre lo que dice y lo que hace. 5. Derivá insights accionables para el diseño.',
+    cuandoUsarlo: 'Después de hacer investigación cualitativa (entrevistas, etnografía) y antes de crear las Personas. También es útil en workshops de discovery con el equipo y cuando tenés datos contradictorios entre lo que el usuario dice y hace.',
+    ejemplo: 'Equipo post-10 entrevistas con freelancers: Ve notificaciones de múltiples apps. Oye que "la multitarea es mala". Piensa "si no lo anoto se me olvida". Siente agotamiento y culpa. Dice "no me da la vida". Hace context switching cada 5 min. Insight: no necesita más features, necesita menos fricción cognitiva.',
+  },
   {
     codigo: 'persona',
     nombre: 'User Persona',

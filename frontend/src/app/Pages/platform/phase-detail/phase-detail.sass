@@ -1,1 +1,149 @@
-// Estilos específicos de phase-detail (Tailwind maneja la mayoría)
+// ─── Add Tool Dialog ──────────────────────────────────────────────────────────
+
+.add-tool-header
+  display: flex
+  align-items: center
+  gap: 12px
+
+  &__icon
+    width: 38px
+    height: 38px
+    border-radius: 10px
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%)
+    display: flex
+    align-items: center
+    justify-content: center
+    color: white
+    font-size: 0.9rem
+    flex-shrink: 0
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35)
+
+  &__text
+    display: flex
+    flex-direction: column
+    gap: 1px
+
+  &__title
+    margin: 0
+    font-family: 'Syne', sans-serif
+    font-size: 1rem
+    font-weight: 700
+    color: var(--p-text-color)
+    line-height: 1.3
+
+  &__sub
+    margin: 0
+    font-size: 0.75rem
+    color: var(--p-text-secondary-color)
+    line-height: 1.3
+
+.add-tool-label
+  font-size: 0.8125rem
+  font-weight: 600
+  color: var(--p-text-color)
+
+// ─── Tool Preview Card ────────────────────────────────────────────────────────
+
+.tool-preview
+  border: 1px solid #a7f3d0
+  border-radius: 10px
+  padding: 12px 14px
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)
+  display: flex
+  flex-direction: column
+  gap: 6px
+  animation: previewFadeIn 0.2s ease-out
+
+  &__name
+    margin: 0
+    display: flex
+    align-items: center
+    gap: 6px
+    font-family: 'Syne', sans-serif
+    font-size: 0.875rem
+    font-weight: 700
+    color: #065f46
+
+    .pi
+      font-size: 0.8rem
+      color: #10b981
+
+  &__desc
+    margin: 0
+    font-size: 0.8125rem
+    color: #374151
+    line-height: 1.6
+
+  &__when
+    display: flex
+    align-items: flex-start
+    gap: 7px
+    padding-top: 8px
+    border-top: 1px solid #d1fae5
+    margin-top: 2px
+
+    .pi
+      color: #059669
+      font-size: 0.75rem
+      margin-top: 2px
+      flex-shrink: 0
+
+    span
+      font-size: 0.75rem
+      color: #6b7280
+      line-height: 1.55
+      display: -webkit-box
+      -webkit-line-clamp: 3
+      -webkit-box-orient: vertical
+      overflow: hidden
+
+@keyframes previewFadeIn
+  from
+    opacity: 0
+    transform: translateY(-6px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+// ─── Estado Pills ─────────────────────────────────────────────────────────────
+
+.estado-pills
+  display: flex
+  gap: 8px
+
+.estado-pill
+  flex: 1
+  padding: 9px 12px
+  border-radius: 8px
+  border: 1.5px solid var(--p-surface-300)
+  background: transparent
+  font-size: 0.8125rem
+  font-family: 'Outfit', sans-serif
+  color: var(--p-text-secondary-color)
+  cursor: pointer
+  transition: all 0.15s ease
+  text-align: center
+  font-weight: 500
+  line-height: 1
+
+  &:hover
+    background: var(--p-surface-50)
+    border-color: var(--p-surface-400)
+
+.estado-pill--PENDING.estado-pill--active
+  border-color: #d1d5db
+  background: #f9fafb
+  color: #374151
+  font-weight: 700
+
+.estado-pill--IN_PROGRESS.estado-pill--active
+  border-color: #93c5fd
+  background: #eff6ff
+  color: #1d4ed8
+  font-weight: 700
+
+.estado-pill--COMPLETED.estado-pill--active
+  border-color: #6ee7b7
+  background: #ecfdf5
+  color: #065f46
+  font-weight: 700

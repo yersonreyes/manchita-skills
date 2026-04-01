@@ -10,6 +10,8 @@ import { InOutToolComponent } from './in-out/in-out-tool.component';
 import { DiagramaSistemaToolComponent } from './diagrama-sistema/diagrama-sistema-tool.component';
 import { StakeholderMapToolComponent } from './stakeholder-map/stakeholder-map-tool.component';
 import { RolePlayToolComponent } from './role-play/role-play-tool.component';
+import { MapaEmpatiaToolComponent } from './mapa-empatia/mapa-empatia-tool.component';
+import { CustomerJourneyMapToolComponent } from './customer-journey-map/customer-journey-map-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -70,6 +72,16 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: RolePlayToolComponent,
     tabLabel: 'Role Play',
     tabIcon: 'pi-comments',
+  },
+  'mapa-empatia': {
+    component: MapaEmpatiaToolComponent,
+    tabLabel: 'Mapa de Empatía',
+    tabIcon: 'pi-heart',
+  },
+  'customer-journey-map': {
+    component: CustomerJourneyMapToolComponent,
+    tabLabel: 'Customer Journey Map',
+    tabIcon: 'pi-map',
   },
 };
 
