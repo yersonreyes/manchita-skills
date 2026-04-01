@@ -1,0 +1,314 @@
+<!-- ─── SETUP PHASE ─────────────────────────────────────────────────────────── -->
+@if (!hasSession()) {
+  <div class="setup-layout">
+
+    <div class="setup-header">
+      <div class="setup-header__icon">
+        <i class="pi pi-comments"></i>
+      </div>
+      <h3 class="setup-header__title">Configurá el Role Play</h3>
+      <p class="setup-header__desc">
+        Definí el escenario y los personajes antes de iniciar la simulación.
+        La IA interpretará los roles y facilitará la sesión.
+      </p>
+    </div>
+
+    <!-- Escenario -->
+    <div class="setup-section">
+      <h4 class="setup-section__title">Escenario</h4>
+
+      <div class="form-field">
+        <label class="form-field__label">Título del escenario</label>
+        <input
+          pInputText
+          class="form-field__input"
+          placeholder="Ej: Cliente solicitando tarjeta de crédito online"
+          [ngModel]="data().escenario.titulo"
+          (ngModelChange)="onEscenarioChange('titulo', $event)"
+        />
+      </div>
+
+      <div class="form-field">
+        <label class="form-field__label">Descripción de la situación</label>
+        <textarea
+          class="form-field__textarea p-inputtext"
+          rows="3"
+          placeholder="Describí el contexto, el entorno y las circunstancias de la simulación..."
+          [ngModel]="data().escenario.descripcion"
+          (ngModelChange)="onEscenarioChange('descripcion', $event)"
+        ></textarea>
+      </div>
+
+      <div class="form-field">
+        <label class="form-field__label">Objetivo del role play</label>
+        <input
+          pInputText
+          class="form-field__input"
+          placeholder="Ej: Identificar por qué los usuarios abandonan el proceso de solicitud"
+          [ngModel]="data().escenario.objetivo"
+          (ngModelChange)="onEscenarioChange('objetivo', $event)"
+        />
+      </div>
+    </div>
+
+    <!-- Roles -->
+    <div class="setup-section">
+      <div class="setup-section__header">
+        <h4 class="setup-section__title">Personajes</h4>
+        <p-button
+          label="Agregar personaje"
+          icon="pi pi-user-plus"
+          size="small"
+          variant="outlined"
+          severity="secondary"
+          (onClick)="addRol()"
+        />
+      </div>
+
+      @for (rol of data().roles; track rol.id; let i = $index) {
+        <div class="rol-card">
+          <div class="rol-card__row">
+            <div class="form-field form-field--flex">
+              <label class="form-field__label">Nombre</label>
+              <input
+                pInputText
+                class="form-field__input"
+                placeholder="Ej: Juan (cliente)"
+                [ngModel]="rol.nombre"
+                (ngModelChange)="onRolChange(i, 'nombre', $event)"
+              />
+            </div>
+            <div class="form-field form-field--select">
+              <label class="form-field__label">Tipo</label>
+              <select
+                class="form-field__select p-inputtext"
+                [ngModel]="rol.tipo"
+                (ngModelChange)="onRolChange(i, 'tipo', $event)"
+              >
+                @for (opt of rolTipoOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+            <p-button
+              icon="pi pi-trash"
+              severity="danger"
+              variant="text"
+              size="small"
+              pTooltip="Eliminar personaje"
+              tooltipPosition="top"
+              (onClick)="removeRol(i)"
+            />
+          </div>
+
+          <div class="form-field">
+            <label class="form-field__label">Descripción del personaje</label>
+            <input
+              pInputText
+              class="form-field__input"
+              placeholder="Ej: 28 años, autónomo, primera vez solicitando crédito"
+              [ngModel]="rol.descripcion"
+              (ngModelChange)="onRolChange(i, 'descripcion', $event)"
+            />
+          </div>
+
+          <div class="form-field">
+            <label class="form-field__label">Brief (contexto interno)</label>
+            <textarea
+              class="form-field__textarea p-inputtext"
+              rows="2"
+              placeholder="Goals, miedos, motivaciones, información que solo este personaje sabe..."
+              [ngModel]="rol.brief"
+              (ngModelChange)="onRolChange(i, 'brief', $event)"
+            ></textarea>
+          </div>
+        </div>
+      }
+
+      @if (data().roles.length === 0) {
+        <div class="roles-empty">
+          <i class="pi pi-users"></i>
+          <p>Agregá al menos un personaje para iniciar la simulación.</p>
+        </div>
+      }
+    </div>
+
+    <p-button
+      label="Iniciar simulación"
+      icon="pi pi-play"
+      [disabled]="!canStart() || sending()"
+      [loading]="sending()"
+      (onClick)="startSimulation()"
+      class="w-full"
+      styleClass="w-full"
+    />
+
+  </div>
+}
+
+<!-- ─── CHAT PHASE ──────────────────────────────────────────────────────────── -->
+@if (hasSession()) {
+  <div class="chat-layout">
+
+    <div class="chat-header">
+      <span class="chat-header__title">
+        <i class="pi pi-comments"></i>
+        {{ data().escenario.titulo || application()?.tool?.nombre }}
+      </span>
+      <p-button
+        icon="pi pi-trash"
+        severity="danger"
+        variant="text"
+        size="small"
+        pTooltip="Limpiar simulación"
+        tooltipPosition="left"
+        [disabled]="sending() || analyzing()"
+        (onClick)="clearSession()"
+      />
+    </div>
+
+    <div class="chat-messages">
+      @for (msg of messages(); track $index) {
+        <div class="message" [class.message--user]="msg.role === 'user'" [class.message--assistant]="msg.role === 'assistant'">
+          @if (msg.role === 'assistant') {
+            <div class="message__avatar">
+              <i class="pi pi-comments"></i>
+            </div>
+          }
+          <div class="message__bubble">
+            <p class="message__text">{{ msg.content }}</p>
+          </div>
+          @if (msg.role === 'user') {
+            <div class="message__avatar message__avatar--user">
+              <i class="pi pi-user"></i>
+            </div>
+          }
+        </div>
+      }
+
+      @if (sending()) {
+        <div class="message message--assistant">
+          <div class="message__avatar">
+            <i class="pi pi-comments"></i>
+          </div>
+          <div class="message__bubble message__bubble--thinking">
+            <span class="thinking-dot"></span>
+            <span class="thinking-dot"></span>
+            <span class="thinking-dot"></span>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (isAnalyzed() && aiSession()?.analysis) {
+      <div class="analysis-card">
+        <div class="analysis-card__header">
+          <div class="analysis-card__icon">
+            <i class="pi pi-chart-bar"></i>
+          </div>
+          <h4 class="analysis-card__title">Análisis del Role Play</h4>
+          <span class="analysis-card__badge">{{ aiSession()!.turnCount }} intercambios</span>
+        </div>
+
+        <div class="analysis-card__summary">
+          <p>{{ aiSession()!.analysis!.summary }}</p>
+        </div>
+
+        @if (aiSession()!.analysis!.insights.length) {
+          <div class="analysis-card__section">
+            <p class="analysis-card__label">
+              <i class="pi pi-lightbulb"></i>
+              Insights
+            </p>
+            <ul class="analysis-card__list">
+              @for (insight of aiSession()!.analysis!.insights; track $index) {
+                <li>{{ insight }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (aiSession()!.analysis!.painPoints.length) {
+          <div class="analysis-card__section">
+            <p class="analysis-card__label">
+              <i class="pi pi-exclamation-triangle"></i>
+              Pain Points
+            </p>
+            <ul class="analysis-card__list">
+              @for (pain of aiSession()!.analysis!.painPoints; track $index) {
+                <li>{{ pain }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (aiSession()!.analysis!.recommendations.length) {
+          <div class="analysis-card__section">
+            <p class="analysis-card__label">
+              <i class="pi pi-check-square"></i>
+              Recomendaciones
+            </p>
+            <ul class="analysis-card__list analysis-card__list--recommendations">
+              @for (rec of aiSession()!.analysis!.recommendations; track $index) {
+                <li>{{ rec }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    }
+
+    @if (!isAnalyzed()) {
+      <div class="chat-input-area">
+        <div class="chat-input">
+          <input
+            pInputText
+            [ngModel]="userInput()"
+            (ngModelChange)="userInput.set($event)"
+            placeholder="Dirigí la escena, observá o participá como un personaje..."
+            class="chat-input__field"
+            [disabled]="sending() || analyzing()"
+            (keydown.enter)="!sending() && !analyzing() && userInput().trim() && sendMessage()"
+          />
+          <p-button
+            icon="pi pi-send"
+            [disabled]="!userInput().trim() || sending() || analyzing()"
+            [loading]="sending()"
+            pTooltip="Enviar (Enter)"
+            tooltipPosition="top"
+            (onClick)="sendMessage()"
+          />
+        </div>
+
+        @if (canRequestAnalysis()) {
+          <div class="analyze-trigger">
+            <p-button
+              label="Solicitar análisis final"
+              icon="pi pi-chart-bar"
+              severity="secondary"
+              variant="outlined"
+              [loading]="analyzing()"
+              [disabled]="sending()"
+              (onClick)="requestAnalysis()"
+              styleClass="w-full"
+            />
+            @if ((aiSession()?.turnCount ?? 0) < 5) {
+              <p class="analyze-trigger__hint">
+                <i class="pi pi-info-circle"></i>
+                Recomendado después de 5 intercambios · {{ aiSession()?.turnCount ?? 0 }} hasta ahora
+              </p>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @if (isAnalyzed()) {
+      <p class="session-closed">
+        <i class="pi pi-lock"></i>
+        Sesión finalizada — el análisis está guardado
+      </p>
+    }
+
+  </div>
+}

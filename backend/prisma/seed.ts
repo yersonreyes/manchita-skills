@@ -140,7 +140,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     cuandoUsarlo: `Antes de diseñar cualquier solución, cuando el equipo tiene visiones distintas sobre quién es el usuario, o cuando las decisiones de diseño generan debates sin resolución. Una persona compartida da un criterio de decisión común: "¿esto sirve a María?"`,
     ejemplo: `María, 34 años, gerente de proyectos en una consultora. Objetivo: terminar su trabajo antes de las 18hs para buscar a sus hijos. Frustración: las herramientas de gestión son lentas y requieren mucha configuración. Comportamiento: usa el celular para todo, prefiere voz a texto cuando puede.`,
   },
-  { codigo: 'role-play', nombre: 'Role Play', descripcion: 'Técnica de simulación donde los participantes actúan roles para entender experiencias y perspectivas del usuario.' },
+  {
+    codigo: 'role-play',
+    nombre: 'Role Play',
+    descripcion: 'Técnica de simulación donde los participantes actúan roles específicos para explorar situaciones, necesidades o problemas desde la perspectiva del usuario. Permite vivir la experiencia del usuario en lugar de solo observarla, generando empatía profunda e insights que no se obtienen con métodos tradicionales.',
+    comoSeUsa: `1. Define el escenario: una situación específica y concreta a explorar. 2. Asigna roles: cada participante asume un personaje (usuario primario, stakeholder, customer service, etc.). 3. Establece el contexto: goals, constraints y backstory de cada personaje. 4. Actúa la situación: simula la interacción o proceso. 5. Observa y registra: capturá lo que sucede, especialmente lo inesperado. 6. Debrief: discutí insights, observaciones y aprendizajes derivados de la simulación.`,
+    cuandoUsarlo: `Cuando necesitás entender procesos complejos con múltiples actores, identificar pain points en interacciones, construir empatía en el equipo, o cuando no tenés acceso a usuarios reales. Ideal en workshops de innovación, para validar cambios en servicio al cliente, o para explorar escenarios donde la observación pasiva no es suficiente.`,
+    ejemplo: `Un banco quiere entender por qué los clientes abandonan el proceso de solicitud de tarjeta online. Escenario: cliente intentando solicitar una tarjeta desde su celular por primera vez. Rol 1: Juan (cliente primerizo, 28 años, autónomo) — quiere construir historial crediticio pero tiene dudas sobre los documentos necesarios. Rol 2: Bot del banco — responde preguntas estándar pero no entiende vocabulario de freelancers. Resultado: el bot no reconoce "comprobante de ingresos de freelance" y Juan abandona. Insight: el sistema no cubre el segmento de trabajadores independientes, un segmento en crecimiento.`,
+  },
   {
     codigo: 'stakeholder-map',
     nombre: 'Stakeholder Map',

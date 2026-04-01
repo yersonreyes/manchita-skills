@@ -21,10 +21,13 @@ import { DiagramaSistemaController } from './diagrama-sistema/diagrama-sistema.c
 import { DiagramaSistemaAnalyzeService } from './diagrama-sistema/diagrama-sistema-analyze.service';
 import { StakeholderMapController } from './stakeholder-map/stakeholder-map.controller';
 import { StakeholderMapAnalyzeService } from './stakeholder-map/stakeholder-map-analyze.service';
+import { RolePlayController } from './role-play/role-play.controller';
+import { RolePlayChatService } from './role-play/role-play-chat.service';
+import { RolePlayAnalyzeService } from './role-play/role-play-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController, RolePlayController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService, RolePlayChatService, RolePlayAnalyzeService],
 })
 export class ToolHubModule {}

@@ -9,6 +9,7 @@ import { AnalogosAntilogosToolComponent } from './analogos-antilogos/analogos-an
 import { InOutToolComponent } from './in-out/in-out-tool.component';
 import { DiagramaSistemaToolComponent } from './diagrama-sistema/diagrama-sistema-tool.component';
 import { StakeholderMapToolComponent } from './stakeholder-map/stakeholder-map-tool.component';
+import { RolePlayToolComponent } from './role-play/role-play-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -64,6 +65,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: StakeholderMapToolComponent,
     tabLabel: 'Stakeholder Map',
     tabIcon: 'pi-users',
+  },
+  'role-play': {
+    component: RolePlayToolComponent,
+    tabLabel: 'Role Play',
+    tabIcon: 'pi-comments',
   },
 };
 
