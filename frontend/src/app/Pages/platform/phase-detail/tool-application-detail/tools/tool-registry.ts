@@ -23,6 +23,7 @@ import { InvestigacionRemotaToolComponent } from './investigacion-remota/investi
 import { ClienteMisteriosoToolComponent } from './cliente-misterioso/cliente-misterioso-tool.component';
 import { Perspectiva360ToolComponent } from './perspectiva-360/perspectiva-360-tool.component';
 import { SafariToolComponent } from './safari/safari-tool.component';
+import { ShadowingToolComponent } from './shadowing/shadowing-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -148,6 +149,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: SafariToolComponent,
     tabLabel: 'Safari / Design Safari',
     tabIcon: 'pi-map-marker',
+  },
+  'shadowing': {
+    component: ShadowingToolComponent,
+    tabLabel: 'Shadowing',
+    tabIcon: 'pi-eye',
   },
 };
 
