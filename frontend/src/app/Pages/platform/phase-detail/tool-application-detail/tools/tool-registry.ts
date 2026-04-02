@@ -36,6 +36,8 @@ import { MapaActivoExperienciaToolComponent } from './mapa-activo-experiencia/ma
 import { PovToolComponent } from './pov/pov-tool.component';
 import { DesafioDisenoToolComponent } from './desafio-diseno/desafio-diseno-tool.component';
 import { BriefToolComponent } from './brief/brief-tool.component';
+import { MetaforaProblemaToolComponent } from './metafora-problema/metafora-problema-tool.component';
+import { MapaConvergenciaToolComponent } from './mapa-convergencia/mapa-convergencia-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -226,6 +228,16 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: BriefToolComponent,
     tabLabel: 'Brief de Proyecto',
     tabIcon: 'pi-file',
+  },
+  'metafora-problema': {
+    component: MetaforaProblemaToolComponent,
+    tabLabel: 'Metáfora del Problema',
+    tabIcon: 'pi-comment',
+  },
+  'mapa-convergencia': {
+    component: MapaConvergenciaToolComponent,
+    tabLabel: 'Mapa de Convergencia',
+    tabIcon: 'pi-filter',
   },
 };
 
