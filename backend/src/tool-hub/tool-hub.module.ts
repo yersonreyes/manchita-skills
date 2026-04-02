@@ -54,10 +54,20 @@ import { SafariController } from './safari/safari.controller';
 import { SafariAnalyzeService } from './safari/safari-analyze.service';
 import { ShadowingController } from './shadowing/shadowing.controller';
 import { ShadowingAnalyzeService } from './shadowing/shadowing-analyze.service';
+import { VisitaCampoController } from './visita-campo/visita-campo.controller';
+import { VisitaCampoAnalyzeService } from './visita-campo/visita-campo-analyze.service';
+import { PoemsController } from './poems/poems.controller';
+import { PoemsAnalyzeService } from './poems/poems-analyze.service';
+import { MatrizTendenciasController } from './matriz-tendencias/matriz-tendencias.controller';
+import { MatrizTendenciasAnalyzeService } from './matriz-tendencias/matriz-tendencias-analyze.service';
+import { FromToController } from './from-to/from-to.controller';
+import { FromToAnalyzeService } from './from-to/from-to-analyze.service';
+import { MapaEvolucionInnovacionController } from './mapa-evolucion-innovacion/mapa-evolucion-innovacion.controller';
+import { MapaEvolucionInnovacionAnalyzeService } from './mapa-evolucion-innovacion/mapa-evolucion-innovacion-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController, RolePlayController, PersonaController, MapaEmpatiaController, CustomerJourneyMapController, BenchmarkingController, BusquedaMediosController, BuzzReportController, EntrevistaCualitativaController, EntrevistaExpertoController, FocusGroupController, FotoVideoEtnografiaController, InvestigacionRemotaController, ClienteMisteriosoController, Perspectiva360Controller, SafariController, ShadowingController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService, RolePlayChatService, RolePlayAnalyzeService, PersonaAnalyzeService, MapaEmpatiaAnalyzeService, CustomerJourneyMapAnalyzeService, BenchmarkingAnalyzeService, BusquedaMediosAnalyzeService, BuzzReportAnalyzeService, EntrevistaCualitativaAnalyzeService, EntrevistaExpertoAnalyzeService, FocusGroupAnalyzeService, FotoVideoEtnografiaAnalyzeService, InvestigacionRemotaAnalyzeService, ClienteMisteriosoAnalyzeService, Perspectiva360AnalyzeService, SafariAnalyzeService, ShadowingAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController, RolePlayController, PersonaController, MapaEmpatiaController, CustomerJourneyMapController, BenchmarkingController, BusquedaMediosController, BuzzReportController, EntrevistaCualitativaController, EntrevistaExpertoController, FocusGroupController, FotoVideoEtnografiaController, InvestigacionRemotaController, ClienteMisteriosoController, Perspectiva360Controller, SafariController, ShadowingController, VisitaCampoController, PoemsController, MatrizTendenciasController, FromToController, MapaEvolucionInnovacionController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService, RolePlayChatService, RolePlayAnalyzeService, PersonaAnalyzeService, MapaEmpatiaAnalyzeService, CustomerJourneyMapAnalyzeService, BenchmarkingAnalyzeService, BusquedaMediosAnalyzeService, BuzzReportAnalyzeService, EntrevistaCualitativaAnalyzeService, EntrevistaExpertoAnalyzeService, FocusGroupAnalyzeService, FotoVideoEtnografiaAnalyzeService, InvestigacionRemotaAnalyzeService, ClienteMisteriosoAnalyzeService, Perspectiva360AnalyzeService, SafariAnalyzeService, ShadowingAnalyzeService, VisitaCampoAnalyzeService, PoemsAnalyzeService, MatrizTendenciasAnalyzeService, FromToAnalyzeService, MapaEvolucionInnovacionAnalyzeService],
 })
 export class ToolHubModule {}

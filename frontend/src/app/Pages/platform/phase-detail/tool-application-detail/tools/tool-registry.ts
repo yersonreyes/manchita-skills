@@ -24,6 +24,11 @@ import { ClienteMisteriosoToolComponent } from './cliente-misterioso/cliente-mis
 import { Perspectiva360ToolComponent } from './perspectiva-360/perspectiva-360-tool.component';
 import { SafariToolComponent } from './safari/safari-tool.component';
 import { ShadowingToolComponent } from './shadowing/shadowing-tool.component';
+import { VisitaCampoToolComponent } from './visita-campo/visita-campo-tool.component';
+import { PoemsToolComponent } from './poems/poems-tool.component';
+import { MatrizTendenciasToolComponent } from './matriz-tendencias/matriz-tendencias-tool.component';
+import { FromToToolComponent } from './from-to/from-to-tool.component';
+import { MapaEvolucionInnovacionToolComponent } from './mapa-evolucion-innovacion/mapa-evolucion-innovacion-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -154,6 +159,31 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: ShadowingToolComponent,
     tabLabel: 'Shadowing',
     tabIcon: 'pi-eye',
+  },
+  'visita-campo': {
+    component: VisitaCampoToolComponent,
+    tabLabel: 'Visita de Campo',
+    tabIcon: 'pi-map',
+  },
+  'poems': {
+    component: PoemsToolComponent,
+    tabLabel: 'POEMS',
+    tabIcon: 'pi-th-large',
+  },
+  'matriz-tendencias': {
+    component: MatrizTendenciasToolComponent,
+    tabLabel: 'Matriz de Tendencias',
+    tabIcon: 'pi-chart-bar',
+  },
+  'from-to': {
+    component: FromToToolComponent,
+    tabLabel: 'From-To',
+    tabIcon: 'pi-arrow-right',
+  },
+  'mapa-evolucion-innovacion': {
+    component: MapaEvolucionInnovacionToolComponent,
+    tabLabel: 'Mapa de Evolución e Innovación',
+    tabIcon: 'pi-history',
   },
 };
 
