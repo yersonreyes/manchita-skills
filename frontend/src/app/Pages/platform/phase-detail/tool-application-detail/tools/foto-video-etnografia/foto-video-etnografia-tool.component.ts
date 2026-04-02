@@ -163,7 +163,7 @@ import {
                       [ngModel]="r.url"
                       (ngModelChange)="updateRegistro(i, 'url', $event)"
                     />
-                    @if (r.url?.trim()) {
+                    @if (r.url.trim()) {
                       @if (getMediaType(r.url) === 'image') {
                         <img class="fve__preview-img" [src]="r.url" [alt]="r.titulo" />
                       } @else if (getMediaType(r.url) === 'youtube') {

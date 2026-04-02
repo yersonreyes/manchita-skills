@@ -19,6 +19,7 @@ import { EntrevistaCualitativaToolComponent } from './entrevista-cualitativa/ent
 import { EntrevistaExpertoToolComponent } from './entrevista-experto/entrevista-experto-tool.component';
 import { FocusGroupToolComponent } from './focus-group/focus-group-tool.component';
 import { FotoVideoEtnografiaToolComponent } from './foto-video-etnografia/foto-video-etnografia-tool.component';
+import { InvestigacionRemotaToolComponent } from './investigacion-remota/investigacion-remota-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -124,6 +125,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: FotoVideoEtnografiaToolComponent,
     tabLabel: 'Foto-Vídeo Etnografía',
     tabIcon: 'pi-camera',
+  },
+  'investigacion-remota': {
+    component: InvestigacionRemotaToolComponent,
+    tabLabel: 'Investigación Remota',
+    tabIcon: 'pi-wifi',
   },
 };
 
