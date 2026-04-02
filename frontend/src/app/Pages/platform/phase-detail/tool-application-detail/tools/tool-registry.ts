@@ -29,6 +29,13 @@ import { PoemsToolComponent } from './poems/poems-tool.component';
 import { MatrizTendenciasToolComponent } from './matriz-tendencias/matriz-tendencias-tool.component';
 import { FromToToolComponent } from './from-to/from-to-tool.component';
 import { MapaEvolucionInnovacionToolComponent } from './mapa-evolucion-innovacion/mapa-evolucion-innovacion-tool.component';
+import { KeyFactsToolComponent } from './key-facts/key-facts-tool.component';
+import { InsightsClusterToolComponent } from './insights-cluster/insights-cluster-tool.component';
+import { Matriz2x2ToolComponent } from './matriz-2x2/matriz-2x2-tool.component';
+import { MapaActivoExperienciaToolComponent } from './mapa-activo-experiencia/mapa-activo-experiencia-tool.component';
+import { PovToolComponent } from './pov/pov-tool.component';
+import { DesafioDisenoToolComponent } from './desafio-diseno/desafio-diseno-tool.component';
+import { BriefToolComponent } from './brief/brief-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -184,6 +191,41 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: MapaEvolucionInnovacionToolComponent,
     tabLabel: 'Mapa de Evolución e Innovación',
     tabIcon: 'pi-history',
+  },
+  'key-facts': {
+    component: KeyFactsToolComponent,
+    tabLabel: 'Key Facts',
+    tabIcon: 'pi-list-check',
+  },
+  'insights-cluster': {
+    component: InsightsClusterToolComponent,
+    tabLabel: 'Insights Cluster',
+    tabIcon: 'pi-objects-column',
+  },
+  'matriz-2x2': {
+    component: Matriz2x2ToolComponent,
+    tabLabel: 'Matriz 2×2',
+    tabIcon: 'pi-th-large',
+  },
+  'mapa-activo-experiencia': {
+    component: MapaActivoExperienciaToolComponent,
+    tabLabel: 'Mapa Activo de la Experiencia',
+    tabIcon: 'pi-map',
+  },
+  'pov': {
+    component: PovToolComponent,
+    tabLabel: 'POV (Point of View)',
+    tabIcon: 'pi-eye',
+  },
+  'desafio-diseno': {
+    component: DesafioDisenoToolComponent,
+    tabLabel: 'Desafío de Diseño',
+    tabIcon: 'pi-bolt',
+  },
+  'brief': {
+    component: BriefToolComponent,
+    tabLabel: 'Brief de Proyecto',
+    tabIcon: 'pi-file',
   },
 };
 
