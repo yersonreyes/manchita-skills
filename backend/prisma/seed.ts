@@ -196,7 +196,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     cuandoUsarlo: 'Cuando necesitás entender cómo se está hablando de tu marca, producto o campaña en el entorno digital. Ideal antes de lanzar una estrategia de comunicación, durante una crisis reputacional, o al evaluar el impacto de una campaña reciente. En el Double Diamond, se usa en la fase Define para contextualizar el problema desde la perspectiva de la conversación pública.',
     ejemplo: 'Monitoring de "Marca X lanzamiento zapatos": MENCIONES: tweet viral positivo (50K impresiones) sobre el diseño, reseña negativa en blog sobre el precio, post de influencer neutral probando el producto. TEMAS RECURRENTES: precio elevado, diseño innovador. SENTIMENT: 40% positivo, 35% neutro, 25% negativo concentrado en precio. OPORTUNIDAD: capitalizar el elogio al diseño con contenido UGC. RIESGO: narrativa de precio inasequible puede frenar conversiones.',
   },
-  { codigo: 'cliente-misterioso', nombre: 'Cliente Misterioso', descripcion: 'Técnica de investigación encubierta donde se evalúa la experiencia del cliente de forma anónima.' },
+  {
+    codigo: 'cliente-misterioso',
+    nombre: 'Cliente Misterioso',
+    descripcion: 'Técnica de investigación donde una persona entrenada evalúa un servicio, producto o proceso actuando como cliente común, revelando problemas que los usuarios no reportan porque se han acostumbrado a ellos.',
+    comoSeUsa: `Definí los criterios de evaluación (UX, servicio, proceso, pricing). Creá una guía con el checklist de observación y seleccioná los escenarios a ejecutar. Realizá la visita como cliente normal sin revelar tu rol. Documentá los pasos con tiempos, issues encontrados con nivel de impacto (alto/medio/bajo) y un score general de 1-5. Analizá los hallazgos para identificar fricciones y oportunidades de mejora.`,
+    cuandoUsarlo: `En Discover para entender la experiencia actual, en Define para priorizar problemas a resolver, y en Deliver para validar que la solución funciona. Ideal para audits de servicio al cliente, evaluación de competidores y para encontrar problemas ocultos en la experiencia. No usar cuando el contexto es muy especializado o el servicio es muy técnico.`,
+    ejemplo: `Evaluación de onboarding en app de banking. Canal: App móvil. Escenario: usuario nuevo crea cuenta. Hallazgos: instrucciones confusas para subir INE (abandono alto, prioridad #1), error en vinculación bancaria sin feedback claro (prioridad #2), campos de dirección excesivos (prioridad #3). Score: 2/5. Tiempo total: 15 min + 2 horas espera de revisión. Insight: la fricción en documentos e instrucciones poco claras genera abandono en el paso más crítico del journey.`,
+  },
   {
     codigo: 'entrevista-cualitativa',
     nombre: 'Entrevista Cualitativa',

@@ -20,6 +20,7 @@ import { EntrevistaExpertoToolComponent } from './entrevista-experto/entrevista-
 import { FocusGroupToolComponent } from './focus-group/focus-group-tool.component';
 import { FotoVideoEtnografiaToolComponent } from './foto-video-etnografia/foto-video-etnografia-tool.component';
 import { InvestigacionRemotaToolComponent } from './investigacion-remota/investigacion-remota-tool.component';
+import { ClienteMisteriosoToolComponent } from './cliente-misterioso/cliente-misterioso-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -130,6 +131,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: InvestigacionRemotaToolComponent,
     tabLabel: 'Investigación Remota',
     tabIcon: 'pi-wifi',
+  },
+  'cliente-misterioso': {
+    component: ClienteMisteriosoToolComponent,
+    tabLabel: 'Cliente Misterioso',
+    tabIcon: 'pi-eye-slash',
   },
 };
 
