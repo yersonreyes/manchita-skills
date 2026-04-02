@@ -21,6 +21,7 @@ import { FocusGroupToolComponent } from './focus-group/focus-group-tool.componen
 import { FotoVideoEtnografiaToolComponent } from './foto-video-etnografia/foto-video-etnografia-tool.component';
 import { InvestigacionRemotaToolComponent } from './investigacion-remota/investigacion-remota-tool.component';
 import { ClienteMisteriosoToolComponent } from './cliente-misterioso/cliente-misterioso-tool.component';
+import { Perspectiva360ToolComponent } from './perspectiva-360/perspectiva-360-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -136,6 +137,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: ClienteMisteriosoToolComponent,
     tabLabel: 'Cliente Misterioso',
     tabIcon: 'pi-eye-slash',
+  },
+  'perspectiva-360': {
+    component: Perspectiva360ToolComponent,
+    tabLabel: 'Perspectiva 360',
+    tabIcon: 'pi-eye',
   },
 };
 
