@@ -354,7 +354,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
   },
 
   // Develop > Idear
-  { codigo: 'brainstorming', nombre: 'Brainstorming', descripcion: 'Técnica de generación de ideas en grupo donde se busca producir la mayor cantidad posible sin juzgarlas.' },
+  {
+    codigo: 'brainstorming',
+    nombre: 'Brainstorming',
+    descripcion: 'Técnica de generación de ideas en grupo donde se busca producir la mayor cantidad posible sin juzgarlas.',
+    comoSeUsa: `Definí el reto o pregunta de brainstorming ("¿Cómo podríamos…?"). Elegí la técnica (clásico, worst-possible-idea, SCAMPER, brainwriting o sketching) y el número de participantes. Durante la sesión, cargá todas las ideas generadas — podés asignar un cluster o categoría a cada idea para agruparlas temáticamente. Después de la sesión, registrá los votos que recibió cada idea (dot voting). Marcá las ideas ganadoras en el campo "Top Ideas". Con el reto definido y al menos 3 ideas podés generar el análisis AI, que evalúa la calidad de la sesión, analiza las top ideas, identifica patrones en los clusters, y detecta ideas innovadoras que merecen más exploración.`,
+    cuandoUsarlo: `Cuando el equipo está definiendo cómo resolver un problema y necesita explorar múltiples direcciones antes de comprometerse con una solución. Al inicio de la fase de ideación (Develop), después de haber definido claramente el problema. También cuando hay bloqueos creativos o cuando el equipo está atascado en una sola dirección de solución. Ideal como primer paso antes del Mapa de Convergencia, donde se filtran y priorizan las ideas generadas.`,
+    ejemplo: `Reto: "¿Cómo podríamos reducir el abandono en el checkout de nuestra app?". Técnica: Clásico. 6 participantes. Ideas generadas (32): agregar progress bar, checkout en 1 click, mostrar costos ocultos upfront, guest checkout, chat de soporte en tiempo real, envío gratis desde $X, suscripción mensual… Clusters: UX (10 ideas), Payment (8 ideas), Pricing (7 ideas), Support (7 ideas). Top ideas por votos: "Checkout en 1 click" (15 votos), "Mostrar costos ocultos upfront" (12 votos), "Guest checkout" (10 votos).`,
+  },
   { codigo: 'disenio-escenarios', nombre: 'Diseño de Escenarios', descripcion: 'Creación de narrativas que describen cómo los usuarios interactuarán con la solución en diferentes contextos.' },
   { codigo: 'hibridacion-agregacion', nombre: 'Hibridación por Agregación', descripcion: 'Técnica de combinación de ideas donde se agregan elementos de diferentes conceptos para crear uno nuevo.' },
   { codigo: 'hibridacion-sintesis', nombre: 'Hibridación por Síntesis', descripcion: 'Técnica de fusión de ideas donde se sintetizan los mejores elementos de múltiples conceptos en uno.' },
