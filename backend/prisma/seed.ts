@@ -214,6 +214,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     ejemplo: 'Proyecto: app de telemedicina. EXPERTO: Dra. González, médica clínica con 15 años en salud digital. OBJETIVO: entender las barreras regulatorias y de adopción. P: "¿Cuál es el mayor obstáculo para digitalizar la consulta médica en Argentina?" R: "No es la tecnología, es la facturación. Las obras sociales no tienen un código de prestación para teleconsulta, entonces el médico no cobra igual. Hasta que eso no se resuelva, el incentivo no existe". CITA TÉCNICA: "El médico va a usar la herramienta que le permita cobrar, no la que tenga mejor UX". INSIGHT: la adopción depende del modelo de pago, no de la usabilidad — el diseño debe contemplar la integración con sistemas de facturación médica.',
   },
   {
+    codigo: 'foto-video-etnografia',
+    nombre: 'Foto-Vídeo Etnografía',
+    descripcion: 'Técnica de investigación de campo que documenta visualmente el contexto y comportamientos del usuario mediante fotografía y video.',
+    comoSeUsa: '1. Definí el objetivo de campo: qué querés observar y documentar visualmente. 2. Planificá las salidas: fechas, lugares, quién hace fotos y quién registra video. 3. Durante la salida de campo, documentá el entorno físico, herramientas y objetos del usuario, comportamientos y gestos, emociones visibles y workarounds. 4. Organizá el material en carpetas por fecha, lugar o tema. 5. Para cada registro (foto/video) anotá: qué muestra, dónde fue tomado, quién o qué es el sujeto, qué observás y qué revela sobre el usuario. 6. Identificá patrones visuales que emergen del conjunto. 7. Generá el análisis IA para extraer insights etnográficos, workarounds detectados y oportunidades de diseño.',
+    cuandoUsarlo: 'En las fases de Discover y Define. Ideal cuando el contexto físico del usuario es parte del problema, para capturar workarounds e improvisaciones, y para comunicar hallazgos de campo a miembros del equipo que no estuvieron presentes. Las imágenes capturan detalles del entorno y comportamientos que las notas escritas suelen perder. No usar cuando el usuario no da permiso para ser documentado o el tema es muy personal o sensible.',
+    ejemplo: 'Equipo diseñando para pequeños comerciantes. En un almacén de barrio fotografiaron una libreta manuscrita con cuentas, fotos de clientes recortadas y post-its con precios pegados detrás del mostrador. Observación: sistema de gestión analógico y relacional. Insight: conocer al cliente es parte del negocio — no es un dato, es una relación. La solución digital debe respetar esta dimensión relacional.',
+  },
+  {
     codigo: 'focus-group',
     nombre: 'Focus Group',
     descripcion: 'Sesión grupal moderada para explorar percepciones, opiniones y actitudes de usuarios sobre un tema.',
@@ -311,6 +319,7 @@ const TOOL_CATEGORY_ASSIGNMENTS: { toolCodigo: string; categoryCodigo: string }[
   { toolCodigo: 'cliente-misterioso', categoryCodigo: 'define-investigacion' },
   { toolCodigo: 'entrevista-cualitativa', categoryCodigo: 'define-investigacion' },
   { toolCodigo: 'entrevista-experto', categoryCodigo: 'define-investigacion' },
+  { toolCodigo: 'foto-video-etnografia', categoryCodigo: 'define-investigacion' },
   { toolCodigo: 'focus-group', categoryCodigo: 'define-investigacion' },
   { toolCodigo: 'investigacion-remota', categoryCodigo: 'define-investigacion' },
   { toolCodigo: 'perspectiva-360', categoryCodigo: 'define-investigacion' },

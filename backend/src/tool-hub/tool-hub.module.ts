@@ -42,10 +42,12 @@ import { EntrevistaExpertoController } from './entrevista-experto/entrevista-exp
 import { EntrevistaExpertoAnalyzeService } from './entrevista-experto/entrevista-experto-analyze.service';
 import { FocusGroupController } from './focus-group/focus-group.controller';
 import { FocusGroupAnalyzeService } from './focus-group/focus-group-analyze.service';
+import { FotoVideoEtnografiaController } from './foto-video-etnografia/foto-video-etnografia.controller';
+import { FotoVideoEtnografiaAnalyzeService } from './foto-video-etnografia/foto-video-etnografia-analyze.service';
 
 @Module({
   imports: [AiModule, PrismaModule],
-  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController, RolePlayController, PersonaController, MapaEmpatiaController, CustomerJourneyMapController, BenchmarkingController, BusquedaMediosController, BuzzReportController, EntrevistaCualitativaController, EntrevistaExpertoController, FocusGroupController],
-  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService, RolePlayChatService, RolePlayAnalyzeService, PersonaAnalyzeService, MapaEmpatiaAnalyzeService, CustomerJourneyMapAnalyzeService, BenchmarkingAnalyzeService, BusquedaMediosAnalyzeService, BuzzReportAnalyzeService, EntrevistaCualitativaAnalyzeService, EntrevistaExpertoAnalyzeService, FocusGroupAnalyzeService],
+  controllers: [CincoPorquesController, BmcController, FodaController, ProjectBriefController, DiagnosticoIndustriaController, AnalogosAntilogosController, InOutController, DiagramaSistemaController, StakeholderMapController, RolePlayController, PersonaController, MapaEmpatiaController, CustomerJourneyMapController, BenchmarkingController, BusquedaMediosController, BuzzReportController, EntrevistaCualitativaController, EntrevistaExpertoController, FocusGroupController, FotoVideoEtnografiaController],
+  providers: [CincoPorquesChatService, CincoPorquesAnalyzeService, BmcAnalyzeService, FodaAnalyzeService, ProjectBriefChatService, ProjectBriefGenerateService, DiagnosticoIndustriaAnalyzeService, AnalogosAntilogosAnalyzeService, InOutAnalyzeService, DiagramaSistemaAnalyzeService, StakeholderMapAnalyzeService, RolePlayChatService, RolePlayAnalyzeService, PersonaAnalyzeService, MapaEmpatiaAnalyzeService, CustomerJourneyMapAnalyzeService, BenchmarkingAnalyzeService, BusquedaMediosAnalyzeService, BuzzReportAnalyzeService, EntrevistaCualitativaAnalyzeService, EntrevistaExpertoAnalyzeService, FocusGroupAnalyzeService, FotoVideoEtnografiaAnalyzeService],
 })
 export class ToolHubModule {}
