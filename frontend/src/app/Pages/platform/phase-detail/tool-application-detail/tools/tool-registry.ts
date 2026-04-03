@@ -44,6 +44,9 @@ import { WhatIfToolComponent } from './what-if/what-if-tool.component';
 import { HibridacionAgregacionToolComponent } from './hibridacion-agregacion/hibridacion-agregacion-tool.component';
 import { HibridacionTraslacionToolComponent } from './hibridacion-traslacion/hibridacion-traslacion-tool.component';
 import { HibridacionSintesisToolComponent } from './hibridacion-sintesis/hibridacion-sintesis-tool.component';
+import { DisenioEscenariosToolComponent } from './disenio-escenarios/disenio-escenarios-tool.component';
+import { SesionCocreacionToolComponent } from './sesion-cocreacion/sesion-cocreacion-tool.component';
+import { PrototipoEmpatizarToolComponent } from './prototipo-empatizar/prototipo-empatizar-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -274,6 +277,21 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: HibridacionSintesisToolComponent,
     tabLabel: 'Hibridación por Síntesis',
     tabIcon: 'pi-objects-column',
+  },
+  'disenio-escenarios': {
+    component: DisenioEscenariosToolComponent,
+    tabLabel: 'Diseño de Escenarios',
+    tabIcon: 'pi-map',
+  },
+  'sesion-cocreacion': {
+    component: SesionCocreacionToolComponent,
+    tabLabel: 'Sesión de Cocreación',
+    tabIcon: 'pi-users',
+  },
+  'prototipo-empatizar': {
+    component: PrototipoEmpatizarToolComponent,
+    tabLabel: 'Prototipo para Empatizar',
+    tabIcon: 'pi-heart',
   },
 };
 

@@ -362,7 +362,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     cuandoUsarlo: `Cuando el equipo está definiendo cómo resolver un problema y necesita explorar múltiples direcciones antes de comprometerse con una solución. Al inicio de la fase de ideación (Develop), después de haber definido claramente el problema. También cuando hay bloqueos creativos o cuando el equipo está atascado en una sola dirección de solución. Ideal como primer paso antes del Mapa de Convergencia, donde se filtran y priorizan las ideas generadas.`,
     ejemplo: `Reto: "¿Cómo podríamos reducir el abandono en el checkout de nuestra app?". Técnica: Clásico. 6 participantes. Ideas generadas (32): agregar progress bar, checkout en 1 click, mostrar costos ocultos upfront, guest checkout, chat de soporte en tiempo real, envío gratis desde $X, suscripción mensual… Clusters: UX (10 ideas), Payment (8 ideas), Pricing (7 ideas), Support (7 ideas). Top ideas por votos: "Checkout en 1 click" (15 votos), "Mostrar costos ocultos upfront" (12 votos), "Guest checkout" (10 votos).`,
   },
-  { codigo: 'disenio-escenarios', nombre: 'Diseño de Escenarios', descripcion: 'Creación de narrativas que describen cómo los usuarios interactuarán con la solución en diferentes contextos.' },
+  {
+    codigo: 'disenio-escenarios',
+    nombre: 'Diseño de Escenarios',
+    descripcion: 'Técnica que crea narrativas detalladas sobre cómo un usuario interactúa con un producto o servicio en situaciones específicas, incluyendo contexto emocional y situacional — no solo qué hace el usuario, sino cómo se siente.',
+    comoSeUsa: '1. Definí el contexto general del producto o servicio. 2. Creá un escenario por situación: definí quién es el usuario, dónde está, cuándo usa el producto y qué quiere lograr. 3. Elegí el tipo: happy path, edge case, error, contextual o day-in-life. 4. Escribí el flujo paso a paso: acción del usuario + emoción en cada paso. 5. Identificá oportunidades de diseño derivadas del escenario.',
+    cuandoUsarlo: 'Para diseñar flujos de usuario en contextos realistas. Para identificar pain points emocionales, no solo funcionales. En prototipado de servicios. Para comunicar al equipo cómo se usa el producto en situaciones reales. Cuando necesitás validar soluciones en diferentes contextos de uso.',
+    ejemplo: 'María, 32 años, diseñadora freelance. Oficina de coworking, 7:15pm. Abre la app de delivery, filtra por vegano (alivio), elige restaurante (satisfacción), paga con Apple Pay (confianza), espera (ansiedad: ¿cuánto falta?), recibe pedido con 3 minutos de demora (frustración). Oportunidad: notificar proactivamente cuando hay demoras y mostrar actualización del tiempo en vivo.',
+  },
   {
     codigo: 'hibridacion-agregacion',
     nombre: 'Hibridación por Agregación',
@@ -403,7 +410,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     cuandoUsarlo: `Después de una sesión de brainstorming o ideación donde generaron múltiples ideas y necesitás priorizarlas antes de prototipar. Cuando el equipo tiene desacuerdo sobre qué ideas continuar y necesitás un proceso objetivo para decidir. Antes de presentar a stakeholders cuáles ideas se van a desarrollar — el proceso documentado muestra rigor en la toma de decisiones. También útil cuando los recursos son limitados y hay que elegir entre pocas opciones con criterios claros.`,
     ejemplo: `Equipo de producto evaluando 6 ideas de features nuevos con criterios: impacto en usuario (peso 40%), viabilidad técnica (peso 35%), diferenciación (peso 25%). Idea "Modo offline" — scores: impacto 5, viabilidad 3, diferenciación 4 → score ponderado 4.0. Idea "AI assistant" — scores: impacto 4, viabilidad 2, diferenciación 5 → score ponderado 3.45. Seleccionadas: "Modo offline" (score 4.0, alta viabilidad), "Templates prediseñados" (score 3.8). En backlog: "AI assistant" (re-evaluar en Q3 cuando la infra esté lista). Decisión documentada: priorizar funcionalidades de confiabilidad sobre innovación para este trimestre.`,
   },
-  { codigo: 'sesion-cocreacion', nombre: 'Sesión de Cocreación', descripcion: 'Taller colaborativo donde diseñadores y usuarios trabajan juntos para generar soluciones.' },
+  {
+    codigo: 'sesion-cocreacion',
+    nombre: 'Sesión de Cocreación',
+    descripcion: 'Taller donde usuarios, stakeholders y el equipo de diseño trabajan juntos como co-creadores activos para generar soluciones. El usuario no es solo sujeto de investigación — es co-creador del producto.',
+    comoSeUsa: '1. Definí el objetivo: qué van a crear o resolver juntos. 2. Seleccioná participantes: usuarios target + equipo + stakeholders mezclados. 3. Ejecutá las fases: warm-up (30min), context setting con findings (30min), generación de ideas en grupos (30min), prototipado colaborativo (60min), presentaciones y feedback (30min). 4. Documentá cada idea con su grupo origen y los votos que recibió. 5. Marcá las ideas que el grupo eligió avanzar. 6. Registrá las decisiones y aprendizajes del proceso.',
+    cuandoUsarlo: 'Para construir ownership con stakeholders. Cuando el problema es complejo y tiene múltiples perspectivas. Para validar conceptos antes de invertir en desarrollo. Para generar ideas más creativas que las que el equipo solo puede crear. En las fases de Develop (generar ideas) y Define (validar conceptos con usuarios reales).',
+    ejemplo: 'Fintech quiere mejorar onboarding de app de pagos. 8 usuarios + 3 del equipo + 1 stakeholder. Técnica 6-3-5 en grupos de 3. Ideas resultantes: Reto de Ahorro (gamificar con niveles, 12 votos ★), Redondeo Automático (10 votos), Meta Visual con ilustración (8 votos). Decisión: prototipar combinación de Reto de Ahorro + Redondeo. Los usuarios se sienten owners porque ellos lo crearon.',
+  },
   {
     codigo: 'what-if',
     nombre: 'What If',
@@ -415,7 +429,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
 
   // Develop > Prototipar
   { codigo: 'mvp', nombre: 'MVP', descripcion: 'Mínimo Producto Viable: versión simplificada del producto con las funcionalidades esenciales para validar hipótesis.' },
-  { codigo: 'prototipo-empatizar', nombre: 'Prototipo para Empatizar', descripcion: 'Prototipo diseñado para generar empatía y comprensión sobre la experiencia del usuario.' },
+  {
+    codigo: 'prototipo-empatizar',
+    nombre: 'Prototipo para Empatizar',
+    descripcion: 'Herramienta de design thinking que crea representaciones tangibles o digitales del producto con el único propósito de entender las necesidades, emociones y contexto del usuario. No busca validar funcionalidad sino generar empatía real.',
+    comoSeUsa: '1. Definí el objetivo de empatía: qué querés que el equipo sienta o comprenda. 2. Elegí el tipo de prototipo: role-play (actuar la experiencia), bodystorming (prototipar con el cuerpo), environmental (recrear el entorno físico), experiencial (vivir la experiencia completa). 3. Construí el prototipo rápido y simple — no busques fidelidad, buscá inmersión. 4. Documentá los pasos de la sesión con las observaciones de cada momento. 5. Registrá insights emocionales (qué sintió el equipo), fricciones identificadas y supuestos que querés validar o refutar. 6. Usá el análisis IA para convertir lo vivido en implicaciones de diseño concretas.',
+    cuandoUsarlo: 'Antes de diseñar soluciones en la fase de Develop cuando el equipo cree que entiende al usuario pero no lo ha vivido. Cuando hay disconnect entre lo que el equipo imagina y lo que el usuario experimenta. En investigación de nuevos dominios donde el equipo no tiene experiencia directa con el problema. Para validar que los assumptions del equipo sobre el usuario son correctos antes de invertir en desarrollo. Especialmente útil cuando el usuario tiene contextos de uso que el equipo no vive habitualmente (adultos mayores, personas con discapacidades, contextos de estrés o emergencia).',
+    ejemplo: 'Equipo diseñando checkout para adultos mayores. Tipo: experiencial. Objetivo: sentir la frustración de completar un formulario con limitaciones motoras y visuales. Pasos: (1) Colocarse gafas que reducen visión periférica, (2) usar guantes para simular limitación motora fina, (3) completar el checkout con ruido de fondo y presión de tiempo. Insights emocionales: "la ansiedad del timeout del sesión genera errores que no tienen nada que ver con la UI". Fricciones: botones de 24px son imposibles con guantes, múltiples campos de verificación de tarjeta abruman. Supuesto refutado: "el problema es el número de pasos" → en realidad el problema es la densidad de información en cada paso, no la cantidad de pasos.',
+  },
   { codigo: 'prototipo-fisico', nombre: 'Prototipo Físico', descripcion: 'Representación tangible y tridimensional de la solución para evaluar forma, ergonomía e interacción.' },
   { codigo: 'prototipo-funcional', nombre: 'Prototipo Funcional', descripcion: 'Prototipo que replica funcionalidades reales del producto para pruebas de usabilidad avanzadas.' },
   { codigo: 'prototipo-mostrar', nombre: 'Prototipo para Mostrar', descripcion: 'Prototipo de alta fidelidad diseñado para presentar y comunicar la solución a stakeholders.' },

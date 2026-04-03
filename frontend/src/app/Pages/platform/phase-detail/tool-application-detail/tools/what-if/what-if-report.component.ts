@@ -51,7 +51,7 @@ import { WhatIfReportVersionDto } from './what-if.types';
                     @if (item.potencialInnovador) {
                       <p class="report__pregunta-potencial">{{ item.potencialInnovador }}</p>
                     }
-                    @if (item.implicaciones?.length) {
+                    @if (item.implicaciones.length) {
                       <ul class="report__sub-list">
                         @for (imp of item.implicaciones; track $index) {
                           <li>{{ imp }}</li>

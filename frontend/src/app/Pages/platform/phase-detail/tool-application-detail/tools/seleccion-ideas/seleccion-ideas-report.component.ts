@@ -50,7 +50,7 @@ import { SeleccionIdeasReportVersionDto } from './seleccion-ideas.types';
                         <span class="report__score-badge">{{ item.scoreTotal | number:'1.1-1' }} / 5</span>
                       }
                     </div>
-                    @if (item.puntosFuertes?.length) {
+                    @if (item.puntosFuertes.length) {
                       <div class="report__idea-section">
                         <span class="report__idea-tag report__idea-tag--forte">Fortalezas</span>
                         <ul class="report__sub-list">
@@ -60,7 +60,7 @@ import { SeleccionIdeasReportVersionDto } from './seleccion-ideas.types';
                         </ul>
                       </div>
                     }
-                    @if (item.puntosDebiles?.length) {
+                    @if (item.puntosDebiles.length) {
                       <div class="report__idea-section">
                         <span class="report__idea-tag report__idea-tag--debil">Debilidades</span>
                         <ul class="report__sub-list">

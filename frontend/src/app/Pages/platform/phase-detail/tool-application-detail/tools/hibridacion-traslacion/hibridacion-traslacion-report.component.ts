@@ -61,7 +61,7 @@ import { HibridacionTraslacionReportVersionDto } from './hibridacion-traslacion.
                     @if (item.potencialDeTraslacion) {
                       <p class="report__traslacion-texto">{{ item.potencialDeTraslacion }}</p>
                     }
-                    @if (item.desafiosAdaptacion?.length) {
+                    @if (item.desafiosAdaptacion.length) {
                       <div class="report__desafios">
                         <span class="report__tag report__tag--yellow">Desafíos de adaptación</span>
                         <ul class="report__sub-list">
