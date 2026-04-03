@@ -47,6 +47,10 @@ import { HibridacionSintesisToolComponent } from './hibridacion-sintesis/hibrida
 import { DisenioEscenariosToolComponent } from './disenio-escenarios/disenio-escenarios-tool.component';
 import { SesionCocreacionToolComponent } from './sesion-cocreacion/sesion-cocreacion-tool.component';
 import { PrototipoEmpatizarToolComponent } from './prototipo-empatizar/prototipo-empatizar-tool.component';
+import { PrototipoPensarToolComponent } from './prototipo-pensar/prototipo-pensar-tool.component';
+import { PrototipoMostrarToolComponent } from './prototipo-mostrar/prototipo-mostrar-tool.component';
+import { PrototipoRapidoToolComponent } from './prototipo-rapido/prototipo-rapido-tool.component';
+import { PrototipoFisicoToolComponent } from './prototipo-fisico/prototipo-fisico-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -292,6 +296,26 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: PrototipoEmpatizarToolComponent,
     tabLabel: 'Prototipo para Empatizar',
     tabIcon: 'pi-heart',
+  },
+  'prototipo-pensar': {
+    component: PrototipoPensarToolComponent,
+    tabLabel: 'Prototipo para Pensar',
+    tabIcon: 'pi-lightbulb',
+  },
+  'prototipo-mostrar': {
+    component: PrototipoMostrarToolComponent,
+    tabLabel: 'Prototipo para Mostrar',
+    tabIcon: 'pi-eye',
+  },
+  'prototipo-rapido': {
+    component: PrototipoRapidoToolComponent,
+    tabLabel: 'Prototipo Rápido',
+    tabIcon: 'pi-bolt',
+  },
+  'prototipo-fisico': {
+    component: PrototipoFisicoToolComponent,
+    tabLabel: 'Prototipo Físico',
+    tabIcon: 'pi-box',
   },
 };
 
