@@ -40,6 +40,10 @@ import { MetaforaProblemaToolComponent } from './metafora-problema/metafora-prob
 import { MapaConvergenciaToolComponent } from './mapa-convergencia/mapa-convergencia-tool.component';
 import { BrainstormingToolComponent } from './brainstorming/brainstorming-tool.component';
 import { SeleccionIdeasToolComponent } from './seleccion-ideas/seleccion-ideas-tool.component';
+import { WhatIfToolComponent } from './what-if/what-if-tool.component';
+import { HibridacionAgregacionToolComponent } from './hibridacion-agregacion/hibridacion-agregacion-tool.component';
+import { HibridacionTraslacionToolComponent } from './hibridacion-traslacion/hibridacion-traslacion-tool.component';
+import { HibridacionSintesisToolComponent } from './hibridacion-sintesis/hibridacion-sintesis-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -250,6 +254,26 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: SeleccionIdeasToolComponent,
     tabLabel: 'Selección de Ideas',
     tabIcon: 'pi-list-check',
+  },
+  'what-if': {
+    component: WhatIfToolComponent,
+    tabLabel: 'What If',
+    tabIcon: 'pi-question-circle',
+  },
+  'hibridacion-agregacion': {
+    component: HibridacionAgregacionToolComponent,
+    tabLabel: 'Hibridación por Agregación',
+    tabIcon: 'pi-link',
+  },
+  'hibridacion-traslacion': {
+    component: HibridacionTraslacionToolComponent,
+    tabLabel: 'Hibridación por Traslación',
+    tabIcon: 'pi-arrow-right-arrow-left',
+  },
+  'hibridacion-sintesis': {
+    component: HibridacionSintesisToolComponent,
+    tabLabel: 'Hibridación por Síntesis',
+    tabIcon: 'pi-objects-column',
   },
 };
 
