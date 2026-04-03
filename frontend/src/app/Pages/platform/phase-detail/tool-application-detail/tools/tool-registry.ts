@@ -51,6 +51,8 @@ import { PrototipoPensarToolComponent } from './prototipo-pensar/prototipo-pensa
 import { PrototipoMostrarToolComponent } from './prototipo-mostrar/prototipo-mostrar-tool.component';
 import { PrototipoRapidoToolComponent } from './prototipo-rapido/prototipo-rapido-tool.component';
 import { PrototipoFisicoToolComponent } from './prototipo-fisico/prototipo-fisico-tool.component';
+import { PrototipoFuncionalToolComponent } from './prototipo-funcional/prototipo-funcional-tool.component';
+import { MvpToolComponent } from './mvp/mvp-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -316,6 +318,16 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: PrototipoFisicoToolComponent,
     tabLabel: 'Prototipo Físico',
     tabIcon: 'pi-box',
+  },
+  'prototipo-funcional': {
+    component: PrototipoFuncionalToolComponent,
+    tabLabel: 'Prototipo Funcional',
+    tabIcon: 'pi-code',
+  },
+  'mvp': {
+    component: MvpToolComponent,
+    tabLabel: 'MVP',
+    tabIcon: 'pi-rocket',
   },
 };
 

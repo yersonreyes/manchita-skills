@@ -428,7 +428,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
   },
 
   // Develop > Prototipar
-  { codigo: 'mvp', nombre: 'MVP', descripcion: 'Mínimo Producto Viable: versión simplificada del producto con las funcionalidades esenciales para validar hipótesis.' },
+  {
+    codigo: 'mvp',
+    nombre: 'MVP',
+    descripcion: 'El MVP (Mínimo Producto Viable) es la versión más simple de un producto que puede ser lanzada para validar una hipótesis de negocio. Tiene el conjunto mínimo de features necesario para resolver el problema core del usuario y obtener feedback. Su objetivo no es tener un producto perfecto, sino aprender rápido qué funciona.',
+    comoSeUsa: 'Proceso: (1) Definir la hipótesis — qué quieres validar; (2) Identificar core feature — una sola cosa que funcione; (3) Priorizar con la matriz valor/esfuerzo — Alto valor + Bajo esfuerzo = MVP, Alto valor + Alto esfuerzo = Later, Bajo valor + Bajo esfuerzo = Mandatory, Bajo valor + Alto esfuerzo = Drop; (4) Build — rápido y simple; (5) Launch — obtener usuarios reales; (6) Learn — medir y iterar. Tipos de MVP: Wizard of Oz (humanos simulan el sistema), Concierge (servicio manual primero), Landing + Email (validar interés), Crowdfunding (video prototipo), Feature MVP (solo el core feature).',
+    cuandoUsarlo: 'En Develop para validar el negocio rápido antes de comprometer recursos en desarrollo completo. Para launch temprano y aprender con usuarios reales. Cuando los recursos son limitados y se necesita validar product-market fit. Para reducir el riesgo de buildear algo que nadie quiere.',
+    ejemplo: 'Caso: Validar app de delivery de comida. MVP tradicional (equivocado): app con lista de restaurantes, carrito, checkout, tracking y panel para restaurantes — 3 meses de desarrollo antes de validar. MVP smarter (correcto): landing page con lista de 5 restaurantes + pedidos por WhatsApp + fulfillment manual. En 2 semanas validaron: ¿la gente ordena online?, ¿cuánto pagan?, ¿qué tipo de comida prefieren?. Aprendizaje: el delivery era menos importante que la falta de opciones saludables en la zona. Pivotaron el negocio antes de invertir en desarrollo.',
+  },
   {
     codigo: 'prototipo-empatizar',
     nombre: 'Prototipo para Empatizar',
@@ -444,7 +451,14 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
     comoSeUsa: '1. Definir qué se quiere validar: no "si el producto es bueno" sino preguntas específicas — "¿es cómodo sostenerlo con una mano?", "¿el mecanismo de apertura es intuitivo?". 2. Elegir el material según la fidelidad necesaria: cartón (2 horas, muy bajo costo) para validar forma básica, foam (medio día) para textura y forma definida, madera balsa para detalles estructurales, impresión 3D para formas complejas con mecanismos, resina para acabado near-production. 3. Fabricar el prototipo con el material elegido. 4. Testear con usuarios reales en el contexto real de uso. 5. Documentar hallazgos específicos — qué funcionó, qué falló, qué sorprendió. 6. Subir fidelidad solo cuando la iteración anterior confirmó que la dirección es correcta — nunca escalar a impresión 3D si el cartón todavía tiene preguntas abiertas.',
     ejemplo: 'Diseño de dispensador de jabón para baño público. Iteración 1 (Cartón, 2 horas): forma cilíndrica básica — test: ¿es cómodo sostenerlo? Resultado: el diámetro era demasiado grande para mano promedio. Iteración 2 (Foam, 1 día): forma más delgada y con grip — test: ¿es fácil de recargar con manos mojadas? Hallazgo: la tapa superior requería dos manos. Iteración 3 (Impresión 3D, 1 semana): mecanismo de palanca funcional — test con agua real: ¿el ángulo de dispensación genera salpicaduras? Hallazgo crítico: 15° de ajuste en el ángulo eliminaron el 90% del splash. Decisión: ajustar ángulo y textura del grip antes de fabricar molde. Costo total: $200 en materiales vs $50,000 en moldes de producción.',
   },
-  { codigo: 'prototipo-funcional', nombre: 'Prototipo Funcional', descripcion: 'Prototipo que replica funcionalidades reales del producto para pruebas de usabilidad avanzadas.' },
+  {
+    codigo: 'prototipo-funcional',
+    nombre: 'Prototipo Funcional',
+    descripcion: 'Representación del producto que realmente "funciona", permitiendo a usuarios completar tareas reales con comportamiento automático. Es un paso más allá de los mockups interactivos porque tiene lógica real, no solo navegación. Permite testear no solo la usabilidad sino también la viabilidad técnica del producto.',
+    comoSeUsa: 'Proceso: (1) Definir flujos críticos — qué debe funcionar exactamente; (2) Priorizar features — solo lo esencial para el testing; (3) Desarrollar el prototipo con las herramientas elegidas (Figma+ProtoPie, Vercel, Firebase, FlutterFlow, etc.); (4) Testear con usuarios reales ejecutando tareas concretas; (5) Registrar hallazgos funcionales y de UX; (6) Iterar corrigiendo bugs y mejoras. Tipos: MVP (lanzamiento inicial), Pilot (versión limitada en producción), Beta (validación amplia), Feature Flag (funcionalidad toggled para testing gradual).',
+    cuandoUsarlo: 'En la fase de Develop cuando se necesita validación técnica real, no solo de usabilidad. Para pasar de diseño a desarrollo y validar viabilidad técnica. En testing de usabilidad avanzado donde los usuarios deben completar tareas reales. Para validación de negocio antes de comprometer recursos en desarrollo completo.',
+    ejemplo: 'Caso: Testear nueva funcionalidad de búsqueda en ecommerce. Desarrollo del prototipo con API básica + frontend funcional + 50 productos de datos dummy. Testing con 10 usuarios en 3 tareas: buscar camisa azul bajo $50, buscar regalo para alguien runner, comparar 3 productos similares. Hallazgos funcionales: filtro de precio incorrecto, búsqueda no entiende sinónimos, resultados no ordenables por rating. Hallazgos UX: filtro de color poco visible, usuarios quieren reseñas en resultados, necesitan "guardar búsqueda". Resultado: 15 bugs/mejoras identificados antes del desarrollo completo, ahorrando semanas de iteración.',
+  },
   {
     codigo: 'prototipo-mostrar',
     nombre: 'Prototipo para Mostrar',
