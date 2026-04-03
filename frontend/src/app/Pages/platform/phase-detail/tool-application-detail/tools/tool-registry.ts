@@ -39,6 +39,7 @@ import { BriefToolComponent } from './brief/brief-tool.component';
 import { MetaforaProblemaToolComponent } from './metafora-problema/metafora-problema-tool.component';
 import { MapaConvergenciaToolComponent } from './mapa-convergencia/mapa-convergencia-tool.component';
 import { BrainstormingToolComponent } from './brainstorming/brainstorming-tool.component';
+import { SeleccionIdeasToolComponent } from './seleccion-ideas/seleccion-ideas-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -244,6 +245,11 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: BrainstormingToolComponent,
     tabLabel: 'Brainstorming',
     tabIcon: 'pi-lightbulb',
+  },
+  'seleccion-ideas': {
+    component: SeleccionIdeasToolComponent,
+    tabLabel: 'Selección de Ideas',
+    tabIcon: 'pi-list-check',
   },
 };
 
