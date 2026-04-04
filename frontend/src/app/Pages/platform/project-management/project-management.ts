@@ -234,6 +234,10 @@ export class ProjectManagement implements OnInit {
     void this.router.navigate(['/platform/projects', id]);
   }
 
+  navigateToWiki(id: number): void {
+    void this.router.navigate(['/platform/projects', id, 'wiki']);
+  }
+
   // ─── Helpers ──────────────────────────────────────────────────────────────
   getEstadoLabel(estado: ProjectStatus): string {
     return this.estadoOptions.find((o) => o.value === estado)?.label ?? estado;

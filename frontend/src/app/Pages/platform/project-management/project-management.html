@@ -22,64 +22,101 @@
         <th>Proyecto</th>
         <th>Estado</th>
         <th>Propietario</th>
-        <th>Miembros</th>
-        <th>Activo</th>
+        <th class="text-center">Miembros</th>
         <th class="text-center">Acciones</th>
       </tr>
     </ng-template>
+
     <ng-template #body let-project>
-      <tr>
+      <tr class="project-row">
+
+        <!-- Nombre + descripción -->
         <td>
-          <div>
-            <p class="font-medium text-gray-800">{{ project.nombre }}</p>
-            @if (project.descripcion) {
-              <p class="text-xs text-gray-400 mt-0.5">{{ project.descripcion }}</p>
-            }
+          <div class="project-name-cell">
+            <div class="project-name-cell__indicator" [attr.data-estado]="project.estado"></div>
+            <div>
+              <p class="project-name-cell__name">{{ project.nombre }}</p>
+              @if (project.descripcion) {
+                <p class="project-name-cell__desc">{{ project.descripcion }}</p>
+              }
+              @if (!project.activo) {
+                <span class="project-name-cell__inactive">Inactivo</span>
+              }
+            </div>
           </div>
         </td>
+
+        <!-- Estado -->
         <td>
           <p-tag
             [value]="getEstadoLabel(project.estado)"
             [severity]="getEstadoSeverity(project.estado)"
           />
         </td>
-        <td class="text-gray-600 text-sm">{{ project.owner?.nombre ?? '—' }}</td>
-        <td class="text-gray-600 text-sm">{{ project.members?.length ?? 0 }}</td>
+
+        <!-- Propietario -->
         <td>
-          <p-tag
-            [value]="project.activo ? 'Activo' : 'Inactivo'"
-            [severity]="project.activo ? 'success' : 'danger'"
-          />
-        </td>
-        <td>
-          <div class="flex justify-center gap-1">
-            <p-button
-              icon="pi pi-eye"
-              [rounded]="true"
-              severity="secondary"
-              variant="text"
-              pTooltip="Ver proyecto"
-              tooltipPosition="top"
-              (onClick)="navigateToProject(project.id)"
-            />
-            <p-button
-              *hasPermission="'projects:update'"
-              icon="pi pi-pencil"
-              [rounded]="true"
-              severity="secondary"
-              variant="text"
-              pTooltip="Editar proyecto"
-              tooltipPosition="top"
-              (onClick)="openEditDialog(project)"
-            />
+          <div class="project-owner-cell">
+            <div class="project-owner-cell__avatar">
+              {{ (project.owner?.nombre ?? '?').charAt(0).toUpperCase() }}
+            </div>
+            <span class="project-owner-cell__name">{{ project.owner?.nombre ?? '—' }}</span>
           </div>
         </td>
+
+        <!-- Miembros -->
+        <td class="text-center">
+          <div class="project-members-badge">
+            <i class="pi pi-users"></i>
+            {{ project.members?.length ?? 0 }}
+          </div>
+        </td>
+
+        <!-- Acciones -->
+        <td>
+          <div class="project-actions">
+            <button
+              class="project-action project-action--tools"
+              (click)="navigateToProject(project.id)"
+              title="Ver herramientas y fases"
+            >
+              <i class="pi pi-th-large"></i>
+              <span>Herramientas</span>
+            </button>
+
+            <button
+              *hasPermission="'projects:update'"
+              class="project-action project-action--edit"
+              (click)="openEditDialog(project)"
+              title="Editar proyecto"
+            >
+              <i class="pi pi-pencil"></i>
+              <span>Editar</span>
+            </button>
+
+            <button
+              *hasPermission="'wiki:read'"
+              class="project-action project-action--wiki"
+              (click)="navigateToWiki(project.id)"
+              title="Ver wiki del proyecto"
+            >
+              <i class="pi pi-book"></i>
+              <span>Wiki</span>
+            </button>
+          </div>
+        </td>
+
       </tr>
     </ng-template>
+
     <ng-template #emptymessage>
       <tr>
-        <td colspan="6" class="text-center text-gray-400 py-8">
-          No se encontraron proyectos
+        <td colspan="5">
+          <div class="project-empty">
+            <i class="pi pi-folder-open"></i>
+            <p>No se encontraron proyectos</p>
+            <span>Creá uno nuevo usando el botón de arriba</span>
+          </div>
         </td>
       </tr>
     </ng-template>
