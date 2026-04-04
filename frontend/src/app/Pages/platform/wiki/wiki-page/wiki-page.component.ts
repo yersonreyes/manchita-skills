@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { WikiService } from '@core/services/wikiService/wiki.service';
 import { UiDialogService } from '@core/services/ui-dialog.service';
 import { HasPermissionDirective } from '@shared/directives/has-permission.directive';
+
 import { MarkdownComponent } from 'ngx-markdown';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
@@ -42,7 +43,7 @@ import { Textarea } from 'primeng/textarea';
             </h1>
           }
 
-          <div class="wiki-page__actions" *appHasPermission="'wiki:write'">
+          <div class="wiki-page__actions" *hasPermission="'wiki:write'">
             @if (mode() === 'view') {
               <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" (click)="mode.set('edit')" />
             } @else {

@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Tooltip } from 'primeng/tooltip';
 import { Button } from 'primeng/button';
 import { WikiTreeNode } from '../wiki.types';
-import { WikiTreeNodeComponent } from './wiki-tree-node.component';
 
 @Component({
   selector: 'app-wiki-tree-node',
