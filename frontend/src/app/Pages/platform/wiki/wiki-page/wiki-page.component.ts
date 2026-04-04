@@ -429,56 +429,153 @@ const EMOJI_GROUPS = [
       line-height: 1.6;
       resize: vertical;
     }
+    /* ─── Markdown preview — estilo GitHub ─── */
     .wiki-page__preview {
-      line-height: 1.7;
-      color: var(--p-text-color);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: #1f2328;
+      word-wrap: break-word;
+      max-width: 800px;
     }
-    .wiki-page__preview h1 { font-size: 1.875rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
-    .wiki-page__preview h2 { font-size: 1.5rem;   font-weight: 700; margin: 1.25rem 0 0.625rem; }
-    .wiki-page__preview h3 { font-size: 1.25rem;  font-weight: 600; margin: 1rem 0 0.5rem; }
-    .wiki-page__preview h4 { font-size: 1.125rem; font-weight: 600; margin: 0.875rem 0 0.5rem; }
-    .wiki-page__preview p  { margin: 0 0 0.875rem; }
+
+    /* Headings */
+    .wiki-page__preview h1,
+    .wiki-page__preview h2,
+    .wiki-page__preview h3,
+    .wiki-page__preview h4,
+    .wiki-page__preview h5,
+    .wiki-page__preview h6 {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-weight: 600;
+      line-height: 1.25;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .wiki-page__preview h1 {
+      font-size: 2em;
+      font-weight: 700;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid #d1d9e0;
+      margin-top: 0;
+    }
+    .wiki-page__preview h2 {
+      font-size: 1.5em;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid #d1d9e0;
+    }
+    .wiki-page__preview h3 { font-size: 1.25em; }
+    .wiki-page__preview h4 { font-size: 1em; }
+    .wiki-page__preview h5 { font-size: 0.875em; }
+    .wiki-page__preview h6 { font-size: 0.85em; color: #656d76; }
+
+    /* Párrafos y separadores */
+    .wiki-page__preview p { margin: 0 0 1rem; }
+    .wiki-page__preview hr {
+      height: 4px;
+      padding: 0;
+      margin: 1.5rem 0;
+      background-color: #d1d9e0;
+      border: 0;
+      border-radius: 2px;
+    }
+
+    /* Listas */
     .wiki-page__preview ul,
-    .wiki-page__preview ol { margin: 0 0 0.875rem; padding-left: 1.5rem; }
-    .wiki-page__preview ul { list-style: disc; }
-    .wiki-page__preview ol { list-style: decimal; }
-    .wiki-page__preview li { margin-bottom: 0.25rem; }
+    .wiki-page__preview ol { margin: 0 0 1rem; padding-left: 2em; }
+    .wiki-page__preview ul { list-style-type: disc; }
+    .wiki-page__preview ol { list-style-type: decimal; }
+    .wiki-page__preview li { margin: 0.25rem 0; }
+    .wiki-page__preview li > ul,
+    .wiki-page__preview li > ol { margin: 0.25rem 0 0; }
+
+    /* Task list (GitHub checkboxes) */
+    .wiki-page__preview input[type="checkbox"] {
+      margin: 0 0.25em 0.2em -1.4em;
+      vertical-align: middle;
+    }
+
+    /* Blockquote */
     .wiki-page__preview blockquote {
-      border-left: 3px solid var(--p-primary-color);
-      margin: 0 0 0.875rem;
-      padding: 0.25rem 0 0.25rem 1rem;
-      color: var(--p-text-muted-color);
-      font-style: italic;
+      margin: 0 0 1rem;
+      padding: 0 1em;
+      color: #656d76;
+      border-left: 4px solid #d1d9e0;
     }
-    .wiki-page__preview code {
-      background: var(--p-surface-100);
-      border: 1px solid var(--p-surface-200);
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.875em;
+    .wiki-page__preview blockquote > :last-child { margin-bottom: 0; }
+
+    /* Código inline */
+    .wiki-page__preview :not(pre) > code {
+      padding: 0.2em 0.4em;
+      margin: 0;
+      font-size: 85%;
+      white-space: break-spaces;
+      background-color: #eff1f3;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
     }
+
+    /* Bloques de código */
     .wiki-page__preview pre {
-      background: var(--p-surface-900, #1e1e2e);
-      color: var(--p-surface-0, #fff);
-      border-radius: 8px;
+      margin: 0 0 1rem;
       padding: 1rem;
-      margin: 0 0 0.875rem;
-      overflow-x: auto;
+      overflow: auto;
+      font-size: 85%;
+      line-height: 1.45;
+      background-color: #f6f8fa;
+      border-radius: 6px;
+      border: 1px solid #d1d9e0;
     }
     .wiki-page__preview pre code {
-      background: none;
-      border: none;
+      display: inline;
       padding: 0;
-      color: inherit;
-      font-size: 0.875rem;
+      margin: 0;
+      overflow: visible;
+      font-size: 100%;
+      word-break: normal;
+      white-space: pre;
+      background: transparent;
+      border: 0;
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
     }
-    .wiki-page__preview a { color: var(--p-primary-color); text-decoration: underline; }
-    .wiki-page__preview hr { border: none; border-top: 1px solid var(--p-surface-200); margin: 1.5rem 0; }
-    .wiki-page__preview table { width: 100%; border-collapse: collapse; margin: 0 0 0.875rem; }
+
+    /* Links */
+    .wiki-page__preview a {
+      color: #0969da;
+      text-decoration: none;
+    }
+    .wiki-page__preview a:hover { text-decoration: underline; }
+
+    /* Imágenes */
+    .wiki-page__preview img {
+      max-width: 100%;
+      box-sizing: content-box;
+      border-radius: 6px;
+    }
+
+    /* Tablas */
+    .wiki-page__preview table {
+      width: max-content;
+      max-width: 100%;
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin: 0 0 1rem;
+      overflow: auto;
+      display: block;
+    }
+    .wiki-page__preview tr { background-color: #ffffff; border-top: 1px solid #d1d9e0; }
+    .wiki-page__preview tr:nth-child(2n) { background-color: #f6f8fa; }
     .wiki-page__preview th,
-    .wiki-page__preview td { padding: 8px 12px; border: 1px solid var(--p-surface-200); }
-    .wiki-page__preview th { background: var(--p-surface-100); font-weight: 600; }
+    .wiki-page__preview td {
+      padding: 6px 13px;
+      border: 1px solid #d1d9e0;
+    }
+    .wiki-page__preview th { font-weight: 600; background-color: #f6f8fa; }
+
+    /* Strong / em */
+    .wiki-page__preview strong { font-weight: 600; }
+    .wiki-page__preview em { font-style: italic; }
+    .wiki-page__preview del { text-decoration: line-through; color: #656d76; }
   `],
 })
 export class WikiPageComponent implements OnInit {
