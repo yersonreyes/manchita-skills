@@ -118,6 +118,15 @@ type Tab = 'file' | 'url' | 'color';
               </button>
             }
           </div>
+          @if (selectedColor()) {
+            <div class="wbu-colors__confirm">
+              <p-button
+                label="Aplicar gradiente"
+                icon="pi pi-check"
+                (click)="confirm()"
+              />
+            </div>
+          }
         </div>
       }
 
@@ -279,6 +288,11 @@ type Tab = 'file' | 'url' | 'color';
       margin: 0 0 14px;
       font-size: 0.82rem;
       color: var(--p-text-muted-color);
+    }
+    .wbu-colors__confirm {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
     }
     .wbu-colors__grid {
       display: grid;
