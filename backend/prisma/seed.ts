@@ -13,6 +13,9 @@ const PERMISSIONS = [
   { codigo: 'permissions:read', descripcion: 'Leer permisos y roles' },
   { codigo: 'permissions:update', descripcion: 'Actualizar permisos y roles' },
   { codigo: 'assets:upload', descripcion: 'Subir archivos' },
+  { codigo: 'wiki:read', descripcion: 'Ver páginas de la wiki del proyecto' },
+  { codigo: 'wiki:write', descripcion: 'Crear y editar páginas de la wiki' },
+  { codigo: 'wiki:delete', descripcion: 'Eliminar páginas de la wiki' },
 ];
 
 const ROLES = [
@@ -28,6 +31,9 @@ const ROLES = [
       'permissions:read',
       'permissions:update',
       'assets:upload',
+      'wiki:read',
+      'wiki:write',
+      'wiki:delete',
     ],
   },
   {
@@ -39,13 +45,15 @@ const ROLES = [
       'users:update',
       'permissions:read',
       'assets:upload',
+      'wiki:read',
+      'wiki:write',
     ],
   },
   {
     codigo: 'VIEWER',
     nombre: 'Visualizador',
     descripcion: 'Solo puede leer contenido',
-    permissions: ['users:read', 'permissions:read'],
+    permissions: ['users:read', 'permissions:read', 'wiki:read'],
   },
 ];
 

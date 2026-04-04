@@ -57,6 +57,25 @@ export const PLATFORM_ROUTES: Routes = [
         data: { permissions: ['tool-applications:read'] },
       },
       {
+        path: 'projects/:id/wiki',
+        loadComponent: () =>
+          import('./wiki/wiki-layout/wiki-layout.component').then((m) => m.WikiLayoutComponent),
+        canActivate: [permissionGuard],
+        data: { permissions: ['wiki:read'] },
+        children: [
+          {
+            path: ':pageId',
+            loadComponent: () =>
+              import('./wiki/wiki-page/wiki-page.component').then((m) => m.WikiPageComponent),
+          },
+          {
+            path: '',
+            loadComponent: () =>
+              import('./wiki/wiki-page/wiki-page.component').then((m) => m.WikiPageComponent),
+          },
+        ],
+      },
+      {
         path: '',
         redirectTo: 'userManagement',
         pathMatch: 'full',

@@ -15,6 +15,7 @@ import { ProjectModule } from './project/project.module';
 import { ProjectPhaseModule } from './project-phase/project-phase.module';
 import { ToolApplicationModule } from './tool-application/tool-application.module';
 import { UserModule } from './user/user.module';
+import { WikiModule } from './wiki/wiki.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { UserModule } from './user/user.module';
     ProjectModule,
     ProjectPhaseModule,
     ToolApplicationModule,
+    WikiModule,
   ],
   providers: [
     {

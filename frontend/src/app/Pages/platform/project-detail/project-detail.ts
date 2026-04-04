@@ -442,4 +442,8 @@ export class ProjectDetailComponent implements OnInit {
   goBack(): void {
     void this.router.navigate(['/platform/projects']);
   }
+
+  goToWiki(): void {
+    void this.router.navigate(['/platform/projects', this.projectId, 'wiki']);
+  }
 }

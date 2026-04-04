@@ -10,6 +10,14 @@
     (onClick)="goBack()"
   />
   <p-button
+    *hasPermission="'wiki:read'"
+    label="Wiki"
+    icon="pi pi-book"
+    severity="secondary"
+    variant="outlined"
+    (onClick)="goToWiki()"
+  />
+  <p-button
     *hasPermission="'project-phases:create'"
     label="Agregar fase"
     icon="pi pi-plus"
