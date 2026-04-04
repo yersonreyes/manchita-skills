@@ -8,36 +8,49 @@
   ],
   "scripts": {
     "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm run backend:dev\" \"npm run frontend:start\"",
-
     "build": "npm run backend:build && npm run frontend:build",
     "test": "npm run backend:test && npm run frontend:test",
-
-    "backend:dev":       "npm run start:dev  --workspace=backend",
-    "backend:start":     "npm run start      --workspace=backend",
-    "backend:build":     "npm run build      --workspace=backend",
-    "backend:test":      "npm run test       --workspace=backend",
-    "backend:test:e2e":  "npm run test:e2e   --workspace=backend",
-    "backend:test:cov":  "npm run test:cov   --workspace=backend",
-    "backend:lint":      "npm run lint       --workspace=backend",
-    "backend:format":    "npm run format     --workspace=backend",
-
+    "backend:dev": "npm run start:dev  --workspace=backend",
+    "backend:start": "npm run start      --workspace=backend",
+    "backend:build": "npm run build      --workspace=backend",
+    "backend:test": "npm run test       --workspace=backend",
+    "backend:test:e2e": "npm run test:e2e   --workspace=backend",
+    "backend:test:cov": "npm run test:cov   --workspace=backend",
+    "backend:lint": "npm run lint       --workspace=backend",
+    "backend:format": "npm run format     --workspace=backend",
     "backend:db:generate": "npm run db:generate --workspace=backend",
-    "backend:db:migrate":  "npm run db:migrate  --workspace=backend",
-    "backend:db:seed":     "npm run db:seed     --workspace=backend",
-    "backend:db:reset":    "npm run db:reset    --workspace=backend",
-
-    "backend:docker:up":    "npm run docker:dev:up    --workspace=backend",
-    "backend:docker:down":  "npm run docker:dev:down  --workspace=backend",
+    "backend:db:migrate": "npm run db:migrate  --workspace=backend",
+    "backend:db:seed": "npm run db:seed     --workspace=backend",
+    "backend:db:reset": "npm run db:reset    --workspace=backend",
+    "backend:docker:up": "npm run docker:dev:up    --workspace=backend",
+    "backend:docker:down": "npm run docker:dev:down  --workspace=backend",
     "backend:docker:reset": "npm run docker:dev:reset --workspace=backend",
-
-    "frontend:start":      "npm run start      --workspace=frontend",
-    "frontend:build":      "npm run build      --workspace=frontend",
+    "frontend:start": "npm run start      --workspace=frontend",
+    "frontend:build": "npm run build      --workspace=frontend",
     "frontend:build:prod": "npm run build:prod --workspace=frontend",
-    "frontend:test":       "npm run test       --workspace=frontend",
+    "frontend:test": "npm run test       --workspace=frontend",
     "frontend:test:watch": "npm run test:watch --workspace=frontend",
-    "frontend:lint":       "npm run lint       --workspace=frontend"
+    "frontend:lint": "npm run lint       --workspace=frontend"
   },
   "devDependencies": {
     "concurrently": "^9.0.0"
+  },
+  "dependencies": {
+    "@tiptap/core": "^3.22.1",
+    "@tiptap/extension-code-block-lowlight": "^3.22.1",
+    "@tiptap/extension-image": "^3.22.1",
+    "@tiptap/extension-link": "^3.22.1",
+    "@tiptap/extension-placeholder": "^3.22.1",
+    "@tiptap/extension-table": "^3.22.1",
+    "@tiptap/extension-table-cell": "^3.22.1",
+    "@tiptap/extension-table-header": "^3.22.1",
+    "@tiptap/extension-table-row": "^3.22.1",
+    "@tiptap/extension-task-item": "^3.22.1",
+    "@tiptap/extension-task-list": "^3.22.1",
+    "@tiptap/pm": "^3.22.1",
+    "@tiptap/starter-kit": "^3.22.1",
+    "lowlight": "^3.3.0",
+    "ngx-tiptap": "^14.0.1",
+    "tiptap-markdown": "^0.9.0"
   }
 }

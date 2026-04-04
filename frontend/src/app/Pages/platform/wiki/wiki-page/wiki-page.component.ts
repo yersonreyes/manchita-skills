@@ -5,11 +5,10 @@ import { ActivatedRoute } from '@angular/router';
 import { WikiService } from '@core/services/wikiService/wiki.service';
 import { UiDialogService } from '@core/services/ui-dialog.service';
 import { HasPermissionDirective } from '@shared/directives/has-permission.directive';
-import { MarkdownComponent } from 'ngx-markdown';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
-import { Textarea } from 'primeng/textarea';
 import { WikiBannerUploaderComponent } from '../wiki-banner-uploader/wiki-banner-uploader.component';
+import { WikiEditorComponent } from './wiki-editor.component';
 
 // ─── Banners disponibles (gradientes) ────────────────────────────────────────
 
@@ -56,7 +55,7 @@ const EMOJI_GROUPS = [
 @Component({
   selector: 'app-wiki-page',
   standalone: true,
-  imports: [Button, FormsModule, NgStyle, HasPermissionDirective, InputText, MarkdownComponent, Textarea, WikiBannerUploaderComponent],
+  imports: [Button, FormsModule, NgStyle, HasPermissionDirective, InputText, WikiBannerUploaderComponent, WikiEditorComponent],
   encapsulation: ViewEncapsulation.None,
   template: `
     @if (loading()) {
@@ -165,10 +164,14 @@ const EMOJI_GROUPS = [
             }
 
             <div class="wiki-page__actions" *hasPermission="'wiki:write'">
-              @if (mode() === 'view') {
-                <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" (click)="mode.set('edit')" />
-              } @else {
-                <p-button label="Vista previa" icon="pi pi-eye" severity="secondary" [outlined]="true" (click)="mode.set('view')" />
+              <p-button
+                [label]="rawMode() ? 'Editor visual' : 'Markdown'"
+                [icon]="rawMode() ? 'pi pi-eye' : 'pi pi-code'"
+                severity="secondary"
+                [outlined]="true"
+                (click)="rawMode.update(v => !v)"
+              />
+              @if (dirty()) {
                 <p-button label="Guardar" icon="pi pi-save" [loading]="saving()" (click)="save()" />
               }
             </div>
@@ -176,20 +179,25 @@ const EMOJI_GROUPS = [
         </div>
 
         <!-- ─── Cuerpo ──────────────────────────────────────────────────────── -->
-        <div class="wiki-page__body">
-          @if (mode() === 'view') {
-            <markdown class="wiki-page__preview" [data]="content()" />
-          } @else {
+        @if (rawMode()) {
+          <div class="wiki-page__body">
             <textarea
-              pTextarea
-              class="wiki-page__editor"
-              [(ngModel)]="content"
+              class="wiki-page__raw-editor"
+              [value]="content()"
+              (input)="onRawInput($event)"
               placeholder="Escribí en markdown..."
-              [rows]="30"
-              [autoResize]="false"
+              spellcheck="false"
             ></textarea>
-          }
-        </div>
+          </div>
+        } @else {
+          <div class="wiki-page__body wiki-page__preview">
+            <app-wiki-editor
+              [content]="content()"
+              [editable]="canEdit()"
+              (contentChanged)="onContentChange($event)"
+            />
+          </div>
+        }
 
       </div>
     }
@@ -421,13 +429,20 @@ const EMOJI_GROUPS = [
       overflow-y: auto;
       padding: 0 32px 32px;
     }
-    app-wiki-page .wiki-page__editor {
+    /* Raw markdown editor */
+    app-wiki-page .wiki-page__raw-editor {
       width: 100%;
-      min-height: 500px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      line-height: 1.6;
-      resize: vertical;
+      height: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      padding: 0;
+      font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: #1f2328;
+      background: transparent;
+      tab-size: 2;
     }
 
     /* ─── Markdown preview — estilo GitHub ─── */
@@ -437,7 +452,6 @@ const EMOJI_GROUPS = [
       line-height: 1.5;
       color: #1f2328;
       word-wrap: break-word;
-      max-width: 800px;
     }
 
     /* Headings */
@@ -611,12 +625,14 @@ export class WikiPageComponent implements OnInit {
   page = signal<{ id: number; titulo: string; contenido: string; icono: string | null; banner: string | null } | null>(null);
   loading = signal(false);
   saving = signal(false);
-  mode = signal<'view' | 'edit'>('view');
+  dirty = signal(false);
   editingTitle = signal(false);
   title = signal('');
   content = signal('');
   icon = signal<string | null>(null);
   banner = signal<string | null>(null);
+  canEdit = signal(true); // TODO: check wiki:write permission
+  rawMode = signal(false);
 
   showEmojiPicker = signal(false);
   uploaderVisible = signal(false);
@@ -635,7 +651,7 @@ export class WikiPageComponent implements OnInit {
 
   async loadPage(id: number): Promise<void> {
     this.loading.set(true);
-    this.mode.set('view');
+    this.dirty.set(false);
     this.showEmojiPicker.set(false);
     try {
       const p = await this.wikiService.getById(id);
@@ -710,6 +726,17 @@ export class WikiPageComponent implements OnInit {
     }
   }
 
+  onContentChange(md: string): void {
+    this.content.set(md);
+    this.dirty.set(true);
+  }
+
+  onRawInput(event: Event): void {
+    const value = (event.target as HTMLTextAreaElement).value;
+    this.content.set(value);
+    this.dirty.set(true);
+  }
+
   async save(): Promise<void> {
     const p = this.page();
     if (!p) return;
@@ -717,7 +744,7 @@ export class WikiPageComponent implements OnInit {
     try {
       await this.wikiService.update(p.id, { contenido: this.content() });
       this.page.set({ ...p, contenido: this.content() });
-      this.mode.set('view');
+      this.dirty.set(false);
       this.uiDialog.showSuccess('Guardado', 'La página fue guardada correctamente.');
     } catch {
       this.uiDialog.showError('Error', 'No se pudo guardar la página.');
