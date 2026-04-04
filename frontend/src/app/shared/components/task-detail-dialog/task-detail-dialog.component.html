@@ -18,145 +18,177 @@
   </ng-template>
 
   <div class="task-panel__body">
-    <!-- ─── ATRIBUTOS ──────────────────────────────────────────────────────── -->
-    <div class="task-panel__attributes">
-      <!-- Título -->
-      <div class="task-panel__field task-panel__field--full">
-        <label class="task-panel__label">Titulo <span class="task-panel__required">*</span></label>
-        <input
-          pInputText
-          [(ngModel)]="form.titulo"
-          placeholder="Que hay que hacer?"
-          class="w-full"
-        />
-      </div>
-
-      <!-- Estado + Prioridad -->
-      <div class="task-panel__row">
-        <div class="task-panel__field">
-          <label class="task-panel__label">Estado <span class="task-panel__required">*</span></label>
-          <p-select
-            [(ngModel)]="form.statusId"
-            [options]="statusOptions"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Selecciona un estado..."
-            appendTo="body"
-            class="w-full"
-          />
-        </div>
-
-        <div class="task-panel__field">
-          <label class="task-panel__label">Prioridad</label>
-          <p-select
-            [(ngModel)]="form.prioridad"
-            [options]="priorityOptions"
-            optionLabel="label"
-            optionValue="value"
-            appendTo="body"
-            class="w-full"
-          />
-        </div>
-      </div>
-
-      <!-- Responsable + Estimacion -->
-      <div class="task-panel__row">
-        <div class="task-panel__field">
-          <label class="task-panel__label">Responsable</label>
-          <p-select
-            [(ngModel)]="form.assigneeId"
-            [options]="memberOptions"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Sin asignar"
-            appendTo="body"
-            class="w-full"
-          />
-        </div>
-
-        <div class="task-panel__field">
-          <label class="task-panel__label">Estimacion (hs)</label>
-          <p-inputnumber
-            [(ngModel)]="form.estimacion"
-            [min]="0"
-            [maxFractionDigits]="1"
-            placeholder="Ej: 2.5"
-            class="w-full"
-          />
-        </div>
-      </div>
-
-      <!-- Fechas -->
-      <div class="task-panel__row">
-        <div class="task-panel__field">
-          <label class="task-panel__label">Fecha de inicio</label>
-          <p-datepicker
-            [(ngModel)]="form.fechaInicio"
-            [showClear]="true"
-            appendTo="body"
-            dateFormat="dd/mm/yy"
-            placeholder="Selecciona fecha..."
-            class="w-full"
-          />
-        </div>
-
-        <div class="task-panel__field">
-          <label class="task-panel__label">Fecha de vencimiento</label>
-          <p-datepicker
-            [(ngModel)]="form.fechaVencimiento"
-            [showClear]="true"
-            appendTo="body"
-            dateFormat="dd/mm/yy"
-            placeholder="Selecciona fecha..."
-            class="w-full"
-          />
-        </div>
-      </div>
-
-      <!-- Etiquetas -->
-      <div class="task-panel__field task-panel__field--full">
-        <label class="task-panel__label">Etiquetas</label>
-        <p-multiselect
-          [(ngModel)]="form.tagIds"
-          [options]="tagOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Selecciona etiquetas..."
-          appendTo="body"
-          class="w-full"
-          display="chip"
-        />
-      </div>
-
-      <!-- Tarea padre (solo creacion) -->
-      @if (!isEdit) {
-        <div class="task-panel__field task-panel__field--full">
-          <label class="task-panel__label">Tarea padre</label>
-          <p-select
-            [(ngModel)]="form.parentId"
-            [options]="parentOptions"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Sin tarea padre"
-            appendTo="body"
-            class="w-full"
-            [filter]="true"
-            filterBy="label"
-          />
-        </div>
-      }
+    <!-- ─── TITULO (full width, protagonista) ─────────────────────────────── -->
+    <div class="task-panel__title-bar">
+      <input
+        pInputText
+        [(ngModel)]="form.titulo"
+        placeholder="Que hay que hacer?"
+        class="task-panel__title-input"
+      />
     </div>
 
-    <!-- ─── DESCRIPCION (Markdown Editor) ──────────────────────────────────── -->
-    <div class="task-panel__description">
-      <label class="task-panel__label">Descripcion</label>
-      <div class="task-panel__editor-wrapper">
-        @if (visible()) {
-          <app-wiki-editor
-            [content]="form.descripcion"
-            [editable]="true"
-            (contentChanged)="form.descripcion = $event"
+    <!-- ─── SPLIT: sidebar + editor ───────────────────────────────────────── -->
+    <div class="task-panel__split">
+
+      <!-- Sidebar: atributos compactos -->
+      <aside class="task-panel__sidebar">
+        <div class="task-panel__meta-group">
+          <div class="task-panel__meta">
+            <span class="task-panel__meta-label"><i class="pi pi-circle-fill"></i> Estado</span>
+            <p-select
+              [(ngModel)]="form.statusId"
+              [options]="statusOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Estado..."
+              appendTo="body"
+              class="w-full"
+              size="small"
+            />
+          </div>
+
+          <div class="task-panel__meta">
+            <span class="task-panel__meta-label"><i class="pi pi-flag"></i> Prioridad</span>
+            <p-select
+              [(ngModel)]="form.prioridad"
+              [options]="priorityOptions"
+              optionLabel="label"
+              optionValue="value"
+              appendTo="body"
+              class="w-full"
+              size="small"
+            />
+          </div>
+
+          <div class="task-panel__meta">
+            <span class="task-panel__meta-label"><i class="pi pi-user"></i> Responsable</span>
+            <p-select
+              [(ngModel)]="form.assigneeId"
+              [options]="memberOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Sin asignar"
+              appendTo="body"
+              class="w-full"
+              size="small"
+            />
+          </div>
+
+          <div class="task-panel__meta">
+            <span class="task-panel__meta-label"><i class="pi pi-clock"></i> Estimacion</span>
+            <p-inputnumber
+              [(ngModel)]="form.estimacion"
+              [min]="0"
+              [maxFractionDigits]="1"
+              placeholder="Ej: 2.5 hs"
+              class="w-full"
+              size="small"
+            />
+          </div>
+        </div>
+
+        <div class="task-panel__meta-divider"></div>
+
+        <div class="task-panel__meta-group">
+          <div class="task-panel__meta">
+            <span class="task-panel__meta-label"><i class="pi pi-calendar"></i> Inicio</span>
+            <p-datepicker
+              [(ngModel)]="form.fechaInicio"
+              [showClear]="true"
+              appendTo="body"
+              dateFormat="dd/mm/yy"
+              placeholder="Sin fecha"
+              class="w-full"
+              />
+          </div>
+
+          <div class="task-panel__meta">
+            <span class="task-panel__meta-label"><i class="pi pi-calendar-clock"></i> Vencimiento</span>
+            <p-datepicker
+              [(ngModel)]="form.fechaVencimiento"
+              [showClear]="true"
+              appendTo="body"
+              dateFormat="dd/mm/yy"
+              placeholder="Sin fecha"
+              class="w-full"
+              />
+          </div>
+        </div>
+
+        <div class="task-panel__meta-divider"></div>
+
+        <div class="task-panel__meta-group">
+          <div class="task-panel__meta">
+            <span class="task-panel__meta-label"><i class="pi pi-tags"></i> Etiquetas</span>
+            <p-multiselect
+              [(ngModel)]="form.tagIds"
+              [options]="tagOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Agregar..."
+              appendTo="body"
+              class="w-full"
+              display="chip"
+              size="small"
+            />
+          </div>
+
+          @if (!isEdit) {
+            <div class="task-panel__meta">
+              <span class="task-panel__meta-label"><i class="pi pi-sitemap"></i> Tarea padre</span>
+              <p-select
+                [(ngModel)]="form.parentId"
+                [options]="parentOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Ninguna"
+                appendTo="body"
+                class="w-full"
+                [filter]="true"
+                filterBy="label"
+                size="small"
+              />
+            </div>
+          }
+        </div>
+      </aside>
+
+      <!-- Main: editor de descripcion -->
+      <div class="task-panel__content">
+        <div class="task-panel__content-header">
+          <span class="task-panel__content-title">
+            <i class="pi pi-file-edit"></i> Descripcion
+          </span>
+          <p-selectbutton
+            [options]="descriptionModeOptions"
+            [ngModel]="descriptionMode()"
+            (ngModelChange)="descriptionMode.set($event)"
+            optionLabel="label"
+            optionValue="value"
+            size="small"
           />
+        </div>
+
+        @if (descriptionMode() === 'visual') {
+          <div class="task-panel__editor-wrapper">
+            @if (visible()) {
+              <app-wiki-editor
+                [content]="form.descripcion"
+                [editable]="true"
+                (contentChanged)="form.descripcion = $event"
+              />
+            }
+          </div>
+        } @else {
+          <textarea
+            pTextarea
+            [(ngModel)]="form.descripcion"
+            class="task-panel__raw-editor"
+            placeholder="Escribi markdown directamente..."
+            [autoResize]="false"
+            rows="10"
+          ></textarea>
         }
       </div>
     </div>

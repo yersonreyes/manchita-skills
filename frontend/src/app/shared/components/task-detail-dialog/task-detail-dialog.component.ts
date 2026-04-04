@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, effect, input, output } from '@angular/core';
+import { Component, ViewEncapsulation, effect, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TaskResDto, TaskStatusDto, TaskTagDto } from '@core/services/taskService/task.res.dto';
 import { CreateTaskReqDto, TaskPriority, UpdateTaskReqDto } from '@core/services/taskService/task.req.dto';
@@ -12,6 +12,8 @@ import { InputText } from 'primeng/inputtext';
 import { InputNumber } from 'primeng/inputnumber';
 import { DatePicker } from 'primeng/datepicker';
 import { Tooltip } from 'primeng/tooltip';
+import { Textarea } from 'primeng/textarea';
+import { SelectButton } from 'primeng/selectbutton';
 
 interface SelectOption {
   label: string;
@@ -45,6 +47,8 @@ interface FormState {
     InputNumber,
     DatePicker,
     Tooltip,
+    Textarea,
+    SelectButton,
     WikiEditorComponent,
   ],
   encapsulation: ViewEncapsulation.None,
@@ -66,6 +70,12 @@ export class TaskDetailDialogComponent {
 
   form: FormState = this.emptyForm();
   showDeleteConfirm = false;
+  descriptionMode = signal<'visual' | 'raw'>('visual');
+
+  readonly descriptionModeOptions = [
+    { label: 'Visual', value: 'visual', icon: 'pi pi-eye' },
+    { label: 'Markdown', value: 'raw', icon: 'pi pi-code' },
+  ];
 
   readonly priorityOptions: SelectOption[] = [
     { label: 'Urgente', value: 'URGENT' },
@@ -106,6 +116,7 @@ export class TaskDetailDialogComponent {
         }
       }
       this.showDeleteConfirm = false;
+      this.descriptionMode.set('visual');
     });
   }
 

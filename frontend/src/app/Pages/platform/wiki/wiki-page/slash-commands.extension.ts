@@ -177,7 +177,9 @@ function showTablePicker(editor: Editor, range: Range): void {
   picker.appendChild(label);
   picker.appendChild(grid);
   overlay.appendChild(picker);
-  document.body.appendChild(overlay);
+
+  const drawer = editor.view.dom.closest('.p-drawer');
+  (drawer || document.body).appendChild(overlay);
 
   function cleanup(): void {
     overlay.remove();
@@ -208,18 +210,27 @@ function renderMenu() {
   let popup: HTMLDivElement | null = null;
   let items: SlashCommandItem[] = [];
   let selectedIndex = 0;
-  let commandFn: ((item: SlashCommandItem) => void) | null = null;
-  let pendingClick = false;
+  let capturedEditor: Editor | null = null;
+  let capturedRange: Range | null = null;
+  let mountedInDrawer = false;
 
-  function createPopup(): HTMLDivElement {
+  function createPopup(editor: Editor): HTMLDivElement {
     const el = document.createElement('div');
     el.className = 'wiki-slash-menu';
-
-    // Evitar que los eventos del popup lleguen a ProseMirror
-    // (sin esto, el click quita foco al editor y Suggestion dispara onExit antes del click)
     el.addEventListener('mousedown', (e) => e.preventDefault());
 
-    document.body.appendChild(el);
+    // Montar DENTRO del Drawer si existe — la mascara modal del Drawer
+    // intercepta pointer events de elementos en document.body
+    const drawer = editor.view.dom.closest('.p-drawer');
+    if (drawer) {
+      el.style.position = 'absolute';
+      mountedInDrawer = true;
+      drawer.appendChild(el);
+    } else {
+      mountedInDrawer = false;
+      document.body.appendChild(el);
+    }
+
     return el;
   }
 
@@ -228,13 +239,18 @@ function renderMenu() {
       popup.remove();
       popup = null;
     }
+    capturedEditor = null;
+    capturedRange = null;
   }
 
   function selectItem(index: number): void {
-    pendingClick = true;
-    if (commandFn && items[index]) commandFn(items[index]);
-    pendingClick = false;
+    const ed = capturedEditor;
+    const range = capturedRange;
+    const item = items[index];
     destroyPopup();
+    if (ed && range && item) {
+      item.command(ed, range);
+    }
   }
 
   function updatePopup(): void {
@@ -267,7 +283,7 @@ function renderMenu() {
       .join('');
 
     popup.querySelectorAll<HTMLButtonElement>('.wiki-slash-menu__item').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('mousedown', (e) => {
         e.preventDefault();
         e.stopPropagation();
         selectItem(Number(btn.dataset['index']));
@@ -290,16 +306,25 @@ function renderMenu() {
     if (!popup || !clientRect) return;
     const rect = clientRect();
     if (!rect) return;
-    popup.style.left = `${rect.left}px`;
-    popup.style.top = `${rect.bottom + 6}px`;
+
+    if (mountedInDrawer && popup.parentElement) {
+      // Convertir coords de viewport a coords relativas al Drawer
+      const parentRect = popup.parentElement.getBoundingClientRect();
+      popup.style.left = `${rect.left - parentRect.left}px`;
+      popup.style.top = `${rect.bottom - parentRect.top + 6}px`;
+    } else {
+      popup.style.left = `${rect.left}px`;
+      popup.style.top = `${rect.bottom + 6}px`;
+    }
   }
 
   return {
     onStart(props: any) {
-      popup = createPopup();
+      popup = createPopup(props.editor);
       items = props.items;
       selectedIndex = 0;
-      commandFn = props.command;
+      capturedEditor = props.editor;
+      capturedRange = props.range;
       updatePopup();
       positionPopup(props.clientRect);
     },
@@ -307,7 +332,8 @@ function renderMenu() {
     onUpdate(props: any) {
       items = props.items;
       selectedIndex = 0;
-      commandFn = props.command;
+      capturedEditor = props.editor;
+      capturedRange = props.range;
       updatePopup();
       positionPopup(props.clientRect);
     },
@@ -338,8 +364,6 @@ function renderMenu() {
     },
 
     onExit() {
-      // Si hay un click en curso, dejar que termine antes de destruir
-      if (pendingClick) return;
       destroyPopup();
     },
   };

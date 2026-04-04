@@ -91,7 +91,7 @@ const lowlight = createLowlight(common);
     /* Slash commands menu */
     .wiki-slash-menu {
       position: fixed;
-      z-index: 1000;
+      z-index: 11000;
       background: white;
       border: 1px solid var(--p-surface-200);
       border-radius: 10px;
@@ -164,7 +164,7 @@ const lowlight = createLowlight(common);
     .wiki-table-picker-overlay {
       position: fixed;
       inset: 0;
-      z-index: 1001;
+      z-index: 11001;
       display: flex;
       align-items: center;
       justify-content: center;
