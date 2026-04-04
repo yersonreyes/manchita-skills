@@ -42,8 +42,13 @@ import {
             (click)="toggleReport()"
             [class.eq__btn--active]="showReport()"
           >
-            <i class="pi pi-chart-bar"></i>
-            Informes {{ reports().length ? '(' + reports().length + ')' : '' }}
+            @if (showReport()) {
+              <i class="pi pi-arrow-left"></i>
+              Formulario
+            } @else {
+              <i class="pi pi-chart-bar"></i>
+              Informes {{ reports().length ? '(' + reports().length + ')' : '' }}
+            }
           </button>
           <button
             class="eq__btn eq__btn--primary"
@@ -307,6 +312,7 @@ import {
       border-radius: 8px;
       font-size: 0.8125rem;
       font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
       border: 1px solid transparent;
       transition: all 0.15s;
@@ -331,7 +337,7 @@ import {
       border-color: #ea580c;
     }
 
-    .eq__btn--primary:hover:not(:disabled) { background: #c2410c; }
+    .eq__btn--primary:hover:not(:disabled) { opacity: 0.9; }
 
     .eq__btn-add-qa {
       display: inline-flex;
@@ -344,6 +350,7 @@ import {
       color: #ea580c;
       font-size: 0.75rem;
       font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
       transition: all 0.15s;
       margin-left: auto;

@@ -53,6 +53,11 @@ import { PrototipoRapidoToolComponent } from './prototipo-rapido/prototipo-rapid
 import { PrototipoFisicoToolComponent } from './prototipo-fisico/prototipo-fisico-tool.component';
 import { PrototipoFuncionalToolComponent } from './prototipo-funcional/prototipo-funcional-tool.component';
 import { MvpToolComponent } from './mvp/mvp-tool.component';
+import { RoadmapPrototipadoToolComponent } from './roadmap-prototipado/roadmap-prototipado-tool.component';
+import { MatrizHipotesisToolComponent } from './matriz-hipotesis/matriz-hipotesis-tool.component';
+import { MatrizFeedbackToolComponent } from './matriz-feedback/matriz-feedback-tool.component';
+import { TestCuantitativoToolComponent } from './test-cuantitativo/test-cuantitativo-tool.component';
+import { TestUsuarioToolComponent } from './test-usuario/test-usuario-tool.component';
 
 export interface ToolMeta {
   component: Type<unknown>;
@@ -328,6 +333,31 @@ export const TOOL_REGISTRY: Record<string, ToolMeta> = {
     component: MvpToolComponent,
     tabLabel: 'MVP',
     tabIcon: 'pi-rocket',
+  },
+  'roadmap-prototipado': {
+    component: RoadmapPrototipadoToolComponent,
+    tabLabel: 'Roadmap de Prototipado',
+    tabIcon: 'pi-calendar',
+  },
+  'matriz-hipotesis': {
+    component: MatrizHipotesisToolComponent,
+    tabLabel: 'Matriz de Hipótesis',
+    tabIcon: 'pi-table',
+  },
+  'matriz-feedback': {
+    component: MatrizFeedbackToolComponent,
+    tabLabel: 'Matriz de Feedback',
+    tabIcon: 'pi-comments',
+  },
+  'test-cuantitativo': {
+    component: TestCuantitativoToolComponent,
+    tabLabel: 'Test Cuantitativo',
+    tabIcon: 'pi-chart-bar',
+  },
+  'test-usuario': {
+    component: TestUsuarioToolComponent,
+    tabLabel: 'Test de Usuario',
+    tabIcon: 'pi-eye',
   },
 };
 

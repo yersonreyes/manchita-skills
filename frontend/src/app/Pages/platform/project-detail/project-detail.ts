@@ -76,6 +76,8 @@ export class ProjectDetailComponent implements OnInit {
     orden: 1,
     estado: 'NOT_STARTED' as PhaseStatus,
   };
+  selectedPhaseId = signal<number | null>(null);
+  selectedDesignPhase = computed(() => this.designPhases().find(p => p.id === this.selectedPhaseId()) ?? null);
 
   // ─── Brief del proyecto ───────────────────────────────────────────────────
   briefExpanded = signal(false);
@@ -326,6 +328,7 @@ export class ProjectDetailComponent implements OnInit {
   // ─── Acciones de fases ────────────────────────────────────────────────────
   openAddPhaseDialog(): void {
     this.addPhaseForm = { phaseId: null, orden: this.phases().length + 1, estado: 'NOT_STARTED' };
+    this.selectedPhaseId.set(null);
     this.addPhaseDialogVisible.set(true);
   }
 

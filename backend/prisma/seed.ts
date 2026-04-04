@@ -500,13 +500,48 @@ const TOOLS: { codigo: string; nombre: string; descripcion: string; comoSeUsa?: 
   { codigo: 'wireframe', nombre: 'Wireframe', descripcion: 'Esquema estructural de baja fidelidad que define la disposición de elementos en una interfaz.' },
 
   // Deliver > Preparación
-  { codigo: 'matriz-feedback', nombre: 'Matriz de Feedback', descripcion: 'Herramienta estructurada para organizar y priorizar el feedback recibido durante las pruebas.' },
-  { codigo: 'matriz-hipotesis', nombre: 'Matriz de Hipótesis', descripcion: 'Framework para definir, priorizar y validar las hipótesis clave del proyecto.' },
-  { codigo: 'roadmap-prototipado', nombre: 'Roadmap de Prototipado', descripcion: 'Plan visual que define las iteraciones de prototipado, sus objetivos y cronología.' },
+  {
+    codigo: 'matriz-feedback',
+    nombre: 'Matriz de Feedback',
+    descripcion: 'Herramienta que organiza y categoriza el feedback recibido en una matriz 2×2 (Sobre la solución / Sobre el problema × Positivo / Negativo), permitiendo gestionarlo y priorizarlo efectivamente.',
+    comoSeUsa: 'Se recopila feedback de testing, entrevistas, analytics y stakeholders. Cada pieza de feedback se categoriza en uno de los 4 cuadrantes: Reforzar (solución + positivo), Arreglar (solución + negativo), Nuevos Insights (problema + positivo) o Evaluar/Ignorar (problema + negativo). Se indica la fuente y la prioridad de cada item. Al finalizar, se prioriza por impacto y se asignan acciones.',
+    cuandoUsarlo: 'Usar después de sesiones de testing de usuario, entrevistas, presentaciones a stakeholders o revisiones de producto, cuando se recibe mucho feedback de distintas fuentes y se necesita organizar qué atender primero.',
+    ejemplo: 'Después de un test con 5 usuarios: Reforzar — "El botón de compra es claro y visible" (testing, normal). Arreglar — "El tiempo de entrega es inconsistente" (testing, urgente). Nuevos Insights — "Los usuarios quieren más filtros de búsqueda" (entrevista, normal). Evaluar/Ignorar — "Quería un filtro por precio" (testing, baja) — funcionalidad fuera del scope actual.',
+  },
+  {
+    codigo: 'matriz-hipotesis',
+    nombre: 'Matriz de Hipótesis',
+    descripcion: 'Framework para definir, priorizar y validar las hipótesis clave del proyecto en una matriz de Impacto vs. Incertidumbre.',
+    comoSeUsa: 'Se listan todas las hipótesis de diseño con la estructura Si/Entonces/Porque. Cada hipótesis se evalúa en dos dimensiones: Impacto potencial (alto/bajo) e Incertidumbre (alta/baja). La combinación determina el cuadrante: PRIORITY (alto impacto + alta incertidumbre, validar primero), LATER (alto impacto + baja incertidumbre), DROP (bajo impacto + alta incertidumbre) u OPTIONAL. Para cada hipótesis se define el experimento que permitirá validarla.',
+    cuandoUsarlo: 'Usar al inicio de la fase de Deliver, antes de prototipar o lanzar, cuando el equipo tiene múltiples asunciones no validadas y necesita decidir qué validar primero con los recursos disponibles.',
+    ejemplo: 'Hipótesis PRIORITY: "Si implementamos checkout express (X), entonces reduciremos el abandono un 20% (Y), porque los usuarios abandonan en el paso de datos de envío según análisis de embudos (Z)." Impacto: Alto | Incertidumbre: Alta. Experimento: A/B test con 500 usuarios durante 2 semanas midiendo tasa de abandono en el paso 3.',
+  },
+  {
+    codigo: 'roadmap-prototipado',
+    nombre: 'Roadmap de Prototipado',
+    descripcion: 'Plan visual que muestra la secuencia y timeline de los prototipos a crear, desde la idea hasta el producto final. Define qué se prototipa, cuándo, y con qué nivel de fidelidad. Especialmente útil en proyectos complejos con múltiples features y timeline ajustado para priorizar qué prototipar primero.',
+    comoSeUsa: 'Proceso: (1) Listar todos los features del backlog; (2) Definir la fidelidad necesaria por feature (low/mid/high); (3) Identificar dependencias entre prototipos; (4) Asignar timeline por fases (Exploración → Validación → Refinamiento → Lanzamiento); (5) Priorizar según criterios: prioridad de features, riesgo/incertidumbre, recursos disponibles, dependencias; (6) Comunicar el roadmap al equipo. Consejo clave: siempre comenzar con low-fi y reservar buffer para iterar.',
+    cuandoUsarlo: 'En Develop para planificar el trabajo de diseño antes de comprometer tiempo. En Deliver para comunicar el timeline de handoff a desarrollo. Cuando el proyecto tiene múltiples features y se necesita priorizar qué prototipar primero. Para alinear expectativas con stakeholders sobre cuándo estará listo cada entregable.',
+    ejemplo: 'Equipo de 2 diseñadores, 6 semanas para feature de checkout. Fase 1 (Sem 1-2, Exploración): paper prototype del flujo completo (low-fi, explorar) + wireframes de cada pantalla (low-mid, explorar), entregable: flujo aprobado por product. Fase 2 (Sem 3, Validación): clickable prototype en Figma (mid-fi, validar) con test de 5 usuarios. Fase 3 (Sem 4, Refinamiento): high-fidelity mockup + prototipo funcional en ProtoPie, entregable: design specs para dev. Fase 4 (Sem 5-6, Iteración): revisión de stakeholders, ajustes, documentación y handoff.',
+  },
 
   // Deliver > Técnicas
-  { codigo: 'test-cuantitativo', nombre: 'Test Cuantitativo', descripcion: 'Evaluación con métricas numéricas para medir el rendimiento y efectividad de la solución.' },
-  { codigo: 'test-usuario', nombre: 'Test de Usuario', descripcion: 'Técnica de validación donde usuarios reales interactúan con el diseño mientras el equipo observa y analiza.' },
+  {
+    codigo: 'test-cuantitativo',
+    nombre: 'Test Cuantitativo',
+    descripcion: 'Técnica de validación que recopila datos numéricos y estadísticos sobre el desempeño del diseño. Mide tasas de éxito de tareas, tiempos de completitud, cantidad de errores y niveles de satisfacción para evaluar la usabilidad con evidencia objetiva.',
+    comoSeUsa: 'Proceso: (1) Definí las métricas a medir: tasa de éxito por tarea, tiempo promedio, errores y satisfacción (1-5); (2) Seleccioná el método: encuesta post-task, analytics del sistema, A/B testing o encuesta masiva; (3) Registrá participantes y contexto del test; (4) Para cada tarea, ingresá los datos numéricos obtenidos; (5) Completá los scores globales si corresponde: SUS (System Usability Scale, 0-100) y NPS (Net Promoter Score, -100 a 100); (6) Generá el análisis IA para interpretar las métricas según benchmarks de la industria y obtener recomendaciones accionables. Benchmarks: Éxito >78% bueno, SUS >68 bueno, NPS >30 bueno.',
+    cuandoUsarlo: 'En la fase de Deliver para validar que el prototipo o solución alcanza los estándares de usabilidad requeridos. Ideal cuando necesitás datos objetivos y comparables entre iteraciones, cuando debés justificar decisiones de diseño ante stakeholders, o cuando querés comparar dos versiones de un diseño (A/B). Complementa al test cualitativo: el cuantitativo dice QUÉ tan bien funciona, el cualitativo dice POR QUÉ.',
+    ejemplo: 'Test de onboarding en app fintech. Participantes: 50. TAREA 1 "Crear cuenta": Éxito 72%, Tiempo 200s, Errores 1.8, Satisfacción 3.2/5 — debajo del benchmark (78%). TAREA 2 "Vincular cuenta bancaria": Éxito 54%, Tiempo 480s, Errores 3.4, Satisfacción 2.1/5 — crítico. SUS: 58/100 (Pobre). NPS: -12 (Crítico). INSIGHT: La vinculación bancaria es el punto de quiebre — 46% abandono y satisfacción crítica requieren rediseño urgente antes del lanzamiento.',
+  },
+  {
+    codigo: 'test-usuario',
+    nombre: 'Test de Usuario',
+    descripcion: 'Técnica de validación donde usuarios reales interactúan con el diseño (prototipo o producto) mientras el equipo observa, documenta y analiza su comportamiento, reacciones y confusiones. Es la forma más directa de descubrir si tu diseño funciona porque los comportamientos revelan la verdad que las palabras ocultan.',
+    comoSeUsa: 'Proceso: (1) Definí los objetivos del test: qué hipótesis de diseño querés validar; (2) Documentá el prototipo o versión a testear; (3) Agregá una sesión por participante (5 usuarios encuentran ~85% de los problemas); (4) Por cada sesión, registrá el perfil del participante y el tipo de test (moderado/remoto/guerrilla); (5) Agregá las tareas observadas con su resultado (✅ Completó / ⚠️ Parcial / ❌ No completó), tiempo y observaciones detalladas; (6) Anotá hallazgos de la sesión y citas textuales del participante; (7) Generá el análisis IA para identificar problemas recurrentes y recomendaciones de diseño. Regla de oro: nunca ayudes al usuario mientras testea — los momentos de confusión son el insight más valioso.',
+    cuandoUsarlo: 'En Develop para validar prototipos antes de commitment de desarrollo. En Deliver para validar antes del lanzamiento. Ideal cuando tenés acceso a 3-10 usuarios del segmento target, cuando querés comparar diseños alternativos, o cuando necesitás justificar decisiones de diseño ante stakeholders con evidencia de comportamiento real. No usar si el prototipo es demasiado lo-fi para generar comportamientos reales, o si ya tenés analytics que responden la misma pregunta.',
+    ejemplo: 'Test de checkout en e-commerce. Prototipo: Figma clickable. 5 participantes, moderado/remoto. TAREA 1 "Encontrar un producto": 5/5 ✅, promedio 22s. TAREA 2 "Agregar al carrito y aplicar cupón": 2/5 ✅, 2/5 ⚠️, 1/5 ❌ — promedio 4min. TAREA 3 "Completar pago": 3/5 ✅. Citas: "¿Dónde va el código? No lo veo" (3 usuarios). "Pensé que el envío era gratis porque no decía nada". Hallazgo crítico: el campo de cupón está oculto detrás de un link poco visible — 60% de fracaso en la tarea principal del funnel.',
+  },
 ];
 
 // Mapeo de herramientas a categorías (incluye herramientas compartidas en múltiples categorías)

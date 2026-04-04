@@ -408,45 +408,83 @@
 <p-dialog
   [(visible)]="addPhaseDialogVisible"
   [modal]="true"
-  header="Agregar fase al proyecto"
-  [style]="{ width: '440px' }"
+  [style]="{ width: '460px' }"
   [closable]="true"
+  [draggable]="false"
 >
-  <div class="flex flex-col gap-4 pt-2">
+  <ng-template #header>
+    <div class="add-phase-header">
+      <div class="add-phase-header__icon">
+        <i class="pi pi-sitemap"></i>
+      </div>
+      <div class="add-phase-header__text">
+        <p class="add-phase-header__title">Agregar fase</p>
+        <p class="add-phase-header__sub">al proyecto actual</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-col gap-5 pt-1">
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-gray-700">Fase del catálogo <span class="text-red-400">*</span></label>
+      <label class="add-tool-label">Fase del catálogo <span class="text-red-400">*</span></label>
       <p-select
         [(ngModel)]="addPhaseForm.phaseId"
+        (ngModelChange)="selectedPhaseId.set($event)"
         [options]="designPhases()"
         optionLabel="nombre"
         optionValue="id"
-        placeholder="Seleccioná una fase"
+        placeholder="Seleccioná una fase..."
         appendTo="body"
         class="w-full"
       />
     </div>
 
+    @if (selectedDesignPhase()) {
+      <div class="phase-preview">
+        <p class="phase-preview__name">
+          <i class="pi pi-diamond"></i>
+          {{ selectedDesignPhase()!.nombre }}
+        </p>
+        @if (selectedDesignPhase()!.descripcion) {
+          <p class="phase-preview__desc">{{ selectedDesignPhase()!.descripcion }}</p>
+        }
+      </div>
+    }
+
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-gray-700">Orden</label>
-      <p-inputnumber [(ngModel)]="addPhaseForm.orden" [min]="1" class="w-full" />
+      <label class="add-tool-label">Orden en el proyecto</label>
+      <p-inputnumber
+        [(ngModel)]="addPhaseForm.orden"
+        [min]="1"
+        class="w-full"
+        [showButtons]="true"
+        buttonLayout="horizontal"
+        decrementButtonIcon="pi pi-minus"
+        incrementButtonIcon="pi pi-plus"
+        inputStyleClass="text-center"
+      />
     </div>
 
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-gray-700">Estado inicial</label>
-      <p-select
-        [(ngModel)]="addPhaseForm.estado"
-        [options]="estadoOptions"
-        optionLabel="label"
-        optionValue="value"
-        appendTo="body"
-        class="w-full"
-      />
+      <label class="add-tool-label">Estado inicial</label>
+      <div class="estado-pills">
+        @for (opt of estadoOptions; track opt.value) {
+          <button
+            class="estado-pill estado-pill--{{ opt.value }}"
+            [class.estado-pill--active]="addPhaseForm.estado === opt.value"
+            (click)="addPhaseForm.estado = opt.value"
+            type="button"
+          >
+            {{ opt.label }}
+          </button>
+        }
+      </div>
     </div>
   </div>
 
   <ng-template #footer>
     <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="addPhaseDialogVisible.set(false)" />
-    <p-button label="Agregar fase" icon="pi pi-check" (onClick)="submitAddPhase()" />
+    <p-button label="Agregar fase" icon="pi pi-check" iconPos="right" (onClick)="submitAddPhase()" />
   </ng-template>
 </p-dialog>
 
