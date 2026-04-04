@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgStyle } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -74,7 +74,7 @@ const EMOJI_GROUPS = [
         <div
           class="wiki-banner"
           [class.wiki-banner--active]="banner()"
-          [ngStyle]="getBannerStyle()"
+          [ngStyle]="bannerStyle()"
         >
           @if (!banner()) {
             <div class="wiki-banner__hint" *hasPermission="'wiki:write'">
@@ -477,11 +477,10 @@ export class WikiPageComponent implements OnInit {
     }
   }
 
-  getBannerStyle(): Record<string, string> {
+  bannerStyle = computed<Record<string, string>>(() => {
     const value = this.banner();
     if (!value) return {};
-    const isImage = value.startsWith('http');
-    if (isImage) {
+    if (value.startsWith('http')) {
       return {
         'background-image': `url(${value})`,
         'background-size': 'cover',
@@ -490,7 +489,7 @@ export class WikiPageComponent implements OnInit {
     }
     const gradient = BANNER_OPTIONS.find(b => b.key === value)?.gradient ?? '';
     return { background: gradient };
-  }
+  });
 
   toggleEmojiPicker(): void {
     this.showEmojiPicker.update(v => !v);
