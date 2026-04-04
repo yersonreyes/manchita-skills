@@ -1,5 +1,6 @@
 import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NgStyle } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { WikiService } from '@core/services/wikiService/wiki.service';
 import { UiDialogService } from '@core/services/ui-dialog.service';
@@ -8,10 +9,11 @@ import { MarkdownComponent } from 'ngx-markdown';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
+import { WikiBannerUploaderComponent } from '../wiki-banner-uploader/wiki-banner-uploader.component';
 
-// ─── Banners disponibles ──────────────────────────────────────────────────────
+// ─── Banners disponibles (gradientes) ────────────────────────────────────────
 
-interface BannerOption {
+export interface BannerOption {
   key: string;
   label: string;
   gradient: string;
@@ -54,7 +56,7 @@ const EMOJI_GROUPS = [
 @Component({
   selector: 'app-wiki-page',
   standalone: true,
-  imports: [Button, FormsModule, HasPermissionDirective, InputText, MarkdownComponent, Textarea],
+  imports: [Button, FormsModule, NgStyle, HasPermissionDirective, InputText, MarkdownComponent, Textarea, WikiBannerUploaderComponent],
   template: `
     @if (loading()) {
       <div class="wiki-page wiki-page--loading">
@@ -72,17 +74,17 @@ const EMOJI_GROUPS = [
         <div
           class="wiki-banner"
           [class.wiki-banner--active]="banner()"
-          [style.background]="getBannerGradient()"
+          [ngStyle]="getBannerStyle()"
         >
           @if (!banner()) {
             <div class="wiki-banner__hint" *hasPermission="'wiki:write'">
-              <button class="wiki-banner__add-btn" (click)="toggleBannerPicker()">
+              <button class="wiki-banner__add-btn" (click)="uploaderVisible.set(true)">
                 <i class="pi pi-image"></i> Agregar banner
               </button>
             </div>
           } @else {
             <div class="wiki-banner__controls" *hasPermission="'wiki:write'">
-              <button class="wiki-banner__ctrl-btn" (click)="toggleBannerPicker()">
+              <button class="wiki-banner__ctrl-btn" (click)="uploaderVisible.set(true)">
                 <i class="pi pi-palette"></i> Cambiar
               </button>
               <button class="wiki-banner__ctrl-btn wiki-banner__ctrl-btn--remove" (click)="saveBanner(null)">
@@ -90,25 +92,13 @@ const EMOJI_GROUPS = [
               </button>
             </div>
           }
-
-          <!-- Banner picker -->
-          @if (showBannerPicker()) {
-            <div class="wiki-picker wiki-banner-picker" (click)="$event.stopPropagation()">
-              <p class="wiki-picker__title">Elegí un color</p>
-              <div class="wiki-banner-picker__grid">
-                @for (opt of bannerOptions; track opt.key) {
-                  <button
-                    class="wiki-banner-swatch"
-                    [class.wiki-banner-swatch--active]="banner() === opt.key"
-                    [style.background]="opt.gradient"
-                    [title]="opt.label"
-                    (click)="saveBanner(opt.key)"
-                  ></button>
-                }
-              </div>
-            </div>
-          }
         </div>
+
+        <!-- ─── Banner uploader modal ────────────────────────────────────────── -->
+        <app-wiki-banner-uploader
+          [(visible)]="uploaderVisible"
+          (bannerSelected)="saveBanner($event)"
+        />
 
         <!-- ─── Header ─────────────────────────────────────────────────────── -->
         <div class="wiki-page__header-area">
@@ -118,7 +108,7 @@ const EMOJI_GROUPS = [
             <button
               class="wiki-icon-btn"
               [class.wiki-icon-btn--set]="icon()"
-              (click)="toggleEmojiPicker()"
+              (click)="toggleEmojiPicker(); $event.stopPropagation()"
               [title]="icon() ? 'Cambiar ícono' : 'Agregar ícono'"
             >
               @if (icon()) {
@@ -130,7 +120,6 @@ const EMOJI_GROUPS = [
               }
             </button>
 
-            <!-- Emoji picker -->
             @if (showEmojiPicker()) {
               <div class="wiki-picker wiki-emoji-picker" (click)="$event.stopPropagation()">
                 <div class="wiki-picker__header">
@@ -231,11 +220,13 @@ const EMOJI_GROUPS = [
       width: 100%;
       height: 48px;
       background: var(--p-surface-100);
-      transition: height 0.2s ease, background 0.25s ease;
-      overflow: visible;
+      transition: height 0.2s ease;
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
     }
     .wiki-banner--active {
-      height: 140px;
+      height: 160px;
     }
     .wiki-banner__hint {
       position: absolute;
@@ -247,9 +238,7 @@ const EMOJI_GROUPS = [
       opacity: 0;
       transition: opacity 0.15s;
     }
-    .wiki-banner:hover .wiki-banner__hint {
-      opacity: 1;
-    }
+    .wiki-banner:hover .wiki-banner__hint { opacity: 1; }
     .wiki-banner__add-btn {
       display: flex;
       align-items: center;
@@ -265,10 +254,7 @@ const EMOJI_GROUPS = [
       cursor: pointer;
       transition: background 0.12s, color 0.12s;
     }
-    .wiki-banner__add-btn:hover {
-      background: white;
-      color: var(--p-text-color);
-    }
+    .wiki-banner__add-btn:hover { background: white; color: var(--p-text-color); }
     .wiki-banner__controls {
       position: absolute;
       bottom: 10px;
@@ -278,9 +264,7 @@ const EMOJI_GROUPS = [
       opacity: 0;
       transition: opacity 0.15s;
     }
-    .wiki-banner--active:hover .wiki-banner__controls {
-      opacity: 1;
-    }
+    .wiki-banner--active:hover .wiki-banner__controls { opacity: 1; }
     .wiki-banner__ctrl-btn {
       display: flex;
       align-items: center;
@@ -299,7 +283,38 @@ const EMOJI_GROUPS = [
     .wiki-banner__ctrl-btn:hover { background: rgba(0,0,0,0.4); }
     .wiki-banner__ctrl-btn--remove:hover { background: rgba(200,30,30,0.5); }
 
-    /* ─── Banner picker ─── */
+    /* ─── Header area ─── */
+    .wiki-page__header-area {
+      padding: 0 32px;
+      margin-top: -20px;
+    }
+
+    /* ─── Icon ─── */
+    .wiki-icon-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .wiki-icon-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      border: 2px dashed var(--p-surface-300);
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .wiki-icon-btn:hover { border-color: var(--p-primary-color); background: var(--p-primary-50); }
+    .wiki-icon-btn--set { border-style: solid; border-color: var(--p-surface-200); }
+    .wiki-icon-btn--set:hover { border-color: var(--p-primary-color); }
+    .wiki-icon-btn__emoji { font-size: 1.75rem; line-height: 1; }
+    .wiki-icon-btn__placeholder { font-size: 1.2rem; color: var(--p-text-muted-color); }
+
+    /* ─── Emoji picker ─── */
     .wiki-picker {
       position: absolute;
       z-index: 100;
@@ -337,59 +352,6 @@ const EMOJI_GROUPS = [
       border-radius: 4px;
     }
     .wiki-picker__remove:hover { background: var(--p-surface-100); color: #dc2626; }
-    .wiki-banner-picker {
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100%);
-    }
-    .wiki-banner-picker__grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
-    }
-    .wiki-banner-swatch {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: transform 0.12s, border-color 0.12s;
-    }
-    .wiki-banner-swatch:hover { transform: scale(1.1); }
-    .wiki-banner-swatch--active { border-color: #1e293b; }
-
-    /* ─── Header area ─── */
-    .wiki-page__header-area {
-      padding: 0 32px;
-      margin-top: -20px;
-    }
-
-    /* ─── Icon ─── */
-    .wiki-icon-wrap {
-      position: relative;
-      display: inline-block;
-      margin-bottom: 8px;
-    }
-    .wiki-icon-btn {
-      width: 52px;
-      height: 52px;
-      border-radius: 10px;
-      border: 2px dashed var(--p-surface-300);
-      background: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: border-color 0.15s, background 0.15s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .wiki-icon-btn:hover { border-color: var(--p-primary-color); background: var(--p-primary-50); }
-    .wiki-icon-btn--set { border-style: solid; border-color: var(--p-surface-200); }
-    .wiki-icon-btn--set:hover { border-color: var(--p-primary-color); }
-    .wiki-icon-btn__emoji { font-size: 1.75rem; line-height: 1; }
-    .wiki-icon-btn__placeholder { font-size: 1.2rem; color: var(--p-text-muted-color); }
-
-    /* ─── Emoji picker ─── */
     .wiki-emoji-picker {
       top: 58px;
       left: 0;
@@ -470,7 +432,6 @@ export class WikiPageComponent implements OnInit {
   private readonly wikiService = inject(WikiService);
   private readonly uiDialog = inject(UiDialogService);
 
-  readonly bannerOptions = BANNER_OPTIONS;
   readonly emojiGroups = EMOJI_GROUPS;
 
   page = signal<{ id: number; titulo: string; contenido: string; icono: string | null; banner: string | null } | null>(null);
@@ -484,12 +445,11 @@ export class WikiPageComponent implements OnInit {
   banner = signal<string | null>(null);
 
   showEmojiPicker = signal(false);
-  showBannerPicker = signal(false);
+  uploaderVisible = signal(false);
 
   @HostListener('document:click')
   onDocumentClick(): void {
     this.showEmojiPicker.set(false);
-    this.showBannerPicker.set(false);
   }
 
   async ngOnInit(): Promise<void> {
@@ -503,7 +463,6 @@ export class WikiPageComponent implements OnInit {
     this.loading.set(true);
     this.mode.set('view');
     this.showEmojiPicker.set(false);
-    this.showBannerPicker.set(false);
     try {
       const p = await this.wikiService.getById(id);
       this.page.set(p);
@@ -518,20 +477,23 @@ export class WikiPageComponent implements OnInit {
     }
   }
 
-  getBannerGradient(): string {
-    const key = this.banner();
-    if (!key) return '';
-    return BANNER_OPTIONS.find(b => b.key === key)?.gradient ?? '';
+  getBannerStyle(): Record<string, string> {
+    const value = this.banner();
+    if (!value) return {};
+    const isImage = value.startsWith('http');
+    if (isImage) {
+      return {
+        'background-image': `url(${value})`,
+        'background-size': 'cover',
+        'background-position': 'center',
+      };
+    }
+    const gradient = BANNER_OPTIONS.find(b => b.key === value)?.gradient ?? '';
+    return { background: gradient };
   }
 
   toggleEmojiPicker(): void {
-    this.showBannerPicker.set(false);
     this.showEmojiPicker.update(v => !v);
-  }
-
-  toggleBannerPicker(): void {
-    this.showEmojiPicker.set(false);
-    this.showBannerPicker.update(v => !v);
   }
 
   async saveIcon(emoji: string | null): Promise<void> {
@@ -547,14 +509,13 @@ export class WikiPageComponent implements OnInit {
     }
   }
 
-  async saveBanner(key: string | null): Promise<void> {
+  async saveBanner(value: string | null): Promise<void> {
     const p = this.page();
     if (!p) return;
-    this.banner.set(key);
-    this.showBannerPicker.set(false);
+    this.banner.set(value);
     try {
-      await this.wikiService.update(p.id, { banner: key });
-      this.page.set({ ...p, banner: key });
+      await this.wikiService.update(p.id, { banner: value });
+      this.page.set({ ...p, banner: value });
     } catch {
       this.banner.set(p.banner);
     }
