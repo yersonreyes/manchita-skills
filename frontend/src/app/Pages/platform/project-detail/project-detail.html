@@ -10,6 +10,14 @@
     (onClick)="goBack()"
   />
   <p-button
+    *hasPermission="'projects:read'"
+    label="Tareas"
+    icon="pi pi-check-square"
+    severity="secondary"
+    variant="outlined"
+    (onClick)="goToTasks()"
+  />
+  <p-button
     *hasPermission="'wiki:read'"
     label="Wiki"
     icon="pi pi-book"

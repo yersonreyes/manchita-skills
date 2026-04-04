@@ -800,11 +800,43 @@ async function seedCatalog() {
 
 // ─── MAIN ───────────────────────────────────────────────────────────────────
 
+// ─── TASK STATUS SEED ────────────────────────────────────────────────────────
+
+const DEFAULT_TASK_STATUSES = [
+  { nombre: 'Backlog', color: '#6B7280', orden: 0, isFinal: false },
+  { nombre: 'Por Hacer', color: '#3B82F6', orden: 1, isFinal: false },
+  { nombre: 'En Progreso', color: '#F59E0B', orden: 2, isFinal: false },
+  { nombre: 'En Revisión', color: '#8B5CF6', orden: 3, isFinal: false },
+  { nombre: 'Hecho', color: '#10B981', orden: 4, isFinal: true },
+];
+
+async function seedTaskStatuses() {
+  console.log('Seeding task statuses para proyectos existentes...');
+
+  const projects = await prisma.project.findMany({ select: { id: true } });
+
+  for (const project of projects) {
+    const existing = await prisma.taskStatus.count({
+      where: { projectId: project.id },
+    });
+
+    if (existing === 0) {
+      await prisma.taskStatus.createMany({
+        data: DEFAULT_TASK_STATUSES.map((s) => ({ ...s, projectId: project.id })),
+      });
+      console.log(`  ✔ Proyecto #${project.id}: 5 estados creados`);
+    } else {
+      console.log(`  ─ Proyecto #${project.id}: ya tiene ${existing} estado(s), skip`);
+    }
+  }
+}
+
 async function main() {
   console.log('Iniciando seed...');
 
   await seedAuth();
   await seedCatalog();
+  await seedTaskStatuses();
 
   console.log('');
   console.log('Seed completado exitosamente.');

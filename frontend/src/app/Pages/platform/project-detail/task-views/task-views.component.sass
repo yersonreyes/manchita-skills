@@ -1,0 +1,30 @@
+.task-tabs
+  display: flex
+  gap: 0
+  border-bottom: 2px solid var(--p-surface-200)
+  margin-bottom: 1rem
+  overflow-x: auto
+
+.task-tab
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.75rem 1.25rem
+  color: var(--p-text-muted-color)
+  text-decoration: none
+  font-size: 0.875rem
+  font-weight: 500
+  border-bottom: 2px solid transparent
+  margin-bottom: -2px
+  white-space: nowrap
+  transition: color 0.15s, border-color 0.15s
+
+  &:hover
+    color: var(--p-text-color)
+
+  &--active
+    color: var(--p-primary-color)
+    border-bottom-color: var(--p-primary-color)
+
+.task-views-content
+  min-height: 400px

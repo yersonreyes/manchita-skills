@@ -1,0 +1,67 @@
+<div class="activity-view">
+  @if (activities().length === 0 && !loading()) {
+    <div class="activity-view__empty">
+      <i class="pi pi-history text-4xl opacity-40"></i>
+      <p>No hay actividad registrada en este proyecto todavía.</p>
+    </div>
+  } @else {
+    <div class="activity-view__timeline">
+      @for (activity of activities(); track activity.id) {
+        <div class="activity-view__item">
+          <!-- Icono / Línea -->
+          <div class="activity-view__connector">
+            <div
+              class="activity-view__icon"
+              [style.background-color]="getActionColor(activity.accion) + '22'"
+              [style.color]="getActionColor(activity.accion)"
+            >
+              <i [class]="getActionIcon(activity.accion)"></i>
+            </div>
+            <div class="activity-view__line"></div>
+          </div>
+
+          <!-- Contenido -->
+          <div class="activity-view__content">
+            <div class="activity-view__header">
+              <div class="activity-view__avatar">
+                {{ getInitials(activity.user.nombre) }}
+              </div>
+              <div class="activity-view__meta">
+                <span class="activity-view__description">
+                  {{ describeAction(activity) }}
+                </span>
+                @if (activity.task) {
+                  <span class="activity-view__task-ref">
+                    en "{{ activity.task.titulo }}"
+                  </span>
+                }
+              </div>
+              <span class="activity-view__time" [title]="activity.createdAt">
+                {{ relativeTime(activity.createdAt) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (loading()) {
+      <div class="activity-view__loading">
+        <i class="pi pi-spin pi-spinner"></i>
+        <span>Cargando...</span>
+      </div>
+    }
+
+    @if (hasMore && !loading()) {
+      <div class="activity-view__load-more">
+        <p-button
+          label="Cargar más"
+          icon="pi pi-chevron-down"
+          severity="secondary"
+          variant="outlined"
+          (onClick)="loadMore()"
+        />
+      </div>
+    }
+  }
+</div>

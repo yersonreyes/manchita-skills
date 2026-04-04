@@ -1,0 +1,80 @@
+<div class="task-filters">
+  <p-select
+    [(ngModel)]="filters.statusId"
+    [options]="statusOptions"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Estado"
+    [showClear]="true"
+    appendTo="body"
+    (ngModelChange)="onFilterChange()"
+    class="task-filters__select"
+  />
+
+  <p-select
+    [(ngModel)]="filters.prioridad"
+    [options]="priorityOptions"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Prioridad"
+    [showClear]="true"
+    appendTo="body"
+    (ngModelChange)="onFilterChange()"
+    class="task-filters__select"
+  />
+
+  <p-select
+    [(ngModel)]="filters.assigneeId"
+    [options]="memberOptions"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Responsable"
+    [showClear]="true"
+    appendTo="body"
+    (ngModelChange)="onFilterChange()"
+    class="task-filters__select"
+  />
+
+  <p-select
+    [(ngModel)]="filters.tagId"
+    [options]="tagOptions"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Etiqueta"
+    [showClear]="true"
+    appendTo="body"
+    (ngModelChange)="onFilterChange()"
+    class="task-filters__select"
+  />
+
+  <p-datepicker
+    [(ngModel)]="filters.fechaDesde"
+    placeholder="Desde"
+    [showClear]="true"
+    appendTo="body"
+    (ngModelChange)="onFilterChange()"
+    class="task-filters__date"
+    dateFormat="dd/mm/yy"
+  />
+
+  <p-datepicker
+    [(ngModel)]="filters.fechaHasta"
+    placeholder="Hasta"
+    [showClear]="true"
+    appendTo="body"
+    (ngModelChange)="onFilterChange()"
+    class="task-filters__date"
+    dateFormat="dd/mm/yy"
+  />
+
+  @if (hasActiveFilters) {
+    <p-button
+      label="Limpiar filtros"
+      icon="pi pi-times"
+      severity="secondary"
+      variant="text"
+      size="small"
+      (onClick)="clearFilters()"
+    />
+  }
+</div>

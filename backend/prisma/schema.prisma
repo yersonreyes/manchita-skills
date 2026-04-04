@@ -64,6 +64,23 @@ enum EtapaProyecto {
   MADUREZ
 }
 
+enum TaskPriority {
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TaskAction {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  ASSIGNED
+  PRIORITY_CHANGED
+  MOVED
+  DELETED
+}
+
 // ─── USUARIO ─────────────────────────────────────────────────────────────────
 
 model User {
@@ -88,6 +105,11 @@ model User {
   toolAppNotes       ToolApplicationNote[]        @relation("NoteCreator")
   toolAppAttachments ToolApplicationAttachment[]  @relation("AttachmentCreator")
   wikiPages          WikiPage[]
+
+  // Relaciones tareas
+  assignedTasks  Task[]           @relation("TaskAssignee")
+  createdTasks   Task[]           @relation("TaskCreator")
+  taskActivities TaskActivity[]
 
   @@index([activo])
 }
@@ -273,10 +295,13 @@ model Project {
   updatedAt   DateTime      @updatedAt
 
   // Relaciones
-  owner     User            @relation("ProjectOwner", fields: [ownerId], references: [id])
-  members   ProjectMember[]
-  phases    ProjectPhase[]
-  wikiPages WikiPage[]
+  owner        User            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  members      ProjectMember[]
+  phases       ProjectPhase[]
+  wikiPages    WikiPage[]
+  taskStatuses TaskStatus[]
+  tasks        Task[]
+  taskTags     TaskTag[]
 
   @@index([ownerId])
   @@index([estado])
@@ -342,6 +367,7 @@ model ToolApplication {
   createdBy    User                      @relation("ToolApplicationCreator", fields: [createdById], references: [id])
   notes        ToolApplicationNote[]
   attachments  ToolApplicationAttachment[]
+  tasks        Task[]
 
   @@index([projectPhaseId])
   @@index([toolId])
@@ -409,4 +435,116 @@ model ToolApplicationAttachment {
 
   @@index([toolApplicationId])
   @@index([createdById])
+}
+
+// ─── ESTADO DE TAREA (Columnas Kanban configurables por proyecto) ───────────
+
+model TaskStatus {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  nombre    String
+  color     String
+  orden     Int
+  isFinal   Boolean  @default(false)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks   Task[]
+
+  @@unique([projectId, nombre])
+  @@index([projectId])
+}
+
+// ─── TAREA ──────────────────────────────────────────────────────────────────
+
+model Task {
+  id                Int          @id @default(autoincrement())
+  projectId         Int
+  parentId          Int?
+  statusId          Int
+  toolApplicationId Int?
+  assigneeId        Int?
+  createdById       Int
+  titulo            String
+  descripcion       String?      @db.Text
+  prioridad         TaskPriority @default(MEDIUM)
+  fechaInicio       DateTime?
+  fechaVencimiento  DateTime?
+  fechaCompletado   DateTime?
+  estimacion        Float?
+  orden             Int          @default(0)
+  activo            Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  // Relaciones
+  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parent          Task?            @relation("TaskSubtasks", fields: [parentId], references: [id])
+  children        Task[]           @relation("TaskSubtasks")
+  status          TaskStatus       @relation(fields: [statusId], references: [id])
+  toolApplication ToolApplication? @relation(fields: [toolApplicationId], references: [id])
+  assignee        User?            @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  createdBy       User             @relation("TaskCreator", fields: [createdById], references: [id])
+  tags            TaskTagAssignment[]
+  activities      TaskActivity[]
+
+  @@index([projectId])
+  @@index([parentId])
+  @@index([statusId])
+  @@index([assigneeId])
+  @@index([createdById])
+  @@index([activo])
+}
+
+// ─── ETIQUETA DE TAREA ──────────────────────────────────────────────────────
+
+model TaskTag {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  nombre    String
+  color     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project     Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignments TaskTagAssignment[]
+
+  @@unique([projectId, nombre])
+  @@index([projectId])
+}
+
+// ─── TAREA - ETIQUETA (Many-to-Many) ────────────────────────────────────────
+
+model TaskTagAssignment {
+  taskId Int
+  tagId  Int
+
+  task Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tag  TaskTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, tagId])
+  @@index([taskId])
+  @@index([tagId])
+}
+
+// ─── ACTIVIDAD DE TAREA (Log automático) ────────────────────────────────────
+
+model TaskActivity {
+  id              Int        @id @default(autoincrement())
+  taskId          Int
+  userId          Int
+  accion          TaskAction
+  campoModificado String?
+  valorAnterior   String?
+  valorNuevo      String?
+  createdAt       DateTime   @default(now())
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([createdAt])
 }

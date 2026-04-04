@@ -1,0 +1,103 @@
+.task-calendar
+  user-select: none
+
+  &__nav
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    margin-bottom: 1rem
+
+  &__month
+    font-size: 1.125rem
+    font-weight: 600
+    color: var(--p-text-color)
+    margin: 0
+    flex: 0 0 auto
+    min-width: 200px
+    text-align: center
+    text-transform: capitalize
+
+  &__grid
+    display: grid
+    grid-template-columns: repeat(7, 1fr)
+    border-left: 1px solid var(--p-surface-200)
+    border-top: 1px solid var(--p-surface-200)
+
+    &--header
+      border: none
+      margin-bottom: 0
+
+  &__weekday
+    padding: 0.5rem
+    text-align: center
+    font-size: 0.75rem
+    font-weight: 600
+    color: var(--p-text-muted-color)
+    text-transform: uppercase
+    letter-spacing: 0.05em
+
+  &__day
+    min-height: 100px
+    border-right: 1px solid var(--p-surface-200)
+    border-bottom: 1px solid var(--p-surface-200)
+    padding: 0.375rem
+    display: flex
+    flex-direction: column
+    gap: 0.25rem
+    background: var(--p-surface-0)
+
+    &--other-month
+      background: var(--p-surface-50)
+
+      .task-calendar__day-num
+        color: var(--p-text-muted-color)
+        opacity: 0.5
+
+    &--today
+      .task-calendar__day-num
+        background: var(--p-primary-color)
+        color: white
+        border-radius: 50%
+        width: 24px
+        height: 24px
+        display: flex
+        align-items: center
+        justify-content: center
+        font-weight: 700
+
+  &__day-num
+    font-size: 0.75rem
+    font-weight: 500
+    color: var(--p-text-color)
+    width: 24px
+    height: 24px
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-shrink: 0
+
+  &__day-tasks
+    display: flex
+    flex-direction: column
+    gap: 0.2rem
+    overflow: hidden
+
+  &__task-pill
+    font-size: 0.7rem
+    padding: 0.15rem 0.4rem
+    border-radius: 3px
+    border-left: 3px solid transparent
+    cursor: pointer
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+    font-weight: 500
+    transition: filter 0.1s
+
+    &:hover
+      filter: brightness(0.95)
+
+  &__task-more
+    font-size: 0.65rem
+    color: var(--p-text-muted-color)
+    padding: 0 0.25rem

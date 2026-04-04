@@ -1,0 +1,122 @@
+<div class="task-list">
+  @if (store.loading()) {
+    <div class="task-list__loading">
+      <i class="pi pi-spin pi-spinner text-3xl text-gray-400"></i>
+    </div>
+  } @else if (flatList.length === 0) {
+    <div class="task-list__empty">
+      <i class="pi pi-inbox text-4xl opacity-40"></i>
+      <p>No hay tareas que mostrar.</p>
+    </div>
+  } @else {
+    <p-table
+      [value]="flatList"
+      [rowHover]="true"
+      styleClass="p-datatable-sm"
+      [scrollable]="true"
+    >
+      <ng-template #header>
+        <tr>
+          <th class="task-list__th task-list__th--title">Tarea</th>
+          <th class="task-list__th">Estado</th>
+          <th class="task-list__th">Prioridad</th>
+          <th class="task-list__th">Responsable</th>
+          <th class="task-list__th">Vencimiento</th>
+          <th class="task-list__th">Etiquetas</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-task>
+        <tr class="task-list__row" (click)="openTask(task)">
+          <!-- Título con indentación -->
+          <td class="task-list__td task-list__td--title">
+            <div
+              class="task-list__title-cell"
+              [style.padding-left]="(getLevel(task) * 24) + 'px'"
+            >
+              @if (hasChildren(task)) {
+                <button
+                  class="task-list__expand"
+                  (click)="$event.stopPropagation(); toggleExpand(task.id)"
+                >
+                  <i [class]="isExpanded(task.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                </button>
+              } @else {
+                <span class="task-list__leaf-spacer"></span>
+              }
+              <div
+                class="task-list__status-dot"
+                [style.background-color]="task.status.color"
+              ></div>
+              <span class="task-list__task-name">{{ task.titulo }}</span>
+              @if (task._subtaskCount > 0) {
+                <span class="task-list__subtask-badge">
+                  {{ task._subtaskCompletedCount }}/{{ task._subtaskCount }}
+                </span>
+              }
+            </div>
+          </td>
+
+          <!-- Estado -->
+          <td class="task-list__td">
+            <span
+              class="task-list__status-chip"
+              [style.background-color]="task.status.color + '22'"
+              [style.color]="task.status.color"
+              [style.border-color]="task.status.color + '44'"
+            >
+              {{ task.status.nombre }}
+            </span>
+          </td>
+
+          <!-- Prioridad -->
+          <td class="task-list__td">
+            <p-tag
+              [value]="getPriorityLabel(task.prioridad)"
+              [severity]="getPrioritySeverity(task.prioridad)"
+            />
+          </td>
+
+          <!-- Responsable -->
+          <td class="task-list__td">
+            @if (task.assignee) {
+              <div class="task-list__assignee">
+                <div class="task-list__avatar">
+                  {{ task.assignee.nombre.charAt(0).toUpperCase() }}
+                </div>
+                <span>{{ task.assignee.nombre }}</span>
+              </div>
+            } @else {
+              <span class="task-list__muted">-</span>
+            }
+          </td>
+
+          <!-- Vencimiento -->
+          <td class="task-list__td">
+            <span class="task-list__date">
+              {{ formatDate(task.fechaVencimiento) }}
+            </span>
+          </td>
+
+          <!-- Etiquetas -->
+          <td class="task-list__td">
+            <div class="task-list__tags">
+              @for (tag of task.tags.slice(0, 2); track tag.tagId) {
+                <span
+                  class="task-list__tag"
+                  [style.background-color]="tag.tag.color + '22'"
+                  [style.color]="tag.tag.color"
+                  [style.border-color]="tag.tag.color + '44'"
+                >
+                  {{ tag.tag.nombre }}
+                </span>
+              }
+              @if (task.tags.length > 2) {
+                <span class="task-list__tag-more">+{{ task.tags.length - 2 }}</span>
+              }
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</div>

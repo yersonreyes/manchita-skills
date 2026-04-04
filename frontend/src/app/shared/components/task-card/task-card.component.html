@@ -1,0 +1,82 @@
+<div
+  class="task-card"
+  [class.task-card--compact]="compact()"
+  [class.task-card--overdue]="isOverdue()"
+  (click)="onClick()"
+>
+  <!-- Barra de color del estado -->
+  <div
+    class="task-card__status-bar"
+    [style.background-color]="task().status.color"
+  ></div>
+
+  <div class="task-card__body">
+    <!-- Título -->
+    <p class="task-card__title">{{ task().titulo }}</p>
+
+    @if (!compact()) {
+      <!-- Descripción -->
+      @if (task().descripcion) {
+        <p class="task-card__desc">{{ task().descripcion }}</p>
+      }
+
+      <!-- Tags -->
+      @if (task().tags.length > 0) {
+        <div class="task-card__tags">
+          @for (tag of task().tags; track tag.tagId) {
+            <span
+              class="task-card__tag"
+              [style.background-color]="tag.tag.color + '22'"
+              [style.color]="tag.tag.color"
+              [style.border-color]="tag.tag.color + '44'"
+            >
+              {{ tag.tag.nombre }}
+            </span>
+          }
+        </div>
+      }
+    }
+
+    <!-- Footer -->
+    <div class="task-card__footer">
+      <!-- Prioridad -->
+      <span
+        class="task-card__priority"
+        [class]="'task-card__priority ' + priorityClasses[task().prioridad]"
+      >
+        {{ priorityLabels[task().prioridad] }}
+      </span>
+
+      <div class="task-card__footer-right">
+        <!-- Subtareas -->
+        @if (task()._subtaskCount > 0) {
+          <span class="task-card__subtasks">
+            <i class="pi pi-sitemap"></i>
+            {{ task()._subtaskCompletedCount }}/{{ task()._subtaskCount }}
+          </span>
+        }
+
+        <!-- Fecha vencimiento -->
+        @if (task().fechaVencimiento) {
+          <span
+            class="task-card__due"
+            [class.task-card__due--overdue]="isOverdue()"
+          >
+            <i class="pi pi-calendar"></i>
+            {{ formatDate(task().fechaVencimiento!) }}
+          </span>
+        }
+
+        <!-- Avatar asignado -->
+        @if (task().assignee) {
+          <div
+            class="task-card__avatar"
+            [title]="task().assignee!.nombre"
+          >
+            {{ getInitials(task().assignee!.nombre) }}
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

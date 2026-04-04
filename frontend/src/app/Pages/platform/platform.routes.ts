@@ -57,6 +57,53 @@ export const PLATFORM_ROUTES: Routes = [
         data: { permissions: ['tool-applications:read'] },
       },
       {
+        path: 'projects/:id/tasks',
+        loadComponent: () =>
+          import('./project-detail/task-views/task-views.component').then(
+            (m) => m.TaskViewsComponent,
+          ),
+        canActivate: [permissionGuard],
+        data: { permissions: ['projects:read'] },
+        children: [
+          {
+            path: 'board',
+            loadComponent: () =>
+              import('./project-detail/task-views/task-board/task-board.component').then(
+                (m) => m.TaskBoardComponent,
+              ),
+          },
+          {
+            path: 'list',
+            loadComponent: () =>
+              import('./project-detail/task-views/task-list/task-list.component').then(
+                (m) => m.TaskListComponent,
+              ),
+          },
+          {
+            path: 'calendar',
+            loadComponent: () =>
+              import('./project-detail/task-views/task-calendar/task-calendar.component').then(
+                (m) => m.TaskCalendarComponent,
+              ),
+          },
+          {
+            path: 'timeline',
+            loadComponent: () =>
+              import('./project-detail/task-views/task-timeline/task-timeline.component').then(
+                (m) => m.TaskTimelineComponent,
+              ),
+          },
+          {
+            path: 'activity',
+            loadComponent: () =>
+              import(
+                './project-detail/task-views/task-activity-view/task-activity-view.component'
+              ).then((m) => m.TaskActivityViewComponent),
+          },
+          { path: '', redirectTo: 'board', pathMatch: 'full' },
+        ],
+      },
+      {
         path: 'projects/:id/wiki',
         loadComponent: () =>
           import('./wiki/wiki-layout/wiki-layout.component').then((m) => m.WikiLayoutComponent),

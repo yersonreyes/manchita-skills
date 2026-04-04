@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { TaskStatusService } from 'src/task-status/task-status.service';
 import {
   CreateProjectRequestDto,
   UpdateProjectRequestDto,
@@ -27,7 +28,10 @@ const PROJECT_INCLUDE = {
 
 @Injectable()
 export class ProjectService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private taskStatusService: TaskStatusService,
+  ) {}
 
   // ─── CREATE ───────────────────────────────────────────────────────────────
   async create(dto: CreateProjectRequestDto, ownerId: number) {
@@ -47,6 +51,8 @@ export class ProjectService {
       },
       include: PROJECT_INCLUDE,
     });
+
+    await this.taskStatusService.seedDefaults(res.id);
 
     return { res, code: 0, message: 'Proyecto creado correctamente' };
   }

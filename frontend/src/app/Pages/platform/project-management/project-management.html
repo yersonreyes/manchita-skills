@@ -85,6 +85,15 @@
             </button>
 
             <button
+              class="project-action project-action--tasks"
+              (click)="navigateToTasks(project.id)"
+              title="Ver tareas del proyecto"
+            >
+              <i class="pi pi-check-square"></i>
+              <span>Tareas</span>
+            </button>
+
+            <button
               *hasPermission="'projects:update'"
               class="project-action project-action--edit"
               (click)="openEditDialog(project)"

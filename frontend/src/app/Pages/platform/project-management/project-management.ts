@@ -234,6 +234,10 @@ export class ProjectManagement implements OnInit {
     void this.router.navigate(['/platform/projects', id]);
   }
 
+  navigateToTasks(id: number): void {
+    void this.router.navigate(['/platform/projects', id, 'tasks']);
+  }
+
   navigateToWiki(id: number): void {
     void this.router.navigate(['/platform/projects', id, 'wiki']);
   }

@@ -1,0 +1,58 @@
+.task-dialog
+  &__header
+    display: flex
+    align-items: center
+    gap: 0.75rem
+
+  &__header-icon
+    font-size: 1.25rem
+    color: var(--p-primary-color)
+
+  &__header-title
+    font-weight: 600
+    font-size: 1rem
+    margin: 0
+
+  &__header-sub
+    font-size: 0.75rem
+    color: var(--p-text-muted-color)
+    margin: 0
+
+  &__form
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    padding-top: 0.25rem
+
+  &__row
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 1rem
+
+  &__field
+    display: flex
+    flex-direction: column
+    gap: 0.375rem
+
+  &__label
+    font-size: 0.8125rem
+    font-weight: 500
+    color: var(--p-text-color)
+
+  &__required
+    color: #EF4444
+
+  &__delete-confirm
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    padding: 0.75rem
+    border-radius: 8px
+    background: #FEF2F2
+    border: 1px solid #FECACA
+    color: #B91C1C
+    font-size: 0.875rem
+
+    i
+      flex-shrink: 0
+      color: #EF4444

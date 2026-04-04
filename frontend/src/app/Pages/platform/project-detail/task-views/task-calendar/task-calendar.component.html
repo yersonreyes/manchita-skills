@@ -1,0 +1,68 @@
+<div class="task-calendar">
+  <!-- Navegación -->
+  <div class="task-calendar__nav">
+    <p-button
+      icon="pi pi-chevron-left"
+      severity="secondary"
+      variant="outlined"
+      [rounded]="true"
+      size="small"
+      (onClick)="prevMonth()"
+    />
+    <h3 class="task-calendar__month">{{ monthLabel() }}</h3>
+    <p-button
+      icon="pi pi-chevron-right"
+      severity="secondary"
+      variant="outlined"
+      [rounded]="true"
+      size="small"
+      (onClick)="nextMonth()"
+    />
+    <p-button
+      label="Hoy"
+      severity="secondary"
+      variant="outlined"
+      size="small"
+      (onClick)="goToToday()"
+    />
+  </div>
+
+  <!-- Encabezados de días -->
+  <div class="task-calendar__grid task-calendar__grid--header">
+    @for (day of weekDays; track day) {
+      <div class="task-calendar__weekday">{{ day }}</div>
+    }
+  </div>
+
+  <!-- Grilla de días -->
+  <div class="task-calendar__grid">
+    @for (day of calendarDays(); track day.date.getTime()) {
+      <div
+        class="task-calendar__day"
+        [class.task-calendar__day--other-month]="!day.isCurrentMonth"
+        [class.task-calendar__day--today]="day.isToday"
+      >
+        <span class="task-calendar__day-num">{{ day.date.getDate() }}</span>
+
+        <div class="task-calendar__day-tasks">
+          @for (task of day.tasks.slice(0, 3); track task.id) {
+            <div
+              class="task-calendar__task-pill"
+              [style.background-color]="task.status.color + '33'"
+              [style.border-left-color]="task.status.color"
+              [title]="task.titulo"
+              (click)="openTask(task)"
+            >
+              {{ task.titulo }}
+            </div>
+          }
+          @if (day.tasks.length > 3) {
+            <div class="task-calendar__task-more">
+              +{{ day.tasks.length - 3 }} más
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

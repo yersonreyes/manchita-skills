@@ -1,0 +1,67 @@
+<div class="task-board">
+  @if (store.loading()) {
+    <div class="task-board__loading">
+      <i class="pi pi-spin pi-spinner text-3xl text-gray-400"></i>
+    </div>
+  } @else if (statuses.length === 0) {
+    <div class="task-board__empty">
+      <i class="pi pi-inbox text-4xl opacity-40"></i>
+      <p>Este proyecto no tiene estados configurados.</p>
+    </div>
+  } @else {
+    <div class="task-board__columns">
+      @for (status of statuses; track status.id) {
+        <div
+          class="task-board__column"
+          [class.task-board__column--drag-over]="isDragOver(status.id)"
+          (dragover)="onDragOver($event, status.id)"
+          (dragleave)="onDragLeave()"
+          (drop)="onDrop($event, status.id)"
+        >
+          <!-- Encabezado de columna -->
+          <div class="task-board__col-header">
+            <div class="task-board__col-header-left">
+              <div
+                class="task-board__col-indicator"
+                [style.background-color]="status.color"
+              ></div>
+              <span class="task-board__col-name">{{ status.nombre }}</span>
+              <span class="task-board__col-count">{{ getTasksForStatus(status.id).length }}</span>
+            </div>
+            <button
+              class="task-board__col-add"
+              title="Nueva tarea en {{ status.nombre }}"
+              (click)="openNewTask(status.id)"
+            >
+              <i class="pi pi-plus"></i>
+            </button>
+          </div>
+
+          <!-- Tarjetas de la columna -->
+          <div class="task-board__col-tasks">
+            @for (task of getTasksForStatus(status.id); track task.id) {
+              <div
+                class="task-board__draggable"
+                [class.task-board__draggable--dragging]="isDragging(task.id)"
+                draggable="true"
+                (dragstart)="onDragStart($event, task.id)"
+                (dragend)="onDragEnd()"
+              >
+                <app-task-card
+                  [task]="task"
+                  (cardClick)="openTask($event)"
+                />
+              </div>
+            }
+
+            @if (getTasksForStatus(status.id).length === 0) {
+              <div class="task-board__col-empty">
+                <span>Sin tareas</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

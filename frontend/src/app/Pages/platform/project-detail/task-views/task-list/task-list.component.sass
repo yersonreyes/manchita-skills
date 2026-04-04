@@ -1,0 +1,137 @@
+.task-list
+  &__loading,
+  &__empty
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    gap: 1rem
+    padding: 4rem 0
+    color: var(--p-text-muted-color)
+
+  &__th
+    font-size: 0.75rem
+    font-weight: 600
+    color: var(--p-text-muted-color)
+    text-transform: uppercase
+    letter-spacing: 0.05em
+    white-space: nowrap
+
+    &--title
+      min-width: 250px
+
+  &__row
+    cursor: pointer
+
+    &:hover td
+      background: var(--p-surface-50)
+
+  &__td
+    font-size: 0.875rem
+    vertical-align: middle
+    padding: 0.5rem 0.75rem
+
+    &--title
+      max-width: 350px
+
+  &__title-cell
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+  &__expand
+    width: 20px
+    height: 20px
+    display: flex
+    align-items: center
+    justify-content: center
+    border: none
+    background: transparent
+    cursor: pointer
+    color: var(--p-text-muted-color)
+    border-radius: 4px
+    font-size: 0.7rem
+    flex-shrink: 0
+
+    &:hover
+      background: var(--p-surface-200)
+
+  &__leaf-spacer
+    width: 20px
+    flex-shrink: 0
+
+  &__status-dot
+    width: 8px
+    height: 8px
+    border-radius: 50%
+    flex-shrink: 0
+
+  &__task-name
+    font-size: 0.875rem
+    font-weight: 500
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+
+  &__subtask-badge
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+    background: var(--p-surface-200)
+    padding: 0.1rem 0.375rem
+    border-radius: 999px
+    white-space: nowrap
+    flex-shrink: 0
+
+  &__status-chip
+    font-size: 0.75rem
+    padding: 0.2rem 0.6rem
+    border-radius: 999px
+    border: 1px solid transparent
+    font-weight: 500
+    white-space: nowrap
+
+  &__assignee
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    font-size: 0.8125rem
+
+  &__avatar
+    width: 24px
+    height: 24px
+    border-radius: 50%
+    background: var(--p-primary-100)
+    color: var(--p-primary-700)
+    font-size: 0.7rem
+    font-weight: 700
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-shrink: 0
+
+  &__muted
+    color: var(--p-text-muted-color)
+
+  &__date
+    font-size: 0.8125rem
+    color: var(--p-text-muted-color)
+
+    &--overdue
+      color: #EF4444
+      font-weight: 500
+
+  &__tags
+    display: flex
+    gap: 0.25rem
+    flex-wrap: wrap
+
+  &__tag
+    font-size: 0.7rem
+    padding: 0.1rem 0.4rem
+    border-radius: 999px
+    border: 1px solid transparent
+    font-weight: 500
+
+  &__tag-more
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)

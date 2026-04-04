@@ -1,0 +1,134 @@
+<div class="task-timeline">
+  <!-- Controles -->
+  <div class="task-timeline__controls">
+    <div class="task-timeline__zoom-group">
+      <p-button
+        label="Días"
+        [severity]="zoom() === 'days' ? 'primary' : 'secondary'"
+        [variant]="zoom() === 'days' ? undefined : 'outlined'"
+        size="small"
+        (onClick)="setZoom('days')"
+      />
+      <p-button
+        label="Semanas"
+        [severity]="zoom() === 'weeks' ? 'primary' : 'secondary'"
+        [variant]="zoom() === 'weeks' ? undefined : 'outlined'"
+        size="small"
+        (onClick)="setZoom('weeks')"
+      />
+      <p-button
+        label="Meses"
+        [severity]="zoom() === 'months' ? 'primary' : 'secondary'"
+        [variant]="zoom() === 'months' ? undefined : 'outlined'"
+        size="small"
+        (onClick)="setZoom('months')"
+      />
+    </div>
+  </div>
+
+  @if (store.loading()) {
+    <div class="task-timeline__loading">
+      <i class="pi pi-spin pi-spinner text-3xl text-gray-400"></i>
+    </div>
+  } @else {
+    <div class="task-timeline__wrapper">
+      <!-- Columna de nombres (sticky izquierda) -->
+      <div class="task-timeline__names">
+        <div class="task-timeline__names-header">Tarea</div>
+        @for (ft of tasksWithDates(); track ft.task.id) {
+          <div
+            class="task-timeline__name-row"
+            [style.padding-left]="(ft.level * 16 + 12) + 'px'"
+          >
+            <div
+              class="task-timeline__name-dot"
+              [style.background-color]="priorityColors[ft.task.prioridad]"
+            ></div>
+            <span class="task-timeline__name-text" [title]="ft.task.titulo">
+              {{ ft.task.titulo }}
+            </span>
+          </div>
+        }
+
+        @if (tasksWithoutDates().length > 0) {
+          <div class="task-timeline__names-separator">Sin fechas</div>
+          @for (ft of tasksWithoutDates(); track ft.task.id) {
+            <div
+              class="task-timeline__name-row task-timeline__name-row--no-date"
+              [style.padding-left]="(ft.level * 16 + 12) + 'px'"
+            >
+              <span class="task-timeline__name-text" [title]="ft.task.titulo">
+                {{ ft.task.titulo }}
+              </span>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Área de Gantt (scroll horizontal) -->
+      <div class="task-timeline__gantt-scroll">
+        <div class="task-timeline__gantt" [style.width]="totalWidth() + 'px'">
+          <!-- Encabezado de columnas -->
+          <div class="task-timeline__gantt-header">
+            @for (col of columns(); track col.date.getTime()) {
+              <div
+                class="task-timeline__col-header"
+                [style.width]="col.width + 'px'"
+                [class.task-timeline__col-header--today]="isToday(col.date)"
+              >
+                {{ col.label }}
+              </div>
+            }
+          </div>
+
+          <!-- Indicador de hoy -->
+          <div
+            class="task-timeline__today-line"
+            [style.left]="todayOffset() + 'px'"
+          ></div>
+
+          <!-- Filas con barras -->
+          @for (ft of tasksWithDates(); track ft.task.id) {
+            <div class="task-timeline__row">
+              <!-- Fondo de columnas alternadas -->
+              @for (col of columns(); track col.date.getTime()) {
+                <div
+                  class="task-timeline__col-bg"
+                  [style.width]="col.width + 'px'"
+                  [class.task-timeline__col-bg--today]="isToday(col.date)"
+                ></div>
+              }
+
+              <!-- Barra de Gantt -->
+              @if (getBarStyle(ft.task); as barStyle) {
+                <div
+                  class="task-timeline__bar"
+                  [style]="barStyle"
+                  [title]="ft.task.titulo"
+                  (click)="openTask(ft.task)"
+                >
+                  <span class="task-timeline__bar-label">{{ ft.task.titulo }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          @if (tasksWithoutDates().length > 0) {
+            <!-- Separador y filas sin fechas -->
+            <div class="task-timeline__separator-row"></div>
+            @for (ft of tasksWithoutDates(); track ft.task.id) {
+              <div class="task-timeline__row task-timeline__row--no-date">
+                @for (col of columns(); track col.date.getTime()) {
+                  <div
+                    class="task-timeline__col-bg task-timeline__col-bg--muted"
+                    [style.width]="col.width + 'px'"
+                  ></div>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

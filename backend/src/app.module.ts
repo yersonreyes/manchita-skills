@@ -15,6 +15,10 @@ import { ProjectModule } from './project/project.module';
 import { ProjectPhaseModule } from './project-phase/project-phase.module';
 import { ToolApplicationModule } from './tool-application/tool-application.module';
 import { UserModule } from './user/user.module';
+import { TaskStatusModule } from './task-status/task-status.module';
+import { TaskTagModule } from './task-tag/task-tag.module';
+import { TaskModule } from './task/task.module';
+import { TaskActivityModule } from './task-activity/task-activity.module';
 import { WikiModule } from './wiki/wiki.module';
 
 @Module({
@@ -36,6 +40,10 @@ import { WikiModule } from './wiki/wiki.module';
     ProjectModule,
     ProjectPhaseModule,
     ToolApplicationModule,
+    TaskStatusModule,
+    TaskTagModule,
+    TaskModule,
+    TaskActivityModule,
     WikiModule,
   ],
   providers: [

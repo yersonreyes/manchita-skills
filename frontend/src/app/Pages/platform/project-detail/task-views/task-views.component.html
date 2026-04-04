@@ -1,0 +1,59 @@
+<app-page-header
+  title="Tareas del Proyecto"
+  subtitle="Gestioná las tareas desde distintas vistas"
+>
+  <p-button
+    label="Volver"
+    icon="pi pi-arrow-left"
+    severity="secondary"
+    variant="outlined"
+    (onClick)="goBack()"
+  />
+  <p-button
+    *hasPermission="'projects:create'"
+    label="Nueva tarea"
+    icon="pi pi-plus"
+    (onClick)="openNewTask(getFirstStatus()?.id)"
+  />
+</app-page-header>
+
+<!-- ─── Tab Navigation ────────────────────────────────────────────────────── -->
+<div class="task-tabs">
+  @for (tab of tabs; track tab.path) {
+    <a
+      class="task-tab"
+      [routerLink]="tab.path"
+      routerLinkActive="task-tab--active"
+    >
+      <i [class]="tab.icon"></i>
+      <span>{{ tab.label }}</span>
+    </a>
+  }
+</div>
+
+<!-- ─── Filtros ───────────────────────────────────────────────────────────── -->
+<app-task-filters
+  [statuses]="store.statuses()"
+  [tags]="store.tags()"
+  [members]="store.members()"
+  (filtersChange)="onFiltersChange($event)"
+/>
+
+<!-- ─── Router Outlet (vistas hijas) ─────────────────────────────────────── -->
+<div class="task-views-content">
+  <router-outlet />
+</div>
+
+<!-- ─── Dialog de tarea ───────────────────────────────────────────────────── -->
+<app-task-detail-dialog
+  [visible]="taskDialogVisible()"
+  [task]="editingTask()"
+  [statuses]="store.statuses()"
+  [tags]="store.tags()"
+  [members]="store.members()"
+  [tasks]="store.tasks()"
+  [defaultStatusId]="defaultStatusId()"
+  (visibleChange)="taskDialogVisible.set($event)"
+  (save)="onTaskSave($event)"
+  (delete)="onTaskDelete($event)"
+/>

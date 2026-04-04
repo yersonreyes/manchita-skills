@@ -446,4 +446,8 @@ export class ProjectDetailComponent implements OnInit {
   goToWiki(): void {
     void this.router.navigate(['/platform/projects', this.projectId, 'wiki']);
   }
+
+  goToTasks(): void {
+    void this.router.navigate(['/platform/projects', this.projectId, 'tasks']);
+  }
 }
