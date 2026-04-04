@@ -11,6 +11,9 @@ import { WikiTreeNode } from '../wiki.types';
   template: `
     <div class="wiki-tree-node" [class.active]="node().id === selectedPageId()">
       <div class="wiki-tree-node__row" [style.padding-left.px]="level() * 16 + 8">
+        <span class="wiki-tree-node__icon">
+          {{ node().icono ?? '📄' }}
+        </span>
         <span class="wiki-tree-node__title" (click)="navigate()">
           {{ node().titulo }}
         </span>
@@ -56,6 +59,11 @@ import { WikiTreeNode } from '../wiki.types';
     }
     .wiki-tree-node.active > .wiki-tree-node__row {
       background: var(--p-primary-50);
+    }
+    .wiki-tree-node__icon {
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      line-height: 1;
     }
     .wiki-tree-node__title {
       flex: 1;
