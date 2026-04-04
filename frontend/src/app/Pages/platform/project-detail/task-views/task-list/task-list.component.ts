@@ -5,12 +5,11 @@ import { TaskPriority } from '@core/services/taskService/task.req.dto';
 import { TaskViewsComponent } from '../task-views.component';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
-import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [TableModule, Tag, Button],
+  imports: [TableModule, Tag],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.sass',
 })

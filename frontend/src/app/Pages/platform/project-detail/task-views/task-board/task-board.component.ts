@@ -3,16 +3,13 @@ import { TaskStoreService } from '@core/services/taskStoreService/task-store.ser
 import { TaskResDto, TaskStatusDto } from '@core/services/taskService/task.res.dto';
 import { TaskService } from '@core/services/taskService/task.service';
 import { TaskCardComponent } from '@shared/components/task-card/task-card.component';
-import { TaskDetailDialogComponent } from '@shared/components/task-detail-dialog/task-detail-dialog.component';
 import { UiDialogService } from '@core/services/ui-dialog.service';
-import { CreateTaskReqDto, UpdateTaskReqDto } from '@core/services/taskService/task.req.dto';
-import { Button } from 'primeng/button';
 import { TaskViewsComponent } from '../task-views.component';
 
 @Component({
   selector: 'app-task-board',
   standalone: true,
-  imports: [TaskCardComponent, TaskDetailDialogComponent, Button],
+  imports: [TaskCardComponent],
   templateUrl: './task-board.component.html',
   styleUrl: './task-board.component.sass',
 })

@@ -1,168 +1,171 @@
-<p-dialog
+<p-drawer
   [visible]="visible()"
+  position="right"
   [modal]="true"
-  [style]="{ width: '600px', maxWidth: '95vw' }"
-  [closable]="true"
-  [draggable]="false"
+  [style]="{ width: '66vw' }"
   (onHide)="onHide()"
 >
   <ng-template #header>
-    <div class="task-dialog__header">
-      <i class="pi pi-check-square task-dialog__header-icon"></i>
+    <div class="task-panel__header">
+      <i class="pi pi-check-square task-panel__header-icon"></i>
       <div>
-        <p class="task-dialog__header-title">{{ isEdit ? 'Editar tarea' : 'Nueva tarea' }}</p>
+        <p class="task-panel__header-title">{{ isEdit ? 'Editar tarea' : 'Nueva tarea' }}</p>
         @if (isEdit && task()) {
-          <p class="task-dialog__header-sub">ID #{{ task()!.id }}</p>
+          <p class="task-panel__header-sub">ID #{{ task()!.id }}</p>
         }
       </div>
     </div>
   </ng-template>
 
-  <div class="task-dialog__form">
-    <!-- Título -->
-    <div class="task-dialog__field">
-      <label class="task-dialog__label">Título <span class="task-dialog__required">*</span></label>
-      <input
-        pInputText
-        [(ngModel)]="form.titulo"
-        placeholder="¿Qué hay que hacer?"
-        class="w-full"
-      />
-    </div>
+  <div class="task-panel__body">
+    <!-- ─── ATRIBUTOS ──────────────────────────────────────────────────────── -->
+    <div class="task-panel__attributes">
+      <!-- Título -->
+      <div class="task-panel__field task-panel__field--full">
+        <label class="task-panel__label">Titulo <span class="task-panel__required">*</span></label>
+        <input
+          pInputText
+          [(ngModel)]="form.titulo"
+          placeholder="Que hay que hacer?"
+          class="w-full"
+        />
+      </div>
 
-    <!-- Descripción -->
-    <div class="task-dialog__field">
-      <label class="task-dialog__label">Descripción</label>
-      <textarea
-        pTextarea
-        [(ngModel)]="form.descripcion"
-        [rows]="3"
-        placeholder="Contexto adicional..."
-        class="w-full"
-        [autoResize]="true"
-      ></textarea>
-    </div>
+      <!-- Estado + Prioridad -->
+      <div class="task-panel__row">
+        <div class="task-panel__field">
+          <label class="task-panel__label">Estado <span class="task-panel__required">*</span></label>
+          <p-select
+            [(ngModel)]="form.statusId"
+            [options]="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecciona un estado..."
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
 
-    <!-- Fila: Estado + Prioridad -->
-    <div class="task-dialog__row">
-      <div class="task-dialog__field">
-        <label class="task-dialog__label">Estado <span class="task-dialog__required">*</span></label>
-        <p-select
-          [(ngModel)]="form.statusId"
-          [options]="statusOptions"
+        <div class="task-panel__field">
+          <label class="task-panel__label">Prioridad</label>
+          <p-select
+            [(ngModel)]="form.prioridad"
+            [options]="priorityOptions"
+            optionLabel="label"
+            optionValue="value"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+      </div>
+
+      <!-- Responsable + Estimacion -->
+      <div class="task-panel__row">
+        <div class="task-panel__field">
+          <label class="task-panel__label">Responsable</label>
+          <p-select
+            [(ngModel)]="form.assigneeId"
+            [options]="memberOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Sin asignar"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+
+        <div class="task-panel__field">
+          <label class="task-panel__label">Estimacion (hs)</label>
+          <p-inputnumber
+            [(ngModel)]="form.estimacion"
+            [min]="0"
+            [maxFractionDigits]="1"
+            placeholder="Ej: 2.5"
+            class="w-full"
+          />
+        </div>
+      </div>
+
+      <!-- Fechas -->
+      <div class="task-panel__row">
+        <div class="task-panel__field">
+          <label class="task-panel__label">Fecha de inicio</label>
+          <p-datepicker
+            [(ngModel)]="form.fechaInicio"
+            [showClear]="true"
+            appendTo="body"
+            dateFormat="dd/mm/yy"
+            placeholder="Selecciona fecha..."
+            class="w-full"
+          />
+        </div>
+
+        <div class="task-panel__field">
+          <label class="task-panel__label">Fecha de vencimiento</label>
+          <p-datepicker
+            [(ngModel)]="form.fechaVencimiento"
+            [showClear]="true"
+            appendTo="body"
+            dateFormat="dd/mm/yy"
+            placeholder="Selecciona fecha..."
+            class="w-full"
+          />
+        </div>
+      </div>
+
+      <!-- Etiquetas -->
+      <div class="task-panel__field task-panel__field--full">
+        <label class="task-panel__label">Etiquetas</label>
+        <p-multiselect
+          [(ngModel)]="form.tagIds"
+          [options]="tagOptions"
           optionLabel="label"
           optionValue="value"
-          placeholder="Seleccioná un estado..."
+          placeholder="Selecciona etiquetas..."
           appendTo="body"
           class="w-full"
+          display="chip"
         />
       </div>
 
-      <div class="task-dialog__field">
-        <label class="task-dialog__label">Prioridad</label>
-        <p-select
-          [(ngModel)]="form.prioridad"
-          [options]="priorityOptions"
-          optionLabel="label"
-          optionValue="value"
-          appendTo="body"
-          class="w-full"
-        />
+      <!-- Tarea padre (solo creacion) -->
+      @if (!isEdit) {
+        <div class="task-panel__field task-panel__field--full">
+          <label class="task-panel__label">Tarea padre</label>
+          <p-select
+            [(ngModel)]="form.parentId"
+            [options]="parentOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Sin tarea padre"
+            appendTo="body"
+            class="w-full"
+            [filter]="true"
+            filterBy="label"
+          />
+        </div>
+      }
+    </div>
+
+    <!-- ─── DESCRIPCION (Markdown Editor) ──────────────────────────────────── -->
+    <div class="task-panel__description">
+      <label class="task-panel__label">Descripcion</label>
+      <div class="task-panel__editor-wrapper">
+        @if (visible()) {
+          <app-wiki-editor
+            [content]="form.descripcion"
+            [editable]="true"
+            (contentChanged)="form.descripcion = $event"
+          />
+        }
       </div>
     </div>
 
-    <!-- Fila: Responsable + Estimación -->
-    <div class="task-dialog__row">
-      <div class="task-dialog__field">
-        <label class="task-dialog__label">Responsable</label>
-        <p-select
-          [(ngModel)]="form.assigneeId"
-          [options]="memberOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Sin asignar"
-          appendTo="body"
-          class="w-full"
-        />
-      </div>
-
-      <div class="task-dialog__field">
-        <label class="task-dialog__label">Estimación (hs)</label>
-        <p-inputnumber
-          [(ngModel)]="form.estimacion"
-          [min]="0"
-          [maxFractionDigits]="1"
-          placeholder="Ej: 2.5"
-          class="w-full"
-        />
-      </div>
-    </div>
-
-    <!-- Fila: Fechas -->
-    <div class="task-dialog__row">
-      <div class="task-dialog__field">
-        <label class="task-dialog__label">Fecha de inicio</label>
-        <p-datepicker
-          [(ngModel)]="form.fechaInicio"
-          [showClear]="true"
-          appendTo="body"
-          dateFormat="dd/mm/yy"
-          placeholder="Seleccioná fecha..."
-          class="w-full"
-        />
-      </div>
-
-      <div class="task-dialog__field">
-        <label class="task-dialog__label">Fecha de vencimiento</label>
-        <p-datepicker
-          [(ngModel)]="form.fechaVencimiento"
-          [showClear]="true"
-          appendTo="body"
-          dateFormat="dd/mm/yy"
-          placeholder="Seleccioná fecha..."
-          class="w-full"
-        />
-      </div>
-    </div>
-
-    <!-- Etiquetas -->
-    <div class="task-dialog__field">
-      <label class="task-dialog__label">Etiquetas</label>
-      <p-multiselect
-        [(ngModel)]="form.tagIds"
-        [options]="tagOptions"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Seleccioná etiquetas..."
-        appendTo="body"
-        class="w-full"
-        display="chip"
-      />
-    </div>
-
-    <!-- Tarea padre -->
-    @if (!isEdit) {
-      <div class="task-dialog__field">
-        <label class="task-dialog__label">Tarea padre</label>
-        <p-select
-          [(ngModel)]="form.parentId"
-          [options]="parentOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Sin tarea padre"
-          appendTo="body"
-          class="w-full"
-          [filter]="true"
-          filterBy="label"
-        />
-      </div>
-    }
-
-    <!-- Confirmación de eliminación -->
+    <!-- Confirmacion de eliminacion -->
     @if (showDeleteConfirm) {
-      <div class="task-dialog__delete-confirm">
+      <div class="task-panel__delete-confirm">
         <i class="pi pi-exclamation-triangle"></i>
-        <span>¿Eliminás esta tarea? Esta acción no se puede deshacer.</span>
+        <span>Eliminas esta tarea? Esta accion no se puede deshacer.</span>
         <p-button
           label="Cancelar"
           severity="secondary"
@@ -181,28 +184,30 @@
   </div>
 
   <ng-template #footer>
-    @if (isEdit && !showDeleteConfirm) {
+    <div class="task-panel__footer">
+      @if (isEdit && !showDeleteConfirm) {
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          variant="text"
+          (onClick)="confirmDelete()"
+          pTooltip="Eliminar tarea"
+          tooltipPosition="top"
+        />
+      }
+      <div class="flex-1"></div>
       <p-button
-        icon="pi pi-trash"
-        severity="danger"
-        variant="text"
-        (onClick)="confirmDelete()"
-        pTooltip="Eliminar tarea"
-        tooltipPosition="top"
+        label="Cancelar"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="onHide()"
       />
-    }
-    <div class="flex-1"></div>
-    <p-button
-      label="Cancelar"
-      severity="secondary"
-      variant="outlined"
-      (onClick)="onHide()"
-    />
-    <p-button
-      [label]="isEdit ? 'Guardar cambios' : 'Crear tarea'"
-      icon="pi pi-check"
-      [disabled]="!form.titulo.trim() || !form.statusId"
-      (onClick)="onSubmit()"
-    />
+      <p-button
+        [label]="isEdit ? 'Guardar cambios' : 'Crear tarea'"
+        icon="pi pi-check"
+        [disabled]="!form.titulo.trim() || !form.statusId"
+        (onClick)="onSubmit()"
+      />
+    </div>
   </ng-template>
-</p-dialog>
+</p-drawer>

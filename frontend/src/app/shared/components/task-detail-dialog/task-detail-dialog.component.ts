@@ -1,16 +1,17 @@
-import { Component, effect, input, output } from '@angular/core';
+import { Component, ViewEncapsulation, effect, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TaskResDto, TaskStatusDto, TaskTagDto } from '@core/services/taskService/task.res.dto';
 import { CreateTaskReqDto, TaskPriority, UpdateTaskReqDto } from '@core/services/taskService/task.req.dto';
 import { ProjectMemberDto } from '@core/services/projectService/project.res.dto';
+import { WikiEditorComponent } from '@pages/platform/wiki/wiki-page/wiki-editor.component';
 import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
+import { Drawer } from 'primeng/drawer';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
-import { Textarea } from 'primeng/textarea';
 import { InputText } from 'primeng/inputtext';
 import { InputNumber } from 'primeng/inputnumber';
 import { DatePicker } from 'primeng/datepicker';
+import { Tooltip } from 'primeng/tooltip';
 
 interface SelectOption {
   label: string;
@@ -37,14 +38,16 @@ interface FormState {
   imports: [
     FormsModule,
     Button,
-    Dialog,
+    Drawer,
     Select,
     MultiSelect,
-    Textarea,
     InputText,
     InputNumber,
     DatePicker,
+    Tooltip,
+    WikiEditorComponent,
   ],
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './task-detail-dialog.component.html',
   styleUrl: './task-detail-dialog.component.sass',
 })

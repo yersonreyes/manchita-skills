@@ -1,4 +1,4 @@
-.task-dialog
+.task-panel
   &__header
     display: flex
     align-items: center
@@ -10,7 +10,7 @@
 
   &__header-title
     font-weight: 600
-    font-size: 1rem
+    font-size: 1.05rem
     margin: 0
 
   &__header-sub
@@ -18,11 +18,16 @@
     color: var(--p-text-muted-color)
     margin: 0
 
-  &__form
+  &__body
+    display: flex
+    flex-direction: column
+    gap: 1.5rem
+    height: 100%
+
+  &__attributes
     display: flex
     flex-direction: column
     gap: 1rem
-    padding-top: 0.25rem
 
   &__row
     display: grid
@@ -34,6 +39,9 @@
     flex-direction: column
     gap: 0.375rem
 
+    &--full
+      grid-column: 1 / -1
+
   &__label
     font-size: 0.8125rem
     font-weight: 500
@@ -41,6 +49,30 @@
 
   &__required
     color: #EF4444
+
+  &__description
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+    flex: 1
+    min-height: 0
+
+  &__editor-wrapper
+    flex: 1
+    min-height: 250px
+    border: 1px solid var(--p-surface-200)
+    border-radius: 8px
+    padding: 0.75rem
+    overflow-y: auto
+
+    .wiki-editor .ProseMirror
+      min-height: 200px
+
+  &__footer
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    width: 100%
 
   &__delete-confirm
     display: flex
