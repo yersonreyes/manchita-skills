@@ -26,5 +26,11 @@ export function buildTree(pages: WikiPageResDto[]): WikiTreeNode[] {
     }
   }
 
-  return roots;
+  const sortByOrden = (nodes: WikiTreeNode[]): WikiTreeNode[] => {
+    nodes.sort((a, b) => a.orden - b.orden);
+    for (const node of nodes) sortByOrden(node.children);
+    return nodes;
+  };
+
+  return sortByOrden(roots);
 }
