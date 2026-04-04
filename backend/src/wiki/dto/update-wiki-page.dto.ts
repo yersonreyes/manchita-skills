@@ -13,6 +13,16 @@ export class UpdateWikiPageDto {
   @IsString()
   contenido?: string;
 
+  @ApiPropertyOptional({ example: '📝', nullable: true })
+  @IsOptional()
+  @IsString()
+  icono?: string | null;
+
+  @ApiPropertyOptional({ example: 'emerald', nullable: true })
+  @IsOptional()
+  @IsString()
+  banner?: string | null;
+
   @ApiPropertyOptional({ example: 1 })
   @IsOptional()
   @IsInt()

@@ -42,6 +42,8 @@ export class WikiService {
       data: {
         ...(dto.titulo !== undefined && { titulo: dto.titulo }),
         ...(dto.contenido !== undefined && { contenido: dto.contenido }),
+        ...(dto.icono !== undefined && { icono: dto.icono }),
+        ...(dto.banner !== undefined && { banner: dto.banner }),
         ...(dto.orden !== undefined && { orden: dto.orden }),
         ...(dto.parentId !== undefined && { parentId: dto.parentId }),
       },

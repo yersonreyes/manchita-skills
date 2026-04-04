@@ -16,6 +16,12 @@ export class WikiPageResDto {
   @ApiProperty({ example: '# Investigación\n\nContenido aquí...' })
   contenido: string;
 
+  @ApiPropertyOptional({ example: '📝', nullable: true })
+  icono: string | null;
+
+  @ApiPropertyOptional({ example: 'emerald', nullable: true })
+  banner: string | null;
+
   @ApiProperty({ example: 0 })
   orden: number;
 

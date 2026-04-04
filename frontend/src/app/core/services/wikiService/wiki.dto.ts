@@ -4,6 +4,8 @@ export interface WikiPageResDto {
   parentId: number | null;
   titulo: string;
   contenido: string;
+  icono: string | null;
+  banner: string | null;
   orden: number;
   activo: boolean;
   createdAt: string;
@@ -22,6 +24,8 @@ export interface CreateWikiPageReqDto {
 export interface UpdateWikiPageReqDto {
   titulo?: string;
   contenido?: string;
+  icono?: string | null;
+  banner?: string | null;
   orden?: number;
   parentId?: number | null;
 }

@@ -374,6 +374,8 @@ model WikiPage {
   parentId    Int?
   titulo      String
   contenido   String   @db.Text
+  icono       String?
+  banner      String?
   orden       Int      @default(0)
   activo      Boolean  @default(true)
   createdAt   DateTime @default(now())
