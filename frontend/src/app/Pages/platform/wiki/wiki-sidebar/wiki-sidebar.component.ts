@@ -51,10 +51,29 @@ import { WikiTreeNodeComponent } from './wiki-tree-node.component';
       header="Nueva página"
       [(visible)]="dialogVisible"
       [modal]="true"
-      [style]="{ width: '400px' }"
+      [style]="{ width: '420px' }"
     >
+      <!-- Indicador de ubicación -->
+      <div class="wiki-location">
+        <div class="wiki-location__icon">
+          <i [class]="pendingParentTitle ? 'pi pi-chevron-right' : 'pi pi-home'"></i>
+        </div>
+        <div class="wiki-location__info">
+          <span class="wiki-location__label">Se creará en</span>
+          @if (pendingParentTitle) {
+            <div class="wiki-location__path">
+              <span class="wiki-location__root">Raíz</span>
+              <i class="pi pi-angle-right wiki-location__sep"></i>
+              <span class="wiki-location__parent">{{ pendingParentTitle }}</span>
+            </div>
+          } @else {
+            <span class="wiki-location__root wiki-location__root--active">Raíz de la wiki</span>
+          }
+        </div>
+      </div>
+
       <div class="wiki-sidebar__form">
-        <label>Título</label>
+        <label class="wiki-sidebar__form-label">Título de la página</label>
         <input
           pInputText
           [(ngModel)]="newPageTitle"
@@ -65,7 +84,7 @@ import { WikiTreeNodeComponent } from './wiki-tree-node.component';
 
       <ng-template pTemplate="footer">
         <p-button label="Cancelar" severity="secondary" [text]="true" (click)="dialogVisible = false" />
-        <p-button label="Crear" (click)="submitNewPage()" [disabled]="!newPageTitle.trim()" />
+        <p-button label="Crear página" icon="pi pi-plus" (click)="submitNewPage()" [disabled]="!newPageTitle.trim()" />
       </ng-template>
     </p-dialog>
   `,
@@ -74,7 +93,6 @@ import { WikiTreeNodeComponent } from './wiki-tree-node.component';
       display: flex;
       flex-direction: column;
       height: 100%;
-      border-right: 1px solid var(--p-surface-200);
     }
     .wiki-sidebar__header {
       display: flex;
@@ -105,11 +123,78 @@ import { WikiTreeNodeComponent } from './wiki-tree-node.component';
     .wiki-sidebar__form {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding-bottom: 8px;
+      gap: 6px;
     }
     .wiki-sidebar__form input {
       width: 100%;
+    }
+    .wiki-sidebar__form-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--p-text-color);
+    }
+
+    /* ─── Location indicator ─── */
+    .wiki-location {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      background: var(--p-surface-50);
+      border: 1px solid var(--p-surface-200);
+      border-radius: 8px;
+    }
+    .wiki-location__icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--p-primary-50);
+      color: var(--p-primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.875rem;
+    }
+    .wiki-location__info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .wiki-location__label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--p-text-muted-color);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .wiki-location__path {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .wiki-location__root {
+      font-size: 0.82rem;
+      color: var(--p-text-muted-color);
+    }
+    .wiki-location__root--active {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--p-primary-color);
+    }
+    .wiki-location__sep {
+      font-size: 0.65rem;
+      color: var(--p-text-muted-color);
+    }
+    .wiki-location__parent {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--p-text-color);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   `],
 })
@@ -125,7 +210,8 @@ export class WikiSidebarComponent implements OnInit {
   loading = signal(false);
   dialogVisible = false;
   newPageTitle = '';
-  private pendingParentId: number | null = null;
+  pendingParentId: number | null = null;
+  pendingParentTitle: string | null = null;
 
   async ngOnInit(): Promise<void> {
     await this.loadTree();
@@ -145,6 +231,7 @@ export class WikiSidebarComponent implements OnInit {
 
   openNewPageDialog(parentId: number | null): void {
     this.pendingParentId = parentId;
+    this.pendingParentTitle = parentId ? this.findNodeTitle(this.tree(), parentId) : null;
     this.newPageTitle = '';
     this.dialogVisible = true;
   }
@@ -164,5 +251,14 @@ export class WikiSidebarComponent implements OnInit {
     } catch {
       this.uiDialog.showError('Error', 'No se pudo crear la página');
     }
+  }
+
+  private findNodeTitle(nodes: WikiTreeNode[], id: number): string | null {
+    for (const node of nodes) {
+      if (node.id === id) return node.titulo;
+      const found = this.findNodeTitle(node.children, id);
+      if (found) return found;
+    }
+    return null;
   }
 }
