@@ -17,8 +17,10 @@ type DropZone = 'before' | 'after' | 'inside' | null;
       [class.active]="node().id === selectedPageId()"
       [class.dragging]="dragService.draggingId() === node().id"
       [class.drop-inside]="dropZone() === 'inside'"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
     >
-      <!-- Indicador: insertar antes -->
       @if (dropZone() === 'before') {
         <div class="wiki-drop-line"></div>
       }
@@ -29,9 +31,6 @@ type DropZone = 'before' | 'after' | 'inside' | null;
         draggable="true"
         (dragstart)="onDragStart($event)"
         (dragend)="onDragEnd()"
-        (dragover)="onDragOver($event)"
-        (dragleave)="onDragLeave($event)"
-        (drop)="onDrop($event)"
       >
         <i class="pi pi-bars wiki-tree-node__handle"></i>
         <span class="wiki-tree-node__icon">{{ node().icono ?? '📄' }}</span>
@@ -48,7 +47,6 @@ type DropZone = 'before' | 'after' | 'inside' | null;
         />
       </div>
 
-      <!-- Indicador: insertar después -->
       @if (dropZone() === 'after') {
         <div class="wiki-drop-line wiki-drop-line--after"></div>
       }
@@ -79,8 +77,7 @@ type DropZone = 'before' | 'after' | 'inside' | null;
       padding-top: 2px;
       padding-bottom: 2px;
       padding-right: 4px;
-      cursor: grab;
-      user-select: none;
+      cursor: pointer;
     }
     .wiki-tree-node__row:hover { background: var(--p-surface-100); }
     .wiki-tree-node.active > .wiki-tree-node__row { background: var(--p-primary-50); }
@@ -110,10 +107,8 @@ type DropZone = 'before' | 'after' | 'inside' | null;
       white-space: nowrap;
     }
 
-    /* Estado: siendo arrastrado */
     .wiki-tree-node.dragging { opacity: 0.4; }
 
-    /* Estado: drop "inside" (convertir en hijo) */
     .wiki-tree-node.drop-inside > .wiki-tree-node__row {
       background: var(--p-primary-100);
       outline: 2px solid var(--p-primary-color);
@@ -121,7 +116,6 @@ type DropZone = 'before' | 'after' | 'inside' | null;
       border-radius: 6px;
     }
 
-    /* Línea indicadora de posición */
     .wiki-drop-line {
       height: 2px;
       background: var(--p-primary-color);
@@ -160,6 +154,7 @@ export class WikiTreeNodeComponent {
 
   onDragStart(event: DragEvent): void {
     event.stopPropagation();
+    event.dataTransfer!.effectAllowed = 'move';
     event.dataTransfer?.setData('text/plain', String(this.node().id));
     this.dragService.draggingId.set(this.node().id);
   }
@@ -174,16 +169,18 @@ export class WikiTreeNodeComponent {
     if (draggedId === null || draggedId === this.node().id) return;
     event.preventDefault();
     event.stopPropagation();
+    event.dataTransfer!.dropEffect = 'move';
 
-    const el = (event.currentTarget as HTMLElement).querySelector('.wiki-tree-node__row');
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
+    // Usar el row para calcular la zona (ignora el área de hijos)
+    const row = (event.currentTarget as HTMLElement).querySelector<HTMLElement>(':scope > .wiki-tree-node__row');
+    if (!row) return;
+    const rect = row.getBoundingClientRect();
     const y = event.clientY - rect.top;
     const h = rect.height;
 
-    if (y < h * 0.25) {
+    if (y < h * 0.3) {
       this.dropZone.set('before');
-    } else if (y > h * 0.75) {
+    } else if (y > h * 0.7) {
       this.dropZone.set('after');
     } else {
       this.dropZone.set('inside');
@@ -192,6 +189,7 @@ export class WikiTreeNodeComponent {
 
   onDragLeave(event: DragEvent): void {
     const related = event.relatedTarget as Node | null;
+    // Solo limpiar si el cursor salió FUERA de este nodo completo
     if (related && (event.currentTarget as HTMLElement).contains(related)) return;
     this.dropZone.set(null);
   }
