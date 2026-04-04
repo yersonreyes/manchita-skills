@@ -479,7 +479,7 @@ export class WikiPageComponent implements OnInit {
 
   bannerStyle = computed<Record<string, string>>(() => {
     const value = this.banner();
-    if (!value) return {};
+    if (!value) return {} as Record<string, string>;
     if (value.startsWith('http')) {
       return {
         'background-image': `url(${value})`,
