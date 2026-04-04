@@ -31,6 +31,7 @@
     "@tiptap/extension-task-list": "^3.22.1",
     "@tiptap/pm": "^3.22.1",
     "@tiptap/starter-kit": "^3.22.1",
+    "@tiptap/suggestion": "^3.22.1",
     "highlight.js": "^11.11.1",
     "lowlight": "^3.3.0",
     "marked": "^17.0.5",
