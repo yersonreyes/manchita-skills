@@ -133,9 +133,17 @@ export class TaskDetailDialogComponent {
   }
 
   get memberOptions(): SelectOption[] {
+    const roleLabel: Record<string, string> = {
+      OWNER: 'Dueño',
+      EDITOR: 'Editor',
+      VIEWER: 'Lector',
+    };
     return [
       { label: 'Sin asignar', value: null },
-      ...this.members().map((m) => ({ label: m.user.nombre, value: m.user.id })),
+      ...this.members().map((m) => ({
+        label: `${m.user.nombre} · ${roleLabel[m.role] ?? m.role}`,
+        value: m.user.id,
+      })),
     ];
   }
 

@@ -121,7 +121,14 @@ export class TaskStoreService {
       this.tasks.set(tasks ?? []);
       this.statuses.set((statuses ?? []).sort((a, b) => a.orden - b.orden));
       this.tags.set(tags ?? []);
-      this.members.set(project.members ?? []);
+
+      // Incluir el owner como participante aunque no esté en la tabla members
+      const memberIds = new Set((project.members ?? []).map((m) => m.user.id));
+      const allMembers: ProjectMemberDto[] = [...(project.members ?? [])];
+      if (!memberIds.has(project.owner.id)) {
+        allMembers.unshift({ user: project.owner, role: 'OWNER' as any });
+      }
+      this.members.set(allMembers);
     } catch {
       // Handled by http builder
     } finally {
