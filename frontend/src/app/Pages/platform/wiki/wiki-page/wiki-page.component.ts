@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgStyle } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -57,6 +57,7 @@ const EMOJI_GROUPS = [
   selector: 'app-wiki-page',
   standalone: true,
   imports: [Button, FormsModule, NgStyle, HasPermissionDirective, InputText, MarkdownComponent, Textarea, WikiBannerUploaderComponent],
+  encapsulation: ViewEncapsulation.None,
   template: `
     @if (loading()) {
       <div class="wiki-page wiki-page--loading">
@@ -195,14 +196,14 @@ const EMOJI_GROUPS = [
   `,
   styles: [`
     /* ─── Shell ─── */
-    .wiki-page {
+    app-wiki-page .wiki-page {
       height: 100%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-    .wiki-page--loading,
-    .wiki-page--empty {
+    app-wiki-page .wiki-page--loading,
+    app-wiki-page .wiki-page--empty {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -212,10 +213,11 @@ const EMOJI_GROUPS = [
       color: var(--p-text-muted-color);
       font-size: 0.9rem;
     }
-    .wiki-page--loading i, .wiki-page--empty i { font-size: 2rem; }
+    app-wiki-page .wiki-page--loading i,
+    app-wiki-page .wiki-page--empty i { font-size: 2rem; }
 
     /* ─── Banner ─── */
-    .wiki-banner {
+    app-wiki-page .wiki-banner {
       flex-shrink: 0;
       position: relative;
       width: 100%;
@@ -226,10 +228,8 @@ const EMOJI_GROUPS = [
       background-position: center;
       overflow: hidden;
     }
-    .wiki-banner--active {
-      height: 160px;
-    }
-    .wiki-banner__hint {
+    app-wiki-page .wiki-banner--active { height: 160px; }
+    app-wiki-page .wiki-banner__hint {
       position: absolute;
       inset: 0;
       display: flex;
@@ -239,8 +239,8 @@ const EMOJI_GROUPS = [
       opacity: 0;
       transition: opacity 0.15s;
     }
-    .wiki-banner:hover .wiki-banner__hint { opacity: 1; }
-    .wiki-banner__add-btn {
+    app-wiki-page .wiki-banner:hover .wiki-banner__hint { opacity: 1; }
+    app-wiki-page .wiki-banner__add-btn {
       display: flex;
       align-items: center;
       gap: 6px;
@@ -255,8 +255,8 @@ const EMOJI_GROUPS = [
       cursor: pointer;
       transition: background 0.12s, color 0.12s;
     }
-    .wiki-banner__add-btn:hover { background: white; color: var(--p-text-color); }
-    .wiki-banner__controls {
+    app-wiki-page .wiki-banner__add-btn:hover { background: white; color: var(--p-text-color); }
+    app-wiki-page .wiki-banner__controls {
       position: absolute;
       bottom: 10px;
       right: 20px;
@@ -265,8 +265,8 @@ const EMOJI_GROUPS = [
       opacity: 0;
       transition: opacity 0.15s;
     }
-    .wiki-banner--active:hover .wiki-banner__controls { opacity: 1; }
-    .wiki-banner__ctrl-btn {
+    app-wiki-page .wiki-banner--active:hover .wiki-banner__controls { opacity: 1; }
+    app-wiki-page .wiki-banner__ctrl-btn {
       display: flex;
       align-items: center;
       gap: 5px;
@@ -281,22 +281,22 @@ const EMOJI_GROUPS = [
       cursor: pointer;
       transition: background 0.12s;
     }
-    .wiki-banner__ctrl-btn:hover { background: rgba(0,0,0,0.4); }
-    .wiki-banner__ctrl-btn--remove:hover { background: rgba(200,30,30,0.5); }
+    app-wiki-page .wiki-banner__ctrl-btn:hover { background: rgba(0,0,0,0.4); }
+    app-wiki-page .wiki-banner__ctrl-btn--remove:hover { background: rgba(200,30,30,0.5); }
 
     /* ─── Header area ─── */
-    .wiki-page__header-area {
+    app-wiki-page .wiki-page__header-area {
       padding: 0 32px;
       margin-top: -20px;
     }
 
     /* ─── Icon ─── */
-    .wiki-icon-wrap {
+    app-wiki-page .wiki-icon-wrap {
       position: relative;
       display: inline-block;
       margin-bottom: 8px;
     }
-    .wiki-icon-btn {
+    app-wiki-page .wiki-icon-btn {
       width: 52px;
       height: 52px;
       border-radius: 10px;
@@ -309,14 +309,14 @@ const EMOJI_GROUPS = [
       transition: border-color 0.15s, background 0.15s;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-    .wiki-icon-btn:hover { border-color: var(--p-primary-color); background: var(--p-primary-50); }
-    .wiki-icon-btn--set { border-style: solid; border-color: var(--p-surface-200); }
-    .wiki-icon-btn--set:hover { border-color: var(--p-primary-color); }
-    .wiki-icon-btn__emoji { font-size: 1.75rem; line-height: 1; }
-    .wiki-icon-btn__placeholder { font-size: 1.2rem; color: var(--p-text-muted-color); }
+    app-wiki-page .wiki-icon-btn:hover { border-color: var(--p-primary-color); background: var(--p-primary-50); }
+    app-wiki-page .wiki-icon-btn--set { border-style: solid; border-color: var(--p-surface-200); }
+    app-wiki-page .wiki-icon-btn--set:hover { border-color: var(--p-primary-color); }
+    app-wiki-page .wiki-icon-btn__emoji { font-size: 1.75rem; line-height: 1; }
+    app-wiki-page .wiki-icon-btn__placeholder { font-size: 1.2rem; color: var(--p-text-muted-color); }
 
     /* ─── Emoji picker ─── */
-    .wiki-picker {
+    app-wiki-page .wiki-picker {
       position: absolute;
       z-index: 100;
       background: white;
@@ -325,7 +325,7 @@ const EMOJI_GROUPS = [
       box-shadow: 0 8px 24px rgba(0,0,0,0.12);
       padding: 14px;
     }
-    .wiki-picker__title {
+    app-wiki-page .wiki-picker__title {
       margin: 0 0 10px;
       font-size: 0.75rem;
       font-weight: 600;
@@ -333,14 +333,14 @@ const EMOJI_GROUPS = [
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    .wiki-picker__header {
+    app-wiki-page .wiki-picker__header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 10px;
     }
-    .wiki-picker__header .wiki-picker__title { margin: 0; }
-    .wiki-picker__remove {
+    app-wiki-page .wiki-picker__header .wiki-picker__title { margin: 0; }
+    app-wiki-page .wiki-picker__remove {
       display: flex;
       align-items: center;
       gap: 4px;
@@ -352,15 +352,15 @@ const EMOJI_GROUPS = [
       padding: 2px 6px;
       border-radius: 4px;
     }
-    .wiki-picker__remove:hover { background: var(--p-surface-100); color: #dc2626; }
-    .wiki-emoji-picker {
+    app-wiki-page .wiki-picker__remove:hover { background: var(--p-surface-100); color: #dc2626; }
+    app-wiki-page .wiki-emoji-picker {
       top: 58px;
       left: 0;
       width: 280px;
       max-height: 320px;
       overflow-y: auto;
     }
-    .wiki-emoji-picker__group-label {
+    app-wiki-page .wiki-emoji-picker__group-label {
       margin: 8px 0 4px;
       font-size: 0.7rem;
       font-weight: 600;
@@ -368,13 +368,13 @@ const EMOJI_GROUPS = [
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    .wiki-emoji-picker__group-label:first-of-type { margin-top: 0; }
-    .wiki-emoji-picker__grid {
+    app-wiki-page .wiki-emoji-picker__group-label:first-of-type { margin-top: 0; }
+    app-wiki-page .wiki-emoji-picker__grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
       gap: 2px;
     }
-    .wiki-emoji-picker__emoji {
+    app-wiki-page .wiki-emoji-picker__emoji {
       width: 30px;
       height: 30px;
       display: flex;
@@ -387,18 +387,18 @@ const EMOJI_GROUPS = [
       cursor: pointer;
       transition: background 0.1s;
     }
-    .wiki-emoji-picker__emoji:hover { background: var(--p-surface-100); }
-    .wiki-emoji-picker__emoji--active { background: var(--p-primary-50); }
+    app-wiki-page .wiki-emoji-picker__emoji:hover { background: var(--p-surface-100); }
+    app-wiki-page .wiki-emoji-picker__emoji--active { background: var(--p-primary-50); }
 
     /* ─── Page header ─── */
-    .wiki-page__header {
+    app-wiki-page .wiki-page__header {
       display: flex;
       align-items: flex-start;
       gap: 16px;
       margin-bottom: 20px;
       padding-top: 4px;
     }
-    .wiki-page__title {
+    app-wiki-page .wiki-page__title {
       flex: 1;
       margin: 0;
       font-size: 1.75rem;
@@ -407,21 +407,21 @@ const EMOJI_GROUPS = [
       border-bottom: 2px solid transparent;
       transition: border-color 0.15s;
     }
-    .wiki-page__title:hover { border-color: var(--p-primary-color); }
-    .wiki-page__title-input {
+    app-wiki-page .wiki-page__title:hover { border-color: var(--p-primary-color); }
+    app-wiki-page .wiki-page__title-input {
       flex: 1;
       font-size: 1.75rem;
       font-weight: 700;
     }
-    .wiki-page__actions { display: flex; gap: 8px; flex-shrink: 0; }
+    app-wiki-page .wiki-page__actions { display: flex; gap: 8px; flex-shrink: 0; }
 
     /* ─── Body ─── */
-    .wiki-page__body {
+    app-wiki-page .wiki-page__body {
       flex: 1;
       overflow-y: auto;
       padding: 0 32px 32px;
     }
-    .wiki-page__editor {
+    app-wiki-page .wiki-page__editor {
       width: 100%;
       min-height: 500px;
       font-family: 'Courier New', monospace;
@@ -429,153 +429,176 @@ const EMOJI_GROUPS = [
       line-height: 1.6;
       resize: vertical;
     }
+
     /* ─── Markdown preview — estilo GitHub ─── */
-    .wiki-page__preview {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      font-size: 0.9375rem;
-      line-height: 1.6;
+    app-wiki-page .wiki-page__preview {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
       color: #1f2328;
       word-wrap: break-word;
       max-width: 800px;
     }
 
     /* Headings */
-    .wiki-page__preview h1,
-    .wiki-page__preview h2,
-    .wiki-page__preview h3,
-    .wiki-page__preview h4,
-    .wiki-page__preview h5,
-    .wiki-page__preview h6 {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    app-wiki-page .wiki-page__preview h1,
+    app-wiki-page .wiki-page__preview h2,
+    app-wiki-page .wiki-page__preview h3,
+    app-wiki-page .wiki-page__preview h4,
+    app-wiki-page .wiki-page__preview h5,
+    app-wiki-page .wiki-page__preview h6 {
+      margin-top: 24px;
+      margin-bottom: 16px;
       font-weight: 600;
       line-height: 1.25;
-      margin-top: 1.5rem;
-      margin-bottom: 0.75rem;
     }
-    .wiki-page__preview h1 {
+    app-wiki-page .wiki-page__preview h1 {
       font-size: 2em;
-      font-weight: 700;
+      font-weight: 600;
       padding-bottom: 0.3em;
-      border-bottom: 1px solid #d1d9e0;
-      margin-top: 0;
+      border-bottom: 1px solid hsla(210, 18%, 87%, 1);
     }
-    .wiki-page__preview h2 {
+    app-wiki-page .wiki-page__preview h2 {
       font-size: 1.5em;
+      font-weight: 600;
       padding-bottom: 0.3em;
-      border-bottom: 1px solid #d1d9e0;
+      border-bottom: 1px solid hsla(210, 18%, 87%, 1);
     }
-    .wiki-page__preview h3 { font-size: 1.25em; }
-    .wiki-page__preview h4 { font-size: 1em; }
-    .wiki-page__preview h5 { font-size: 0.875em; }
-    .wiki-page__preview h6 { font-size: 0.85em; color: #656d76; }
+    app-wiki-page .wiki-page__preview h3 { font-size: 1.25em; }
+    app-wiki-page .wiki-page__preview h4 { font-size: 1em; }
+    app-wiki-page .wiki-page__preview h5 { font-size: 0.875em; }
+    app-wiki-page .wiki-page__preview h6 { font-size: 0.85em; color: #656d76; }
 
-    /* Párrafos y separadores */
-    .wiki-page__preview p { margin: 0 0 1rem; }
-    .wiki-page__preview hr {
-      height: 4px;
+    /* Párrafos */
+    app-wiki-page .wiki-page__preview p { margin-top: 0; margin-bottom: 16px; }
+
+    /* Separadores */
+    app-wiki-page .wiki-page__preview hr {
+      height: 0.25em;
       padding: 0;
-      margin: 1.5rem 0;
-      background-color: #d1d9e0;
+      margin: 24px 0;
+      background-color: hsla(210, 18%, 87%, 1);
       border: 0;
-      border-radius: 2px;
     }
 
     /* Listas */
-    .wiki-page__preview ul,
-    .wiki-page__preview ol { margin: 0 0 1rem; padding-left: 2em; }
-    .wiki-page__preview ul { list-style-type: disc; }
-    .wiki-page__preview ol { list-style-type: decimal; }
-    .wiki-page__preview li { margin: 0.25rem 0; }
-    .wiki-page__preview li > ul,
-    .wiki-page__preview li > ol { margin: 0.25rem 0 0; }
+    app-wiki-page .wiki-page__preview ul,
+    app-wiki-page .wiki-page__preview ol {
+      margin-top: 0;
+      margin-bottom: 16px;
+      padding-left: 2em;
+    }
+    app-wiki-page .wiki-page__preview ul { list-style-type: disc; }
+    app-wiki-page .wiki-page__preview ol { list-style-type: decimal; }
+    app-wiki-page .wiki-page__preview li { margin-top: 0.25em; }
+    app-wiki-page .wiki-page__preview li + li { margin-top: 0.25em; }
+    app-wiki-page .wiki-page__preview li > p { margin-top: 16px; }
+    app-wiki-page .wiki-page__preview li > ul,
+    app-wiki-page .wiki-page__preview li > ol { margin-top: 0; margin-bottom: 0; }
 
-    /* Task list (GitHub checkboxes) */
-    .wiki-page__preview input[type="checkbox"] {
-      margin: 0 0.25em 0.2em -1.4em;
+    /* Task list */
+    app-wiki-page .wiki-page__preview input[type="checkbox"] {
+      margin: 0 0.2em 0.25em -1.6em;
       vertical-align: middle;
     }
 
     /* Blockquote */
-    .wiki-page__preview blockquote {
-      margin: 0 0 1rem;
+    app-wiki-page .wiki-page__preview blockquote {
+      margin: 0 0 16px;
       padding: 0 1em;
       color: #656d76;
-      border-left: 4px solid #d1d9e0;
+      border-left: 0.25em solid hsla(210, 18%, 87%, 1);
     }
-    .wiki-page__preview blockquote > :last-child { margin-bottom: 0; }
+    app-wiki-page .wiki-page__preview blockquote > :first-child { margin-top: 0; }
+    app-wiki-page .wiki-page__preview blockquote > :last-child { margin-bottom: 0; }
 
     /* Código inline */
-    .wiki-page__preview :not(pre) > code {
+    app-wiki-page .wiki-page__preview code {
       padding: 0.2em 0.4em;
       margin: 0;
       font-size: 85%;
       white-space: break-spaces;
-      background-color: #eff1f3;
+      background-color: rgba(175, 184, 193, 0.2);
       border-radius: 6px;
-      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+      font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
     }
 
     /* Bloques de código */
-    .wiki-page__preview pre {
-      margin: 0 0 1rem;
-      padding: 1rem;
+    app-wiki-page .wiki-page__preview pre {
+      margin-top: 0;
+      margin-bottom: 16px;
+      padding: 16px;
       overflow: auto;
       font-size: 85%;
       line-height: 1.45;
       background-color: #f6f8fa;
       border-radius: 6px;
-      border: 1px solid #d1d9e0;
+      word-wrap: normal;
     }
-    .wiki-page__preview pre code {
+    app-wiki-page .wiki-page__preview pre code {
       display: inline;
+      max-width: auto;
       padding: 0;
       margin: 0;
       overflow: visible;
-      font-size: 100%;
-      word-break: normal;
-      white-space: pre;
-      background: transparent;
+      line-height: inherit;
+      word-wrap: normal;
+      background-color: transparent;
       border: 0;
-      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+      font-size: 100%;
+      white-space: pre;
     }
 
     /* Links */
-    .wiki-page__preview a {
+    app-wiki-page .wiki-page__preview a {
       color: #0969da;
       text-decoration: none;
     }
-    .wiki-page__preview a:hover { text-decoration: underline; }
+    app-wiki-page .wiki-page__preview a:hover { text-decoration: underline; }
 
     /* Imágenes */
-    .wiki-page__preview img {
+    app-wiki-page .wiki-page__preview img {
       max-width: 100%;
       box-sizing: content-box;
-      border-radius: 6px;
+      background-color: #ffffff;
     }
 
     /* Tablas */
-    .wiki-page__preview table {
-      width: max-content;
-      max-width: 100%;
+    app-wiki-page .wiki-page__preview table {
       border-spacing: 0;
       border-collapse: collapse;
-      margin: 0 0 1rem;
-      overflow: auto;
+      margin-top: 0;
+      margin-bottom: 16px;
       display: block;
+      width: max-content;
+      max-width: 100%;
+      overflow: auto;
     }
-    .wiki-page__preview tr { background-color: #ffffff; border-top: 1px solid #d1d9e0; }
-    .wiki-page__preview tr:nth-child(2n) { background-color: #f6f8fa; }
-    .wiki-page__preview th,
-    .wiki-page__preview td {
+    app-wiki-page .wiki-page__preview tr {
+      background-color: #ffffff;
+      border-top: 1px solid hsla(210, 18%, 87%, 1);
+    }
+    app-wiki-page .wiki-page__preview tr:nth-child(2n) { background-color: #f6f8fa; }
+    app-wiki-page .wiki-page__preview th,
+    app-wiki-page .wiki-page__preview td {
       padding: 6px 13px;
-      border: 1px solid #d1d9e0;
+      border: 1px solid hsla(210, 18%, 87%, 1);
     }
-    .wiki-page__preview th { font-weight: 600; background-color: #f6f8fa; }
+    app-wiki-page .wiki-page__preview th {
+      font-weight: 600;
+    }
 
-    /* Strong / em */
-    .wiki-page__preview strong { font-weight: 600; }
-    .wiki-page__preview em { font-style: italic; }
-    .wiki-page__preview del { text-decoration: line-through; color: #656d76; }
+    /* Strong / em / del */
+    app-wiki-page .wiki-page__preview strong { font-weight: 600; }
+    app-wiki-page .wiki-page__preview em { font-style: italic; }
+    app-wiki-page .wiki-page__preview del { text-decoration: line-through; }
+
+    /* Definiciones (dt/dd) */
+    app-wiki-page .wiki-page__preview dd {
+      padding: 0 16px;
+      margin-left: 0;
+      margin-bottom: 16px;
+    }
   `],
 })
 export class WikiPageComponent implements OnInit {
