@@ -11,7 +11,7 @@ import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 import { providePrimeNG } from 'primeng/config';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { provideMarkdown } from 'ngx-markdown';
+import { MARKED_EXTENSIONS, provideMarkdown } from 'ngx-markdown';
 import { markedHighlight } from 'marked-highlight';
 import hljs from 'highlight.js';
 
@@ -101,17 +101,18 @@ export const appConfig: ApplicationConfig = {
     ),
     provideAnimations(),
     provideAnimationsAsync(),
-    provideMarkdown({
-      markedExtensions: [
-        markedHighlight({
-          langPrefix: 'hljs language-',
-          highlight(code, lang) {
-            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-            return hljs.highlight(code, { language }).value;
-          },
-        }),
-      ],
-    }),
+    provideMarkdown(),
+    {
+      provide: MARKED_EXTENSIONS,
+      useValue: markedHighlight({
+        langPrefix: 'hljs language-',
+        highlight(code, lang) {
+          const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+          return hljs.highlight(code, { language }).value;
+        },
+      }),
+      multi: true,
+    },
     ConfirmationService,
     MessageService,
     providePrimeNG({
