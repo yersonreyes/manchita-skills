@@ -336,6 +336,34 @@
       flex-shrink: 0
       color: #EF4444
 
+  // ─── Tag chips ───
+  &__tag-chip
+    display: inline-flex
+    align-items: center
+    padding: 0.125rem 0.5rem
+    border-radius: 999px
+    border: 1px solid
+    font-size: 0.75rem
+    font-weight: 500
+    line-height: 1.5
+    white-space: nowrap
+
+  &__tag-create
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    font-size: 0.8125rem
+    color: var(--p-primary-color)
+
+    i
+      font-size: 0.8rem
+
+  &__tag-autocomplete
+    .p-autocomplete-token
+      background: transparent !important
+      padding: 0 !important
+      margin: 2px !important
+
   // ─── Legacy support ───
   &__label
     font-size: 0.8125rem

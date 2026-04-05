@@ -15,11 +15,6 @@
     <p class="task-card__title">{{ task().titulo }}</p>
 
     @if (!compact()) {
-      <!-- Descripción -->
-      @if (task().descripcion) {
-        <p class="task-card__desc">{{ task().descripcion }}</p>
-      }
-
       <!-- Tags -->
       @if (task().tags.length > 0) {
         <div class="task-card__tags">

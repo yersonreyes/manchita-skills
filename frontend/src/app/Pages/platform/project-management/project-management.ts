@@ -62,6 +62,10 @@ export class ProjectManagement implements OnInit {
   wizardMembers = signal<ProjectMemberDto[]>([]);
   editingProject = signal<ProjectResDto | null>(null);
 
+  // ─── Diálogo de miembros ──────────────────────────────────────────────────
+  membersDialogVisible = signal(false);
+  managingProject = signal<ProjectResDto | null>(null);
+
   // ─── Formulario Step 1 ────────────────────────────────────────────────────
   projectForm = {
     nombre: '',
@@ -131,6 +135,21 @@ export class ProjectManagement implements OnInit {
     this.createdProjectId.set(null);
     this.wizardStep.set(1);
     this.dialogVisible.set(true);
+  }
+
+  openMembersDialog(project: ProjectResDto): void {
+    this.managingProject.set(project);
+    this.createdProjectId.set(project.id);
+    this.selectedUser = null;
+    this.selectedRole = 'VIEWER';
+    this.wizardMembers.set([...project.members]);
+    this.membersDialogVisible.set(true);
+  }
+
+  async closeMembersDialog(): Promise<void> {
+    this.membersDialogVisible.set(false);
+    this.managingProject.set(null);
+    await this.loadProjects();
   }
 
   openEditDialog(project: ProjectResDto): void {

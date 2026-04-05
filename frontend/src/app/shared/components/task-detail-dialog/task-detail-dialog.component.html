@@ -23,6 +23,7 @@
       <input
         pInputText
         [(ngModel)]="form.titulo"
+        (ngModelChange)="scheduleAutoSave()"
         placeholder="Que hay que hacer?"
         class="task-panel__title-input"
       />
@@ -38,6 +39,7 @@
             <span class="task-panel__meta-label"><i class="pi pi-circle-fill"></i> Estado</span>
             <p-select
               [(ngModel)]="form.statusId"
+              (ngModelChange)="scheduleAutoSave()"
               [options]="statusOptions"
               optionLabel="label"
               optionValue="value"
@@ -52,6 +54,7 @@
             <span class="task-panel__meta-label"><i class="pi pi-flag"></i> Prioridad</span>
             <p-select
               [(ngModel)]="form.prioridad"
+              (ngModelChange)="scheduleAutoSave()"
               [options]="priorityOptions"
               optionLabel="label"
               optionValue="value"
@@ -65,6 +68,7 @@
             <span class="task-panel__meta-label"><i class="pi pi-user"></i> Responsable</span>
             <p-select
               [(ngModel)]="form.assigneeId"
+              (ngModelChange)="scheduleAutoSave()"
               [options]="memberOptions"
               optionLabel="label"
               optionValue="value"
@@ -79,6 +83,7 @@
             <span class="task-panel__meta-label"><i class="pi pi-clock"></i> Estimacion</span>
             <p-inputnumber
               [(ngModel)]="form.estimacion"
+              (ngModelChange)="scheduleAutoSave()"
               [min]="0"
               [maxFractionDigits]="1"
               placeholder="Ej: 2.5 hs"
@@ -95,6 +100,7 @@
             <span class="task-panel__meta-label"><i class="pi pi-calendar"></i> Inicio</span>
             <p-datepicker
               [(ngModel)]="form.fechaInicio"
+              (ngModelChange)="scheduleAutoSave()"
               [showClear]="true"
               appendTo="body"
               dateFormat="dd/mm/yy"
@@ -107,6 +113,7 @@
             <span class="task-panel__meta-label"><i class="pi pi-calendar-clock"></i> Vencimiento</span>
             <p-datepicker
               [(ngModel)]="form.fechaVencimiento"
+              (ngModelChange)="scheduleAutoSave()"
               [showClear]="true"
               appendTo="body"
               dateFormat="dd/mm/yy"
@@ -121,17 +128,46 @@
         <div class="task-panel__meta-group">
           <div class="task-panel__meta">
             <span class="task-panel__meta-label"><i class="pi pi-tags"></i> Etiquetas</span>
-            <p-multiselect
-              [(ngModel)]="form.tagIds"
-              [options]="tagOptions"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Agregar..."
+            <p-autocomplete
+              [(ngModel)]="selectedTagObjects"
+              [suggestions]="tagSuggestions"
+              (completeMethod)="filterTags($event)"
+              (onSelect)="onTagSelect($event)"
+              (onUnselect)="onTagUnselect()"
+              [multiple]="true"
+              field="nombre"
+              placeholder="Escribi y presioná Enter..."
               appendTo="body"
-              class="w-full"
-              display="chip"
-              size="small"
-            />
+              class="w-full task-panel__tag-autocomplete"
+            >
+              <ng-template #selecteditem let-tag>
+                <span
+                  class="task-panel__tag-chip"
+                  [style.background]="tag.color + '20'"
+                  [style.color]="tag.color"
+                  [style.border-color]="tag.color + '50'"
+                >
+                  {{ tag.nombre }}
+                </span>
+              </ng-template>
+              <ng-template #item let-tag>
+                @if (tag.isNew) {
+                  <div class="task-panel__tag-create">
+                    <i class="pi pi-plus-circle"></i>
+                    Crear "<strong>{{ tag.nombre }}</strong>"
+                  </div>
+                } @else {
+                  <span
+                    class="task-panel__tag-chip"
+                    [style.background]="tag.color + '20'"
+                    [style.color]="tag.color"
+                    [style.border-color]="tag.color + '50'"
+                  >
+                    {{ tag.nombre }}
+                  </span>
+                }
+              </ng-template>
+            </p-autocomplete>
           </div>
 
           @if (!isEdit) {
@@ -176,7 +212,7 @@
               <app-wiki-editor
                 [content]="form.descripcion"
                 [editable]="true"
-                (contentChanged)="form.descripcion = $event"
+                (contentChanged)="onDescriptionChange($event)"
               />
             }
           </div>
@@ -184,6 +220,7 @@
           <textarea
             pTextarea
             [(ngModel)]="form.descripcion"
+            (ngModelChange)="scheduleAutoSave()"
             class="task-panel__raw-editor"
             placeholder="Escribi markdown directamente..."
             [autoResize]="false"

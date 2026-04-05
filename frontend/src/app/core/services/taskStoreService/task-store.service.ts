@@ -183,4 +183,11 @@ export class TaskStoreService {
   removeTask(taskId: number): void {
     this.tasks.update((tasks) => tasks.filter((t) => t.id !== taskId));
   }
+
+  addTag(tag: TaskTagDto): void {
+    this.tags.update((tags) => {
+      if (tags.some((t) => t.id === tag.id)) return tags;
+      return [...tags, tag];
+    });
+  }
 }

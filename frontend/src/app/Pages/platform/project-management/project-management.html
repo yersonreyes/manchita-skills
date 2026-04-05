@@ -94,6 +94,15 @@
             </button>
 
             <button
+              class="project-action project-action--members"
+              (click)="openMembersDialog(project)"
+              title="Gestionar equipo del proyecto"
+            >
+              <i class="pi pi-users"></i>
+              <span>Equipo</span>
+            </button>
+
+            <button
               *hasPermission="'projects:update'"
               class="project-action project-action--edit"
               (click)="openEditDialog(project)"
@@ -306,4 +315,100 @@
     </ng-template>
   }
 
+</p-dialog>
+
+<!-- ─── Diálogo de miembros ──────────────────────────────────────────────── -->
+<p-dialog
+  [(visible)]="membersDialogVisible"
+  [modal]="true"
+  [header]="'Equipo — ' + (managingProject()?.nombre ?? '')"
+  [style]="{ width: '520px' }"
+  [closable]="false"
+>
+  <div class="wizard-body">
+
+    <div *hasPermission="'projects:update'" class="wizard-field">
+      <label class="wizard-field__label">Agregar miembro</label>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+        <p-select
+          [(ngModel)]="selectedUser"
+          [options]="availableUsers()"
+          optionLabel="nombre"
+          [filter]="true"
+          filterBy="nombre,email"
+          placeholder="Buscar usuario..."
+          appendTo="body"
+          class="flex-1"
+          [showClear]="true"
+        />
+        <p-select
+          [(ngModel)]="selectedRole"
+          [options]="roleOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Rol"
+          appendTo="body"
+          class="w-36"
+        />
+        <p-button
+          icon="pi pi-user-plus"
+          [disabled]="!selectedUser"
+          pTooltip="Agregar miembro"
+          tooltipPosition="top"
+          (onClick)="addMember()"
+        />
+      </div>
+    </div>
+
+    <div class="wizard-field">
+      <p class="text-sm font-medium text-gray-700">
+        Miembros del equipo
+        <span class="text-gray-400 font-normal">({{ wizardMembers().length }})</span>
+      </p>
+
+      @if (wizardMembers().length === 0) {
+        <div class="wizard-empty">
+          <i class="pi pi-users text-2xl opacity-40"></i>
+          <p class="text-sm">Ningún miembro agregado aún</p>
+        </div>
+      } @else {
+        <div class="wizard-members-list">
+          @for (member of wizardMembers(); track member.user.id) {
+            <div class="wizard-member">
+              <div class="wizard-member__avatar">
+                {{ member.user.nombre.charAt(0).toUpperCase() }}
+              </div>
+              <div class="wizard-member__info">
+                <p class="wizard-member__name">{{ member.user.nombre }}</p>
+                <p class="wizard-member__email">{{ member.user.email }}</p>
+              </div>
+              <div class="wizard-member__actions">
+                <p-tag [value]="getRoleLabel(member.role)" severity="info" />
+                <p-button
+                  *hasPermission="'projects:update'"
+                  icon="pi pi-times"
+                  [rounded]="true"
+                  severity="danger"
+                  variant="text"
+                  pTooltip="Quitar miembro"
+                  tooltipPosition="top"
+                  (onClick)="removeMember(member.user.id)"
+                />
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      label="Cerrar"
+      severity="secondary"
+      variant="outlined"
+      (onClick)="closeMembersDialog()"
+    />
+  </ng-template>
 </p-dialog>

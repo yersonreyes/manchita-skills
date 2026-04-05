@@ -66,25 +66,63 @@ export class TaskViewsComponent implements OnInit {
     this.taskDialogVisible.set(true);
   }
 
+  async onTaskAutosave(dto: UpdateTaskReqDto): Promise<void> {
+    const editing = this.editingTask();
+    if (!editing) return;
+    const incomingTagIds: number[] = (dto as any).tagIds ?? [];
+    const { tagIds: _tags, ...updatePayload } = dto as any;
+    try {
+      const updated = await this.taskService.update(editing.id, updatePayload);
+      const task = await this.syncTags(updated, editing.tags.map((t) => t.tagId), incomingTagIds);
+      this.store.upsertTask(task);
+      this.editingTask.set(task);
+    } catch {
+      // handled by http builder
+    }
+  }
+
   async onTaskSave(dto: CreateTaskReqDto | UpdateTaskReqDto): Promise<void> {
     const editing = this.editingTask();
+    const incomingTagIds: number[] = (dto as any).tagIds ?? [];
+    const { tagIds: _tags, ...payload } = dto as any;
+
     try {
       if (editing) {
-        const updated = await this.taskService.update(editing.id, dto as UpdateTaskReqDto);
-        this.store.upsertTask(updated);
+        const updated = await this.taskService.update(editing.id, payload);
+        const task = await this.syncTags(updated, editing.tags.map((t) => t.tagId), incomingTagIds);
+        this.store.upsertTask(task);
         this.uiDialog.showSuccess('Tarea actualizada', `"${updated.titulo}" fue actualizada.`);
       } else {
         const created = await this.taskService.create({
-          ...(dto as CreateTaskReqDto),
+          ...payload,
           projectId: this.projectId,
         });
-        this.store.upsertTask(created);
-        this.uiDialog.showSuccess('Tarea creada', `"${created.titulo}" fue creada.`);
+        const task = await this.syncTags(created, [], incomingTagIds);
+        this.store.upsertTask(task);
+        this.uiDialog.showSuccess('Tarea creada', `"${task.titulo}" fue creada.`);
       }
       this.taskDialogVisible.set(false);
     } catch {
       // handled by http builder
     }
+  }
+
+  private async syncTags(
+    task: import('@core/services/taskService/task.res.dto').TaskResDto,
+    originalTagIds: number[],
+    newTagIds: number[],
+  ): Promise<import('@core/services/taskService/task.res.dto').TaskResDto> {
+    const toAdd = newTagIds.filter((id) => !originalTagIds.includes(id));
+    const toRemove = originalTagIds.filter((id) => !newTagIds.includes(id));
+
+    if (!toAdd.length && !toRemove.length) return task;
+
+    await Promise.all([
+      ...toAdd.map((id) => this.taskService.assignTag(task.id, { tagId: id })),
+      ...toRemove.map((id) => this.taskService.removeTag(task.id, id)),
+    ]);
+
+    return this.taskService.getById(task.id);
   }
 
   async onTaskDelete(taskId: number): Promise<void> {

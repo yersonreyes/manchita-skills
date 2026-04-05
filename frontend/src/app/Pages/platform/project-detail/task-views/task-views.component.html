@@ -53,7 +53,10 @@
   [members]="store.members()"
   [tasks]="store.tasks()"
   [defaultStatusId]="defaultStatusId()"
+  [projectId]="projectId"
   (visibleChange)="taskDialogVisible.set($event)"
   (save)="onTaskSave($event)"
+  (autosave)="onTaskAutosave($event)"
   (delete)="onTaskDelete($event)"
+  (tagCreated)="store.addTag($event)"
 />

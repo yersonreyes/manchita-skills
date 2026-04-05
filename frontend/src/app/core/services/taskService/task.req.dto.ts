@@ -13,6 +13,7 @@ export interface CreateTaskReqDto {
   fechaVencimiento?: string;
   estimacion?: number;
   orden?: number;
+  tagIds?: number[];
 }
 
 export interface UpdateTaskReqDto {
@@ -25,6 +26,7 @@ export interface UpdateTaskReqDto {
   fechaInicio?: string | null;
   fechaVencimiento?: string | null;
   estimacion?: number | null;
+  tagIds?: number[];
 }
 
 export interface MoveTaskReqDto {
