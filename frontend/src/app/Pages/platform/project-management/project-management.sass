@@ -162,6 +162,13 @@
     border-color: #fcd34d
     color: #92400e
 
+// Requisitos — emerald
+.project-action--requirements
+  &:hover
+    background: #ecfdf5
+    border-color: #6ee7b7
+    color: #065f46
+
 // Equipo — purple
 .project-action--members
   &:hover
@@ -352,3 +359,108 @@
   align-items: center
   gap: 0.5rem
   flex-shrink: 0
+
+// ─── Ficha drawer ─────────────────────────────────────────────────────────────
+
+.drawer-form
+  display: flex
+  flex-direction: column
+  gap: 0.25rem
+
+.drawer-section
+  padding: 1.25rem 0
+
+  & + &
+    border-top: 1px solid $border-color
+
+  &__title
+    font-family: 'Syne', sans-serif
+    font-size: 0.875rem
+    font-weight: 600
+    color: $text-muted
+    text-transform: uppercase
+    letter-spacing: 0.06em
+    margin: 0 0 1rem
+
+.drawer-field
+  display: flex
+  flex-direction: column
+  gap: 0.375rem
+  margin-bottom: 0.875rem
+
+  label
+    font-size: 0.8125rem
+    font-weight: 500
+    color: $text-heading
+
+  input, p-select, p-inputnumber, textarea, p-datepicker
+    width: 100%
+
+.drawer-row
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 0.75rem
+
+.ceremony-grid
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: 0.75rem 1.5rem
+  padding: 0.5rem 0
+
+.ceremony-item
+  display: flex
+  align-items: center
+  gap: 0.5rem
+
+  label
+    font-size: 0.875rem
+    color: $text-heading
+    cursor: pointer
+
+.drawer-footer
+  display: flex
+  justify-content: flex-end
+  gap: 0.75rem
+  padding-top: 1rem
+  border-top: 1px solid $border-color
+
+// ─── Tag input ────────────────────────────────────────────────────────────────
+
+.tag-input-row
+  display: flex
+  gap: 0.5rem
+  align-items: center
+
+  &__input
+    flex: 1
+
+.tag-cloud
+  display: flex
+  flex-wrap: wrap
+  gap: 0.375rem
+  margin-top: 0.375rem
+
+.tag-pill
+  display: inline-flex
+  align-items: center
+  gap: 0.375rem
+  padding: 0.25rem 0.625rem
+  background: #ecfdf5
+  border: 1px solid #a7f3d0
+  border-radius: 9999px
+  font-size: 0.75rem
+  color: #065f46
+  font-family: 'Outfit', monospace
+
+  &__remove
+    background: none
+    border: none
+    cursor: pointer
+    padding: 0
+    display: flex
+    align-items: center
+    color: #059669
+    font-size: 0.625rem
+
+    &:hover
+      color: #dc2626

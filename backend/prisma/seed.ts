@@ -16,6 +16,11 @@ const PERMISSIONS = [
   { codigo: 'wiki:read', descripcion: 'Ver páginas de la wiki del proyecto' },
   { codigo: 'wiki:write', descripcion: 'Crear y editar páginas de la wiki' },
   { codigo: 'wiki:delete', descripcion: 'Eliminar páginas de la wiki' },
+  { codigo: 'requirements:read', descripcion: 'Ver requisitos del proyecto' },
+  { codigo: 'requirements:create', descripcion: 'Crear requisitos del proyecto' },
+  { codigo: 'requirements:update', descripcion: 'Actualizar requisitos del proyecto' },
+  { codigo: 'requirements:status', descripcion: 'Cambiar estado de requisitos del proyecto' },
+  { codigo: 'requirements:delete', descripcion: 'Eliminar requisitos del proyecto' },
 ];
 
 const ROLES = [
@@ -34,6 +39,11 @@ const ROLES = [
       'wiki:read',
       'wiki:write',
       'wiki:delete',
+      'requirements:read',
+      'requirements:create',
+      'requirements:update',
+      'requirements:status',
+      'requirements:delete',
     ],
   },
   {
@@ -47,13 +57,17 @@ const ROLES = [
       'assets:upload',
       'wiki:read',
       'wiki:write',
+      'requirements:read',
+      'requirements:create',
+      'requirements:update',
+      'requirements:status',
     ],
   },
   {
     codigo: 'VIEWER',
     nombre: 'Visualizador',
     descripcion: 'Solo puede leer contenido',
-    permissions: ['users:read', 'permissions:read', 'wiki:read'],
+    permissions: ['users:read', 'permissions:read', 'wiki:read', 'requirements:read'],
   },
 ];
 

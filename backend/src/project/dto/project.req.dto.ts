@@ -1,12 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsBoolean,
+  IsDate,
   IsEnum,
   IsInt,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { EtapaProyecto, ProjectMemberRole, ProjectStatus, TipoProyecto } from '@prisma/client';
 
 export class CreateProjectRequestDto {
@@ -101,4 +104,73 @@ export class UpsertProjectMemberRequestDto {
   @ApiProperty({ enum: ProjectMemberRole })
   @IsEnum(ProjectMemberRole)
   role: ProjectMemberRole;
+
+  // Ficha técnica del miembro en el proyecto
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  cargo?: string;
+
+  @ApiProperty({ required: false })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  fechaIngreso?: Date;
+
+  @ApiProperty({ required: false })
+  @IsInt()
+  @IsOptional()
+  horasSemanalesProyecto?: number;
+
+  @ApiProperty({ type: [String], required: false })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  responsabilidades?: string[];
+
+  @ApiProperty({ type: [String], required: false })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  entregables?: string[];
+
+  @ApiProperty({ type: [String], required: false })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  modulosAsignados?: string[];
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  participaDaily?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  participaPlanning?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  participaReview?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  participaRetro?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  objetivos?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  observaciones?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  accesos?: Record<string, any>;
 }

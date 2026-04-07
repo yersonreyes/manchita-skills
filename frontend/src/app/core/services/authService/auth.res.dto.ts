@@ -16,6 +16,7 @@ export interface User {
   nombre: string;
   isSuperAdmin: boolean;
   activo: boolean;
+  avatarUrl?: string | null;
 }
 
 export interface JwtPayload {

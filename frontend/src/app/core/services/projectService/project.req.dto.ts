@@ -28,4 +28,23 @@ export interface UpdateProjectReqDto {
 export interface UpsertMemberReqDto {
   userId: number;
   role: ProjectMemberRole;
+  // Ficha técnica del miembro en el proyecto
+  cargo?: string;
+  fechaIngreso?: string | null;
+  horasSemanalesProyecto?: number | null;
+  responsabilidades?: string[];
+  entregables?: string[];
+  modulosAsignados?: string[];
+  participaDaily?: boolean;
+  participaPlanning?: boolean;
+  participaReview?: boolean;
+  participaRetro?: boolean;
+  objetivos?: string;
+  observaciones?: string;
+  accesos?: {
+    repositorio?: string;
+    ambientes?: string;
+    herramientas?: string;
+    credenciales?: string;
+  };
 }

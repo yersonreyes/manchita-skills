@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { UiDialogService } from '@core/services/ui-dialog.service';
 import { UserDto } from '@core/services/userService/user.res.dto';
 import { UserService } from '@core/services/userService/user.service';
-import { ProjectMemberRole, ProjectStatus, UpdateProjectReqDto } from '@core/services/projectService/project.req.dto';
+import { ProjectMemberRole, ProjectStatus, UpdateProjectReqDto, UpsertMemberReqDto } from '@core/services/projectService/project.req.dto';
 import { ProjectMemberDto, ProjectResDto } from '@core/services/projectService/project.res.dto';
 import { ProjectService } from '@core/services/projectService/project.service';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -12,11 +12,15 @@ import { HasPermissionDirective } from '@shared/directives/has-permission.direct
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
 import { Checkbox } from 'primeng/checkbox';
+import { DatePicker } from 'primeng/datepicker';
 import { Dialog } from 'primeng/dialog';
+import { Drawer } from 'primeng/drawer';
+import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
+import { Textarea } from 'primeng/textarea';
 import { Tooltip } from 'primeng/tooltip';
 
 interface SelectOption<T> {
@@ -32,12 +36,17 @@ interface SelectOption<T> {
     TableModule,
     Button,
     Dialog,
+    Drawer,
     InputText,
+    InputNumber,
     Select,
     Tag,
     Card,
     Tooltip,
     Checkbox,
+
+    DatePicker,
+    Textarea,
     HasPermissionDirective,
     PageHeaderComponent,
   ],
@@ -65,6 +74,42 @@ export class ProjectManagement implements OnInit {
   // ─── Diálogo de miembros ──────────────────────────────────────────────────
   membersDialogVisible = signal(false);
   managingProject = signal<ProjectResDto | null>(null);
+
+  // ─── Ficha de miembro ─────────────────────────────────────────────────────
+  fichaDrawerVisible = signal(false);
+  fichaProjectId = signal<number | null>(null);
+  fichaUserId = signal<number | null>(null);
+  fichaUserNombre = signal('');
+  savingFicha = signal(false);
+  fichaForm: {
+    cargo: string;
+    fechaIngreso: Date | null;
+    horasSemanalesProyecto: number | null;
+    responsabilidades: string[];
+    entregables: string[];
+    modulosAsignados: string[];
+    participaDaily: boolean;
+    participaPlanning: boolean;
+    participaReview: boolean;
+    participaRetro: boolean;
+    objetivos: string;
+    observaciones: string;
+    accesos: { repositorio: string; ambientes: string; herramientas: string; credenciales: string };
+  } = {
+    cargo: '',
+    fechaIngreso: null,
+    horasSemanalesProyecto: null,
+    responsabilidades: [],
+    entregables: [],
+    modulosAsignados: [],
+    participaDaily: false,
+    participaPlanning: false,
+    participaReview: false,
+    participaRetro: false,
+    objetivos: '',
+    observaciones: '',
+    accesos: { repositorio: '', ambientes: '', herramientas: '', credenciales: '' },
+  };
 
   // ─── Formulario Step 1 ────────────────────────────────────────────────────
   projectForm = {
@@ -259,6 +304,103 @@ export class ProjectManagement implements OnInit {
 
   navigateToWiki(id: number): void {
     void this.router.navigate(['/platform/projects', id, 'wiki']);
+  }
+
+  navigateToRequirements(id: number): void {
+    void this.router.navigate(['/platform/projects', id, 'requirements']);
+  }
+
+  // ─── Ficha array helpers ──────────────────────────────────────────────────
+  fichaArrayInputs: Record<string, string> = {
+    responsabilidades: '', entregables: '', modulosAsignados: '',
+  };
+
+  addFichaArrayItem(field: 'responsabilidades' | 'entregables' | 'modulosAsignados'): void {
+    const val = this.fichaArrayInputs[field]?.trim();
+    if (!val) return;
+    if (!this.fichaForm[field].includes(val)) {
+      this.fichaForm[field] = [...this.fichaForm[field], val];
+    }
+    this.fichaArrayInputs[field] = '';
+  }
+
+  removeFichaArrayItem(field: 'responsabilidades' | 'entregables' | 'modulosAsignados', item: string): void {
+    this.fichaForm[field] = this.fichaForm[field].filter((i) => i !== item);
+  }
+
+  // ─── Ficha de miembro ─────────────────────────────────────────────────────
+  openFichaDrawer(projectId: number, member: ProjectMemberDto): void {
+    this.fichaProjectId.set(projectId);
+    this.fichaUserId.set(member.user.id);
+    this.fichaUserNombre.set(member.user.nombre);
+    this.fichaForm = {
+      cargo: member.cargo ?? '',
+      fechaIngreso: member.fechaIngreso ? new Date(member.fechaIngreso) : null,
+      horasSemanalesProyecto: member.horasSemanalesProyecto ?? null,
+      responsabilidades: [...(member.responsabilidades ?? [])],
+      entregables: [...(member.entregables ?? [])],
+      modulosAsignados: [...(member.modulosAsignados ?? [])],
+      participaDaily: member.participaDaily ?? false,
+      participaPlanning: member.participaPlanning ?? false,
+      participaReview: member.participaReview ?? false,
+      participaRetro: member.participaRetro ?? false,
+      objetivos: member.objetivos ?? '',
+      observaciones: member.observaciones ?? '',
+      accesos: {
+        repositorio: member.accesos?.['repositorio'] ?? '',
+        ambientes: member.accesos?.['ambientes'] ?? '',
+        herramientas: member.accesos?.['herramientas'] ?? '',
+        credenciales: member.accesos?.['credenciales'] ?? '',
+      },
+    };
+    this.fichaArrayInputs = { responsabilidades: '', entregables: '', modulosAsignados: '' };
+    this.fichaDrawerVisible.set(true);
+  }
+
+  async saveFicha(): Promise<void> {
+    const projectId = this.fichaProjectId();
+    const userId = this.fichaUserId();
+    if (!projectId || !userId) return;
+
+    this.savingFicha.set(true);
+    try {
+      // Recuperar rol actual del miembro
+      const project = this.managingProject() ?? this.projects().find((p) => p.id === projectId);
+      const currentMember = project?.members.find((m) => m.user.id === userId);
+      const role: ProjectMemberRole = currentMember?.role ?? 'VIEWER';
+
+      const dto: UpsertMemberReqDto = {
+        userId,
+        role,
+        cargo: this.fichaForm.cargo || undefined,
+        fechaIngreso: this.fichaForm.fechaIngreso?.toISOString() ?? undefined,
+        horasSemanalesProyecto: this.fichaForm.horasSemanalesProyecto ?? undefined,
+        responsabilidades: this.fichaForm.responsabilidades,
+        entregables: this.fichaForm.entregables,
+        modulosAsignados: this.fichaForm.modulosAsignados,
+        participaDaily: this.fichaForm.participaDaily,
+        participaPlanning: this.fichaForm.participaPlanning,
+        participaReview: this.fichaForm.participaReview,
+        participaRetro: this.fichaForm.participaRetro,
+        objetivos: this.fichaForm.objetivos || undefined,
+        observaciones: this.fichaForm.observaciones || undefined,
+        accesos: {
+          repositorio: this.fichaForm.accesos.repositorio || undefined,
+          ambientes: this.fichaForm.accesos.ambientes || undefined,
+          herramientas: this.fichaForm.accesos.herramientas || undefined,
+          credenciales: this.fichaForm.accesos.credenciales || undefined,
+        },
+      };
+
+      await this.projectService.upsertMember(projectId, dto);
+      this.uiDialog.showSuccess('Ficha guardada', `La ficha de ${this.fichaUserNombre()} fue actualizada`);
+      this.fichaDrawerVisible.set(false);
+      await this.loadProjects();
+    } catch {
+      // Error manejado por el builder
+    } finally {
+      this.savingFicha.set(false);
+    }
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────

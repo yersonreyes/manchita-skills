@@ -1,12 +1,15 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { HttpPromiseBuilderService } from '../http-promise-builder.service';
-import { AssignRolesRequest, CreateUserRequest, UpdateUserRequest } from './user.req.dto';
+import { AssignRolesRequest, CreateUserRequest, UpdateUserRequest, UpsertUserSkillsRequest } from './user.req.dto';
 import { UserDto } from './user.res.dto';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly baseUrl = `${environment.apiBaseUrl}/user`;
+  private readonly http = inject(HttpClient);
 
   constructor(private readonly httpBuilder: HttpPromiseBuilderService) {}
 
@@ -40,6 +43,27 @@ export class UserService {
       .request<UserDto>()
       .patch()
       .url(`${this.baseUrl}/${id}`)
+      .body(dto)
+      .send();
+  }
+
+  async uploadAvatar(id: number, file: File): Promise<UserDto> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await firstValueFrom(
+      this.http.post<{ res: UserDto; code: number; message: string }>(
+        `${this.baseUrl}/${id}/avatar`,
+        formData,
+      ),
+    );
+    return response.res;
+  }
+
+  upsertSkills(id: number, dto: UpsertUserSkillsRequest): Promise<UserDto> {
+    return this.httpBuilder
+      .request<UserDto>()
+      .put()
+      .url(`${this.baseUrl}/${id}/skills`)
       .body(dto)
       .send();
   }

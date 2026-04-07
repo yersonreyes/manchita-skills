@@ -24,7 +24,7 @@ const PROJECT_INCLUDE = {
     include: { phase: true },
     orderBy: { orden: 'asc' as const },
   },
-};
+} as const;
 
 @Injectable()
 export class ProjectService {
@@ -135,12 +135,28 @@ export class ProjectService {
       throw new NotFoundException({ message: 'Usuario no encontrado', code: 1 });
     }
 
+    const fichaData = {
+      cargo: dto.cargo ?? undefined,
+      fechaIngreso: dto.fechaIngreso ?? undefined,
+      horasSemanalesProyecto: dto.horasSemanalesProyecto ?? undefined,
+      responsabilidades: dto.responsabilidades ?? undefined,
+      entregables: dto.entregables ?? undefined,
+      modulosAsignados: dto.modulosAsignados ?? undefined,
+      participaDaily: dto.participaDaily ?? undefined,
+      participaPlanning: dto.participaPlanning ?? undefined,
+      participaReview: dto.participaReview ?? undefined,
+      participaRetro: dto.participaRetro ?? undefined,
+      objetivos: dto.objetivos ?? undefined,
+      observaciones: dto.observaciones ?? undefined,
+      accesos: dto.accesos ?? undefined,
+    };
+
     const res = await this.prisma.projectMember.upsert({
       where: {
         projectId_userId: { projectId, userId: dto.userId },
       },
-      update: { role: dto.role },
-      create: { projectId, userId: dto.userId, role: dto.role },
+      update: { role: dto.role, ...fichaData },
+      create: { projectId, userId: dto.userId, role: dto.role, ...fichaData },
       include: {
         user: { select: { id: true, nombre: true, email: true } },
       },

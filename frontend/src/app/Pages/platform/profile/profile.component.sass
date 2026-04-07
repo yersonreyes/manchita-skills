@@ -1,238 +1,607 @@
 @use '../../../sass/colors' as *
+@use 'sass:color'
 
-// ─── Layout ───────────────────────────────────────────────────────────────────
+// ─── Loading ──────────────────────────────────────────────────────────────────
 
-.profile-layout
-  display: grid
-  grid-template-columns: 1fr
-  gap: 1.5rem
-
-  @media (min-width: 1024px)
-    grid-template-columns: 22rem 1fr
-
-// ─── Identity card ────────────────────────────────────────────────────────────
-
-.profile-card
-  background: #ffffff
-  border-radius: $card-radius
-  box-shadow: $card-shadow
-  overflow: hidden
-  animation: card-enter 0.2s ease-out both
-
-.profile-card__accent
-  height: 4px
-  background: linear-gradient(90deg, $brand-primary 0%, $brand-primary-light 100%)
-
-.profile-card__body
-  padding: 2rem 1.5rem 1.5rem
-  display: flex
-  flex-direction: column
-  align-items: center
-  gap: 1.25rem
-
-// ─── Avatar ───────────────────────────────────────────────────────────────────
-
-.profile-avatar-wrap
-  position: relative
-  display: inline-flex
-  align-items: center
-  justify-content: center
-
-  &::after
-    content: ''
-    position: absolute
-    inset: -3px
-    border-radius: 9999px
-    border: 2px solid rgba(52, 211, 153, 0.35)
-    pointer-events: none
-
-.profile-avatar
-  background-color: $brand-primary !important
-  color: #ffffff !important
-  width: 5rem !important
-  height: 5rem !important
-  font-size: 1.875rem !important
-  font-family: 'Syne', sans-serif !important
-  font-weight: 700 !important
-
-// ─── User info ────────────────────────────────────────────────────────────────
-
-.profile-info
-  text-align: center
-  display: flex
-  flex-direction: column
-  align-items: center
-  gap: 0.5rem
-  width: 100%
-
-.profile-info__name
-  font-family: 'Syne', sans-serif
-  font-size: 1.25rem
-  font-weight: 700
-  color: $text-heading
-  letter-spacing: -0.02em
-  margin: 0
-
-.profile-info__email
-  font-size: 0.875rem
-  color: $text-muted
-  margin: 0
-
-.profile-info__tags
-  display: flex
-  gap: 0.5rem
-  flex-wrap: wrap
-  justify-content: center
-  margin-top: 0.25rem
-
-// ─── Meta rows ────────────────────────────────────────────────────────────────
-
-.profile-meta
-  width: 100%
-  border-top: 1px solid $border-color
-  padding-top: 1rem
-  display: flex
-  flex-direction: column
-  gap: 0.75rem
-
-.profile-meta__row
-  display: flex
-  justify-content: space-between
-  align-items: center
-  font-size: 0.8125rem
-
-.profile-meta__label
-  color: $text-muted
-  display: flex
-  align-items: center
-  gap: 0.375rem
-
-  i
-    font-size: 0.75rem
-    opacity: 0.6
-
-.profile-meta__value
-  font-weight: 500
-  color: $text-heading
-  font-family: 'Outfit', monospace
-  font-size: 0.8125rem
-  background: none
-  padding: 0
-  border: none
-
-// ─── Permissions panel ────────────────────────────────────────────────────────
-
-.perms-panel
-  background: #ffffff
-  border-radius: $card-radius
-  box-shadow: $card-shadow
-  overflow: hidden
-  animation: card-enter 0.2s ease-out both
-  display: flex
-  flex-direction: column
-
-.perms-panel__head
-  display: flex
-  align-items: center
-  justify-content: space-between
-  padding: 1.25rem 1.5rem
-  border-bottom: 1px solid $border-color
-
-.perms-panel__title
-  font-family: 'Syne', sans-serif
-  font-size: 1rem
-  font-weight: 600
-  color: $text-heading
-  letter-spacing: -0.01em
-  margin: 0
-
-.perms-panel__count
-  display: inline-flex
-  align-items: center
-  justify-content: center
-  min-width: 1.625rem
-  height: 1.625rem
-  padding: 0 0.5rem
-  background-color: $brand-primary
-  color: #ffffff
-  border-radius: 9999px
-  font-size: 0.75rem
-  font-weight: 600
-  font-family: 'Outfit', sans-serif
-
-.perms-panel__body
-  padding: 1.5rem
-  flex: 1
-
-// ─── Super Admin banner ───────────────────────────────────────────────────────
-
-.superadmin-banner
-  display: flex
-  align-items: center
-  gap: 1rem
-  padding: 1.25rem
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)
-  border: 1px solid #a7f3d0
-  border-radius: 0.75rem
-
-.superadmin-banner__icon
+.profile-loading
   display: flex
   align-items: center
   justify-content: center
-  width: 2.75rem
-  height: 2.75rem
-  background-color: $brand-primary
-  border-radius: 0.625rem
-  flex-shrink: 0
-
-  i
-    color: #ffffff
-    font-size: 1.25rem
-
-.superadmin-banner__title
-  font-weight: 600
-  color: #065f46
-  font-size: 0.9375rem
-  margin: 0 0 0.25rem
-
-.superadmin-banner__subtitle
-  font-size: 0.8125rem
-  color: #059669
-  margin: 0
-
-// ─── Empty state ─────────────────────────────────────────────────────────────
-
-.perms-empty
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: center
-  gap: 0.75rem
-  padding: 3rem 1rem
-  text-align: center
+  padding: 6rem 0
   color: $text-subtle
 
   i
     font-size: 2rem
-    opacity: 0.5
 
-  p
-    font-size: 0.875rem
-    margin: 0
+// ─── Page wrapper ─────────────────────────────────────────────────────────────
+
+.profile-page
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+// ─── HERO CARD ────────────────────────────────────────────────────────────────
+
+.hero-card
+  background: #ffffff
+  border-radius: $card-radius
+  border: 1px solid $border-color
+  overflow: hidden
+  animation: slide-up 0.28s ease-out both
+
+.hero-card__bar
+  height: 3px
+  background: linear-gradient(90deg, $brand-primary 0%, $brand-primary-light 60%, $brand-accent 100%)
+
+.hero-body
+  display: flex
+  align-items: flex-start
+  gap: 1.5rem
+  padding: 1.75rem 1.75rem 0
+
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+
+.hero-avatar-wrap
+  position: relative
+  flex-shrink: 0
+
+.hero-avatar
+  width: 5rem
+  height: 5rem
+  border-radius: 9999px
+  background: linear-gradient(135deg, $brand-primary 0%, $brand-primary-light 100%)
+  color: #ffffff
+  font-family: 'Syne', sans-serif
+  font-size: 1.875rem
+  font-weight: 700
+  display: flex
+  align-items: center
+  justify-content: center
+  letter-spacing: -0.02em
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(5, 150, 105, 0.2)
+  position: relative
+  overflow: hidden
+  cursor: pointer
+  border: none
+  padding: 0
+  transition: box-shadow 0.2s ease
+
+  &:hover
+    box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(5, 150, 105, 0.5)
+
+    .hero-avatar__overlay
+      opacity: 1
+
+  &__img
+    width: 100%
+    height: 100%
+    object-fit: cover
+    border-radius: 9999px
+
+  &__overlay
+    position: absolute
+    inset: 0
+    border-radius: 9999px
+    background: rgba(0, 0, 0, 0.45)
+    display: flex
+    align-items: center
+    justify-content: center
+    opacity: 0
+    transition: opacity 0.15s ease
+
+    i
+      color: #fff
+      font-size: 1.1rem
+
+.hero-avatar__badge
+  position: absolute
+  bottom: 0
+  right: -2px
+  width: 1.375rem
+  height: 1.375rem
+  background: $brand-primary
+  border-radius: 9999px
+  display: flex
+  align-items: center
+  justify-content: center
+  border: 2px solid #fff
+  cursor: default
+
+  i
+    color: #fff
+    font-size: 0.6rem
+
+.hero-avatar__status
+  position: absolute
+  top: 2px
+  right: -2px
+  width: 0.875rem
+  height: 0.875rem
+  border-radius: 9999px
+  background: $text-subtle
+  border: 2px solid #fff
+
+  &--active
+    background: #22c55e
+
+// ─── Hero identity ────────────────────────────────────────────────────────────
+
+.hero-identity
+  flex: 1
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+  padding-top: 0.25rem
+
+.hero-name-input
+  background: transparent !important
+  border: none !important
+  border-bottom: 1.5px solid transparent !important
+  border-radius: 0 !important
+  box-shadow: none !important
+  color: $text-heading !important
+  font-family: 'Syne', sans-serif !important
+  font-size: 1.625rem !important
+  font-weight: 700 !important
+  letter-spacing: -0.03em !important
+  padding: 0.125rem 0 !important
+  width: 100% !important
+  transition: border-color 0.15s ease !important
+
+  &:hover
+    border-bottom-color: $border-color !important
+
+  &:focus
+    outline: none !important
+    border-bottom-color: $brand-primary !important
+
+  &::placeholder
+    color: $text-subtle !important
+    font-weight: 400 !important
+
+.hero-email
+  font-size: 0.8125rem
+  color: $text-muted
+  font-family: 'Outfit', sans-serif
+
+.hero-context
+  display: flex
+  flex-wrap: wrap
+  gap: 0.375rem
+  margin-top: 0.125rem
+
+.ctx-pill
+  display: inline-flex
+  align-items: center
+  padding: 0.1875rem 0.625rem
+  border-radius: 9999px
+  font-size: 0.6875rem
+  font-weight: 600
+  font-family: 'Outfit', sans-serif
+  letter-spacing: 0.01em
+
+  &--area
+    background: #eff6ff
+    color: #1d4ed8
+    border: 1px solid #bfdbfe
+
+  &--level
+    background: #faf5ff
+    color: #6b21a8
+    border: 1px solid #e9d5ff
+
+  &--hours
+    background: #fff7ed
+    color: #c2410c
+    border: 1px solid #fed7aa
+
+  &--active
+    background: #f0fdf4
+    color: #15803d
+    border: 1px solid #bbf7d0
+
+// ─── Hero bio ─────────────────────────────────────────────────────────────────
+
+.hero-bio-wrap
+  padding: 1rem 1.75rem 1.5rem
+  border-top: 1px solid $border-color
+  margin-top: 1.25rem
+
+.hero-bio-input
+  width: 100% !important
+  background: transparent !important
+  border: none !important
+  box-shadow: none !important
+  color: $text-body !important
+  font-family: 'Outfit', sans-serif !important
+  font-size: 0.9375rem !important
+  line-height: 1.65 !important
+  padding: 0 !important
+  resize: none !important
+
+  &:focus
+    outline: none !important
+    box-shadow: none !important
+
+  &::placeholder
+    color: $text-subtle !important
+
+// ─── Main grid (3 cols) ───────────────────────────────────────────────────────
+
+.main-grid
+  display: grid
+  grid-template-columns: 1fr 1fr 1.5fr
+  gap: 1rem
+
+  @media (max-width: 900px)
+    grid-template-columns: 1fr 1fr
+
+  @media (max-width: 600px)
+    grid-template-columns: 1fr
+
+// ─── Bottom grid (2 cols) ─────────────────────────────────────────────────────
+
+.bottom-grid
+  display: grid
+  grid-template-columns: 1.5fr 1fr
+  gap: 1rem
+
+  @media (max-width: 700px)
+    grid-template-columns: 1fr
+
+// ─── Section card ─────────────────────────────────────────────────────────────
+
+.section-card
+  background: #ffffff
+  border-radius: $card-radius
+  border: 1px solid $border-color
+  padding: 1.5rem
+  animation: slide-up 0.28s ease-out both
+
+  &__head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    margin-bottom: 1.25rem
+
+  &__title
+    font-family: 'Syne', sans-serif
+    font-size: 0.75rem
+    font-weight: 700
+    color: $text-muted
+    text-transform: uppercase
+    letter-spacing: 0.09em
+    margin: 0 0 1.25rem
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+    i
+      color: $brand-primary
+      font-size: 0.8125rem
+
+    &--no-mb
+      margin-bottom: 0
+
+// ─── Field list ───────────────────────────────────────────────────────────────
+
+.field-list
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+.field-item
+  display: flex
+  flex-direction: column
+  gap: 0.3125rem
+
+  &__label
+    font-size: 0.6875rem
+    font-weight: 700
     color: $text-subtle
+    text-transform: uppercase
+    letter-spacing: 0.07em
 
-// ─── Permissions cloud ────────────────────────────────────────────────────────
+  input, p-select, p-inputnumber
+    width: 100%
 
-.perms-cloud
+// ─── Pill group ───────────────────────────────────────────────────────────────
+
+.pill-group
+  display: flex
+  flex-wrap: wrap
+  gap: 0.375rem
+
+.pill-btn
+  padding: 0.3125rem 0.75rem
+  border-radius: 9999px
+  border: 1.5px solid $border-color
+  background: $hover-bg
+  color: $text-muted
+  font-family: 'Outfit', sans-serif
+  font-size: 0.75rem
+  font-weight: 500
+  cursor: pointer
+  transition: all 0.15s ease
+  white-space: nowrap
+
+  &:hover
+    border-color: $brand-primary-light
+    color: $brand-primary
+
+  &--active
+    background: $brand-primary
+    border-color: $brand-primary
+    color: #ffffff
+    font-weight: 600
+
+// ─── Stack grid ───────────────────────────────────────────────────────────────
+
+.stack-grid
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: 1.25rem
+
+  @media (max-width: 540px)
+    grid-template-columns: 1fr
+
+.stack-col
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+
+  &__label
+    font-size: 0.6875rem
+    font-weight: 700
+    color: $text-subtle
+    text-transform: uppercase
+    letter-spacing: 0.07em
+
+// ─── Tag input ────────────────────────────────────────────────────────────────
+
+.tag-input
+  display: flex
+  gap: 0.375rem
+  align-items: center
+
+  &__field
+    flex: 1
+    font-size: 0.8125rem !important
+
+  &__btn
+    width: 2rem
+    height: 2rem
+    flex-shrink: 0
+    border-radius: 0.5rem
+    border: 1.5px solid $input-border
+    background: $hover-bg
+    color: $text-muted
+    cursor: pointer
+    display: flex
+    align-items: center
+    justify-content: center
+    transition: all 0.15s ease
+
+    i
+      font-size: 0.6875rem
+
+    &:hover
+      background: $brand-primary
+      border-color: $brand-primary
+      color: #ffffff
+
+.tag-list
+  display: flex
+  flex-wrap: wrap
+  gap: 0.3125rem
+  min-height: 1.75rem
+
+  &__empty
+    font-size: 0.6875rem
+    color: $text-subtle
+    font-style: italic
+
+.tag-item
+  display: inline-flex
+  align-items: center
+  gap: 0.25rem
+  padding: 0.1875rem 0.375rem 0.1875rem 0.625rem
+  background: #f0fdf4
+  border: 1px solid #bbf7d0
+  border-radius: 9999px
+  font-size: 0.6875rem
+  font-weight: 500
+  color: #166534
+  font-family: 'Outfit', monospace
+
+  &__del
+    background: none
+    border: none
+    cursor: pointer
+    padding: 0
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 0.875rem
+    height: 0.875rem
+    color: #4ade80
+    border-radius: 9999px
+    transition: all 0.1s
+
+    i
+      font-size: 0.5rem
+
+    &:hover
+      background: #fee2e2
+      color: #dc2626
+
+// ─── Save bar ─────────────────────────────────────────────────────────────────
+
+.save-bar
+  display: flex
+  justify-content: flex-end
+
+  &--compact
+    margin-top: 1.25rem
+    padding-top: 1rem
+    border-top: 1px solid $border-color
+
+// ─── Skills ───────────────────────────────────────────────────────────────────
+
+.skill-add
+  display: flex
+  gap: 0.5rem
+  align-items: center
+  margin-bottom: 1.25rem
+  flex-wrap: wrap
+
+  &__input
+    flex: 1
+    min-width: 10rem
+
+  &__level
+    width: 9rem
+
+.skills-wrap
   display: flex
   flex-wrap: wrap
   gap: 0.5rem
 
-.permission-badge
+.skill-chip
+  display: inline-flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.4375rem 0.5rem 0.4375rem 0.875rem
+  background: #f8fafc
+  border: 1px solid #e2e8f0
+  border-radius: 0.625rem
+  transition: border-color 0.1s
+
+  &:hover
+    border-color: $input-border
+
+  &__name
+    font-size: 0.8125rem
+    font-weight: 600
+    color: $text-heading
+    font-family: 'Outfit', monospace
+
+  &__level
+    font-size: 0.6875rem
+    font-weight: 700
+    padding: 0.125rem 0.5rem
+    border-radius: 9999px
+
+    &--basico
+      background: #fef9c3
+      color: #92400e
+
+    &--intermedio
+      background: #dbeafe
+      color: #1e40af
+
+    &--avanzado
+      background: #dcfce7
+      color: #166534
+
+  &__del
+    background: none
+    border: none
+    cursor: pointer
+    padding: 0
+    width: 1.25rem
+    height: 1.25rem
+    border-radius: 9999px
+    display: flex
+    align-items: center
+    justify-content: center
+    color: $text-subtle
+    transition: all 0.1s
+
+    i
+      font-size: 0.5625rem
+
+    &:hover
+      background: #fee2e2
+      color: #dc2626
+
+// ─── Empty state ──────────────────────────────────────────────────────────────
+
+.empty-state
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  gap: 0.625rem
+  padding: 2.5rem 1rem
+  text-align: center
+
+  i
+    font-size: 1.75rem
+    color: $text-subtle
+    opacity: 0.4
+
+  p
+    font-size: 0.875rem
+    color: $text-subtle
+    margin: 0
+
+// ─── Count pill ───────────────────────────────────────────────────────────────
+
+.count-pill
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  min-width: 1.5rem
+  height: 1.5rem
+  padding: 0 0.4rem
+  background: $brand-primary
+  color: #fff
+  border-radius: 9999px
+  font-size: 0.6875rem
+  font-weight: 700
+  font-family: 'Outfit', sans-serif
+
+// ─── Superadmin banner ────────────────────────────────────────────────────────
+
+.superadmin-banner
+  display: flex
+  align-items: center
+  gap: 0.875rem
+  padding: 1rem 1.25rem
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5)
+  border: 1px solid #a7f3d0
+  border-radius: 0.625rem
+
+  i
+    font-size: 1.5rem
+    color: $brand-primary
+    flex-shrink: 0
+
+  &__name
+    font-weight: 600
+    color: #065f46
+    margin: 0 0 0.125rem
+    font-size: 0.9375rem
+    font-family: 'Syne', sans-serif
+
+  &__sub
+    font-size: 0.8125rem
+    color: #059669
+    margin: 0
+
+// ─── Permissions ──────────────────────────────────────────────────────────────
+
+.perms-wrap
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
+
+.perm-badge
   display: inline-flex
   align-items: center
   padding: 0.25rem 0.75rem
-  background-color: #ecfdf5
+  background: #ecfdf5
   color: #065f46
   border: 1px solid #a7f3d0
   border-radius: 9999px
@@ -240,8 +609,83 @@
   font-weight: 500
   font-family: 'Outfit', monospace
   letter-spacing: 0.01em
-  transition: background-color 0.1s ease, border-color 0.1s ease
+  transition: background-color 0.1s
 
   &:hover
-    background-color: #d1fae5
-    border-color: #6ee7b7
+    background: #d1fae5
+
+// ─── Avatar modal ─────────────────────────────────────────────────────────────
+
+.avatar-modal
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 1.25rem
+  padding: 0.5rem 0
+
+.avatar-preview-wrap
+  width: 9rem
+  height: 9rem
+  border-radius: 9999px
+  overflow: hidden
+  background: linear-gradient(135deg, $brand-primary 0%, $brand-primary-light 100%)
+  box-shadow: 0 0 0 4px #fff, 0 0 0 6px rgba(5, 150, 105, 0.2)
+
+.avatar-preview__img
+  width: 100%
+  height: 100%
+  object-fit: cover
+
+.avatar-preview__initials
+  width: 100%
+  height: 100%
+  display: flex
+  align-items: center
+  justify-content: center
+  color: #fff
+  font-family: 'Syne', sans-serif
+  font-size: 3rem
+  font-weight: 700
+
+.avatar-file-label
+  display: flex
+  align-items: center
+  gap: 0.625rem
+  padding: 0.625rem 1.25rem
+  border: 1.5px dashed $input-border
+  border-radius: 0.625rem
+  cursor: pointer
+  font-size: 0.875rem
+  color: $text-muted
+  font-family: 'Outfit', sans-serif
+  transition: all 0.15s ease
+  width: 100%
+  justify-content: center
+
+  i
+    color: $brand-primary
+    font-size: 1rem
+
+  &:hover
+    border-color: $brand-primary
+    color: $brand-primary
+    background: #f0fdf4
+
+.avatar-file-input
+  display: none
+
+.avatar-hint
+  font-size: 0.75rem
+  color: $text-subtle
+  margin: 0
+  font-family: 'Outfit', sans-serif
+
+// ─── Animations ───────────────────────────────────────────────────────────────
+
+@keyframes slide-up
+  from
+    opacity: 0
+    transform: translateY(10px)
+  to
+    opacity: 1
+    transform: none

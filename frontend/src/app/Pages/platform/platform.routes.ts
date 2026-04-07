@@ -104,6 +104,13 @@ export const PLATFORM_ROUTES: Routes = [
         ],
       },
       {
+        path: 'projects/:id/requirements',
+        loadComponent: () =>
+          import('./requirements/requirements').then((m) => m.RequirementsComponent),
+        canActivate: [permissionGuard],
+        data: { permissions: ['requirements:read'] },
+      },
+      {
         path: 'projects/:id/wiki',
         loadComponent: () =>
           import('./wiki/wiki-layout/wiki-layout.component').then((m) => m.WikiLayoutComponent),

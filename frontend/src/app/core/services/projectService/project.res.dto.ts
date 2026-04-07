@@ -8,8 +8,22 @@ export interface ProjectUserDto {
 }
 
 export interface ProjectMemberDto {
+  id?: number;
   user: ProjectUserDto;
   role: ProjectMemberRole;
+  cargo?: string | null;
+  fechaIngreso?: string | null;
+  horasSemanalesProyecto?: number | null;
+  responsabilidades?: string[];
+  entregables?: string[];
+  modulosAsignados?: string[];
+  participaDaily?: boolean;
+  participaPlanning?: boolean;
+  participaReview?: boolean;
+  participaRetro?: boolean;
+  objetivos?: string | null;
+  observaciones?: string | null;
+  accesos?: Record<string, any> | null;
 }
 
 export interface ProjectResDto {

@@ -1,7 +1,23 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  FileTypeValidator,
+  Get,
+  MaxFileSizeValidator,
+  Param,
+  ParseFilePipe,
+  Patch,
+  Post,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -11,6 +27,7 @@ import {
   AssignRolesRequestDto,
   CreateUserRequestDto,
   UpdateUserRequestDto,
+  UpsertUserSkillsDto,
 } from './dto/user.req.dto';
 import {
   ErrorResponseDto,
@@ -66,6 +83,45 @@ export class UserController {
   @ApiResponse({ status: 409, type: ErrorResponseDto })
   update(@Param('id') id: string, @Body() dto: UpdateUserRequestDto) {
     return this.service.update(+id, dto);
+  }
+
+  // ─── UPLOAD AVATAR ────────────────────────────────────────────────────────
+  @Post(':id/avatar')
+  @RequirePermission('users:update')
+  @ApiOperation({ summary: 'Sube o reemplaza el avatar de un usuario' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  @ApiResponse({ status: 201, type: UserResponseDto })
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }))
+  uploadAvatar(
+    @Param('id') id: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: /^image\/(png|jpe?g|gif|webp)$/i }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.service.uploadAvatar(+id, file);
+  }
+
+  // ─── UPSERT SKILLS ────────────────────────────────────────────────────────
+  @Put(':id/skills')
+  @RequirePermission('users:update')
+  @ApiOperation({ summary: 'Reemplaza las habilidades de un usuario' })
+  @ApiBody({ type: UpsertUserSkillsDto })
+  @ApiResponse({ status: 200, type: UserResponseDto })
+  @ApiResponse({ status: 404, type: ErrorResponseDto })
+  upsertSkills(@Param('id') id: string, @Body() dto: UpsertUserSkillsDto) {
+    return this.service.upsertSkills(+id, dto);
   }
 
   // ─── ASSIGN ROLES ─────────────────────────────────────────────────────────

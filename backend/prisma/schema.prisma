@@ -81,17 +81,96 @@ enum TaskAction {
   DELETED
 }
 
+enum AreaProfesional {
+  FRONTEND
+  BACKEND
+  FULLSTACK
+  QA
+  DEVOPS
+  UX
+  DISENO
+  PRODUCTO
+  DATOS
+  MANAGEMENT
+  OTRO
+}
+
+enum Senioridad {
+  JUNIOR
+  SEMI_SENIOR
+  SENIOR
+  LEAD
+  PRINCIPAL
+}
+
+enum TipoDisponibilidad {
+  FULL_TIME
+  PART_TIME
+  FREELANCE
+  CONSULTOR
+}
+
+enum NivelCompetencia {
+  BASICO
+  INTERMEDIO
+  AVANZADO
+}
+
+enum RequirementType {
+  FUNCTIONAL
+  NON_FUNCTIONAL
+}
+
+enum RequirementSubtype {
+  PERFORMANCE
+  SECURITY
+  USABILITY
+  SCALABILITY
+  RELIABILITY
+  AVAILABILITY
+  MAINTAINABILITY
+  COMPATIBILITY
+}
+
+enum RequirementPriority {
+  MUST_HAVE
+  SHOULD_HAVE
+  COULD_HAVE
+  WONT_HAVE
+}
+
+enum RequirementStatus {
+  DRAFT
+  IN_REVIEW
+  VALIDATED
+  REJECTED
+  DEFERRED
+}
+
 // ─── USUARIO ─────────────────────────────────────────────────────────────────
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  password     String
-  nombre       String
-  isSuperAdmin Boolean  @default(false)
-  activo       Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             Int                 @id @default(autoincrement())
+  email          String              @unique
+  password       String
+  nombre         String
+  isSuperAdmin   Boolean             @default(false)
+  activo         Boolean             @default(true)
+  // Perfil profesional
+  telefono       String?
+  zonaHoraria    String?
+  area           AreaProfesional?
+  senioridad     Senioridad?
+  disponibilidad TipoDisponibilidad?
+  horasSemanales Int?
+  lenguajes      String[]
+  frameworks     String[]
+  basesDeDatos   String[]
+  herramientas   String[]
+  bio            String?             @db.Text
+  avatarUrl      String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 
   // Relaciones auth
   userRoles       UserRole[]
@@ -99,12 +178,15 @@ model User {
   refreshTokens   RefreshToken[]
 
   // Relaciones proyecto
-  ownedProjects      Project[]                    @relation("ProjectOwner")
-  projectMemberships ProjectMember[]
-  toolApplications   ToolApplication[]            @relation("ToolApplicationCreator")
-  toolAppNotes       ToolApplicationNote[]        @relation("NoteCreator")
-  toolAppAttachments ToolApplicationAttachment[]  @relation("AttachmentCreator")
-  wikiPages          WikiPage[]
+  ownedProjects         Project[]                    @relation("ProjectOwner")
+  projectMemberships    ProjectMember[]
+  toolApplications      ToolApplication[]            @relation("ToolApplicationCreator")
+  toolAppNotes          ToolApplicationNote[]        @relation("NoteCreator")
+  toolAppAttachments    ToolApplicationAttachment[]  @relation("AttachmentCreator")
+  wikiPages             WikiPage[]
+  userSkills            UserSkill[]
+  requirementsCreated   Requirement[]                @relation("RequirementCreatedBy")
+  requirementsUpdated   Requirement[]                @relation("RequirementUpdatedBy")
 
   // Relaciones tareas
   assignedTasks  Task[]           @relation("TaskAssignee")
@@ -112,6 +194,19 @@ model User {
   taskActivities TaskActivity[]
 
   @@index([activo])
+}
+
+// ─── HABILIDADES DE USUARIO ───────────────────────────────────────────────────
+
+model UserSkill {
+  id         Int              @id @default(autoincrement())
+  userId     Int
+  tecnologia String
+  nivel      NivelCompetencia
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tecnologia])
+  @@index([userId])
 }
 
 // ─── ROL ──────────────────────────────────────────────────────────────────────
@@ -302,6 +397,7 @@ model Project {
   taskStatuses TaskStatus[]
   tasks        Task[]
   taskTags     TaskTag[]
+  requirements Requirement[]
 
   @@index([ownerId])
   @@index([estado])
@@ -315,7 +411,22 @@ model ProjectMember {
   projectId Int
   userId    Int
   role      ProjectMemberRole
-  createdAt DateTime          @default(now())
+  // Ficha técnica del miembro en el proyecto
+  cargo                  String?
+  fechaIngreso           DateTime?
+  horasSemanalesProyecto Int?
+  responsabilidades      String[]
+  entregables            String[]
+  modulosAsignados       String[]
+  participaDaily         Boolean  @default(false)
+  participaPlanning      Boolean  @default(false)
+  participaReview        Boolean  @default(false)
+  participaRetro         Boolean  @default(false)
+  objetivos              String?  @db.Text
+  observaciones          String?  @db.Text
+  accesos                Json?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
   // Relaciones
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -547,4 +658,36 @@ model TaskActivity {
   @@index([taskId])
   @@index([userId])
   @@index([createdAt])
+}
+
+// ─── REQUISITOS DEL PROYECTO ─────────────────────────────────────────────────
+
+model Requirement {
+  id                 Int                 @id @default(autoincrement())
+  projectId          Int
+  type               RequirementType
+  subtype            RequirementSubtype?
+  title              String
+  description        String              @db.Text
+  userStory          String?             @db.Text
+  acceptanceCriteria String[]
+  priority           RequirementPriority @default(MUST_HAVE)
+  source             String?
+  businessValue      String?             @db.Text
+  status             RequirementStatus   @default(DRAFT)
+  activo             Boolean             @default(true)
+  createdById        Int
+  updatedById        Int?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  // Relaciones
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy User    @relation("RequirementCreatedBy", fields: [createdById], references: [id])
+  updatedBy User?   @relation("RequirementUpdatedBy", fields: [updatedById], references: [id])
+
+  @@index([projectId])
+  @@index([type])
+  @@index([status])
+  @@index([createdById])
 }

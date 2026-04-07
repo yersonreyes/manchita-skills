@@ -20,6 +20,7 @@ import { TaskTagModule } from './task-tag/task-tag.module';
 import { TaskModule } from './task/task.module';
 import { TaskActivityModule } from './task-activity/task-activity.module';
 import { WikiModule } from './wiki/wiki.module';
+import { RequirementModule } from './requirement/requirement.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { WikiModule } from './wiki/wiki.module';
     TaskModule,
     TaskActivityModule,
     WikiModule,
+    RequirementModule,
   ],
   providers: [
     {

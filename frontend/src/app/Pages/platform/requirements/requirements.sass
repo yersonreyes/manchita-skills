@@ -1,0 +1,580 @@
+// ─── Page ─────────────────────────────────────────────────────────────────
+
+.rq-page
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+
+// ─── Header ───────────────────────────────────────────────────────────────
+
+.rq-header
+  display: flex
+  align-items: flex-start
+  justify-content: space-between
+  flex-wrap: wrap
+  gap: 1rem
+
+.rq-heading
+  font-family: 'Syne', sans-serif
+  font-size: 1.75rem
+  font-weight: 700
+  color: var(--p-text-color)
+  margin: 0
+  line-height: 1.2
+
+.rq-subheading
+  font-size: 0.875rem
+  color: var(--p-text-muted-color)
+  margin: 0.25rem 0 0
+
+// ─── Stats ────────────────────────────────────────────────────────────────
+
+.rq-stats
+  display: flex
+  gap: 0.625rem
+  flex-wrap: wrap
+
+.rq-stat
+  display: flex
+  flex-direction: column
+  align-items: center
+  padding: 0.55rem 0.9rem
+  border-radius: 10px
+  border: 1px solid var(--p-surface-200)
+  background: var(--p-surface-0)
+  min-width: 68px
+  transition: transform 0.15s, box-shadow 0.15s
+
+  &:hover
+    transform: translateY(-1px)
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06)
+
+  &__num
+    font-family: 'Syne', sans-serif
+    font-size: 1.375rem
+    font-weight: 700
+    line-height: 1
+    color: var(--p-text-color)
+
+  &__lbl
+    font-size: 0.68rem
+    font-weight: 600
+    color: var(--p-text-muted-color)
+    text-transform: uppercase
+    letter-spacing: 0.06em
+    margin-top: 0.15rem
+    white-space: nowrap
+
+  &--fr
+    border-color: #bfdbfe
+    background: #eff6ff
+    .rq-stat__num
+      color: #2563eb
+
+  &--nfr
+    border-color: #ddd6fe
+    background: #f5f3ff
+    .rq-stat__num
+      color: #7c3aed
+
+  &--ok
+    border-color: #a7f3d0
+    background: #ecfdf5
+    .rq-stat__num
+      color: #059669
+
+  &--review
+    border-color: #fde68a
+    background: #fffbeb
+    .rq-stat__num
+      color: #d97706
+
+// ─── Panel ────────────────────────────────────────────────────────────────
+
+.rq-panel
+  background: var(--p-surface-0)
+  border: 1px solid var(--p-surface-200)
+  border-radius: 14px
+  overflow: hidden
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03)
+
+// ─── Toolbar ──────────────────────────────────────────────────────────────
+
+.rq-toolbar
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 0.875rem 1.25rem
+  border-bottom: 1px solid var(--p-surface-100)
+  background: var(--p-surface-50)
+
+.rq-switcher
+  display: flex
+  gap: 0.2rem
+  background: var(--p-surface-100)
+  padding: 0.2rem
+  border-radius: 10px
+
+.rq-switch-btn
+  display: inline-flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.425rem 0.875rem
+  border: none
+  border-radius: 8px
+  background: transparent
+  color: var(--p-text-muted-color)
+  font-family: 'Outfit', sans-serif
+  font-size: 0.875rem
+  font-weight: 500
+  cursor: pointer
+  transition: all 0.18s ease
+
+  &:hover:not(.rq-switch-btn--active)
+    color: var(--p-text-color)
+    background: var(--p-surface-200)
+
+  &--active
+    background: var(--p-surface-0)
+    color: var(--p-text-color)
+    font-weight: 600
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)
+
+    .rq-switch-count
+      background: var(--p-primary-100, #d1fae5)
+      color: var(--p-primary-color, #10b981)
+
+.rq-switch-count
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  min-width: 20px
+  height: 18px
+  padding: 0 5px
+  background: var(--p-surface-200)
+  border-radius: 999px
+  font-size: 0.68rem
+  font-weight: 700
+  transition: background 0.18s, color 0.18s
+
+.rq-new-btn
+  display: inline-flex
+  align-items: center
+  gap: 0.4rem
+  padding: 0.5rem 1.1rem
+  border-radius: 8px
+  border: none
+  background: var(--p-primary-color, #10b981)
+  color: white
+  font-family: 'Outfit', sans-serif
+  font-size: 0.875rem
+  font-weight: 500
+  cursor: pointer
+  transition: background 0.2s, transform 0.12s, box-shadow 0.2s
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.35)
+
+  &:hover
+    filter: brightness(1.05)
+    transform: translateY(-1px)
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3)
+
+  &:active
+    transform: translateY(0)
+
+// ─── Loading skeletons ────────────────────────────────────────────────────
+
+@keyframes rq-shimmer
+  from
+    background-position: -600px 0
+  to
+    background-position: 600px 0
+
+.rq-skeletons
+  display: flex
+  flex-direction: column
+
+.rq-skeleton
+  height: 82px
+  border-bottom: 1px solid var(--p-surface-100)
+  background: linear-gradient(90deg, var(--p-surface-100) 25%, var(--p-surface-50) 50%, var(--p-surface-100) 75%)
+  background-size: 1200px 100%
+  animation: rq-shimmer 1.5s infinite linear
+
+  &:last-child
+    border-bottom: none
+
+// ─── Empty state ──────────────────────────────────────────────────────────
+
+.rq-empty
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0.75rem
+  padding: 4rem 1rem
+  text-align: center
+
+.rq-empty__icon
+  width: 68px
+  height: 68px
+  display: flex
+  align-items: center
+  justify-content: center
+  border-radius: 18px
+  background: var(--p-surface-50)
+  border: 1.5px dashed var(--p-surface-300)
+
+  i
+    font-size: 1.75rem
+    color: var(--p-text-muted-color)
+    opacity: 0.4
+
+.rq-empty__title
+  font-family: 'Syne', sans-serif
+  font-weight: 600
+  font-size: 1rem
+  color: var(--p-text-color)
+  margin: 0
+
+.rq-empty__hint
+  font-size: 0.825rem
+  color: var(--p-text-muted-color)
+
+// ─── List ─────────────────────────────────────────────────────────────────
+
+.rq-list
+  display: flex
+  flex-direction: column
+
+// ─── Card ─────────────────────────────────────────────────────────────────
+
+@keyframes rq-card-in
+  from
+    opacity: 0
+    transform: translateY(8px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+.rq-card
+  display: flex
+  border-bottom: 1px solid var(--p-surface-100)
+  animation: rq-card-in 0.28s ease both
+  transition: background 0.15s
+
+  &:last-child
+    border-bottom: none
+
+  &:hover
+    background: var(--p-surface-50)
+
+    .rq-card__accent
+      opacity: 1
+
+  // ── Priority color tokens ────────────────────────────────────────────
+  &--MUST_HAVE
+    --rq-accent: #e11d48
+    --rq-priority-bg: #fff1f2
+    --rq-priority-color: #e11d48
+    --rq-priority-border: #fecdd3
+
+  &--SHOULD_HAVE
+    --rq-accent: #d97706
+    --rq-priority-bg: #fffbeb
+    --rq-priority-color: #d97706
+    --rq-priority-border: #fde68a
+
+  &--COULD_HAVE
+    --rq-accent: #2563eb
+    --rq-priority-bg: #eff6ff
+    --rq-priority-color: #2563eb
+    --rq-priority-border: #bfdbfe
+
+  &--WONT_HAVE
+    --rq-accent: #94a3b8
+    --rq-priority-bg: #f8fafc
+    --rq-priority-color: #64748b
+    --rq-priority-border: #e2e8f0
+
+.rq-card__accent
+  width: 4px
+  flex-shrink: 0
+  background: var(--rq-accent, var(--p-surface-300))
+  opacity: 0.65
+  transition: opacity 0.15s
+
+.rq-card__body
+  display: flex
+  align-items: flex-start
+  justify-content: space-between
+  gap: 1.25rem
+  padding: 1rem 1.25rem
+  flex: 1
+
+// ─── Card left ────────────────────────────────────────────────────────────
+
+.rq-card__left
+  flex: 1
+  min-width: 0
+  display: flex
+  flex-direction: column
+  gap: 0.3rem
+
+.rq-card__title
+  font-family: 'Outfit', sans-serif
+  font-size: 0.9375rem
+  font-weight: 600
+  color: var(--p-text-color)
+  margin: 0
+  line-height: 1.4
+
+.rq-card__desc
+  font-size: 0.8125rem
+  color: var(--p-text-muted-color)
+  margin: 0
+  line-height: 1.55
+  display: -webkit-box
+  -webkit-line-clamp: 2
+  -webkit-box-orient: vertical
+  overflow: hidden
+
+.rq-card__chips
+  display: flex
+  flex-wrap: wrap
+  gap: 0.3rem
+  margin-top: 0.2rem
+
+.rq-chip
+  display: inline-flex
+  align-items: center
+  gap: 0.3rem
+  padding: 0.18rem 0.5rem
+  border-radius: 6px
+  background: var(--p-surface-100)
+  color: var(--p-text-muted-color)
+  font-size: 0.72rem
+  font-weight: 500
+  border: 1px solid var(--p-surface-200)
+
+  i
+    font-size: 0.65rem
+    opacity: 0.7
+
+  &--subtype
+    background: #f5f3ff
+    color: #7c3aed
+    border-color: #ddd6fe
+
+  &--criteria
+    background: #ecfdf5
+    color: #059669
+    border-color: #a7f3d0
+
+  &--value
+    background: #fffbeb
+    color: #d97706
+    border-color: #fde68a
+
+// ─── Card right ───────────────────────────────────────────────────────────
+
+.rq-card__right
+  display: flex
+  flex-direction: column
+  align-items: flex-end
+  gap: 0.5rem
+  flex-shrink: 0
+
+// ─── Priority badge ───────────────────────────────────────────────────────
+
+.rq-priority
+  display: inline-flex
+  align-items: center
+  padding: 0.22rem 0.65rem
+  border-radius: 999px
+  font-size: 0.7rem
+  font-weight: 700
+  letter-spacing: 0.025em
+  border: 1px solid var(--rq-priority-border, var(--p-surface-200))
+  background: var(--rq-priority-bg, var(--p-surface-100))
+  color: var(--rq-priority-color, var(--p-text-muted-color))
+  white-space: nowrap
+
+// ─── Status badge ─────────────────────────────────────────────────────────
+
+.rq-status
+  display: inline-flex
+  align-items: center
+  gap: 0.4rem
+  padding: 0.22rem 0.65rem
+  border-radius: 999px
+  font-size: 0.7rem
+  font-weight: 600
+  white-space: nowrap
+  border: 1px solid
+
+  &__dot
+    width: 6px
+    height: 6px
+    border-radius: 50%
+    background: currentColor
+    flex-shrink: 0
+
+  &--DRAFT
+    color: #64748b
+    background: #f8fafc
+    border-color: #e2e8f0
+
+  &--IN_REVIEW
+    color: #d97706
+    background: #fffbeb
+    border-color: #fde68a
+
+  &--VALIDATED
+    color: #059669
+    background: #ecfdf5
+    border-color: #a7f3d0
+
+  &--REJECTED
+    color: #dc2626
+    background: #fef2f2
+    border-color: #fecaca
+
+  &--DEFERRED
+    color: #7c3aed
+    background: #f5f3ff
+    border-color: #ddd6fe
+
+.rq-status-select
+  width: 140px
+
+// ─── Card actions ─────────────────────────────────────────────────────────
+
+.rq-card__actions
+  display: flex
+  gap: 0.25rem
+
+.rq-action
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  width: 28px
+  height: 28px
+  border: none
+  border-radius: 7px
+  background: var(--p-surface-100)
+  color: var(--p-text-muted-color)
+  cursor: pointer
+  transition: all 0.15s
+
+  i
+    font-size: 0.75rem
+
+  &:hover
+    background: var(--p-primary-50, #ecfdf5)
+    color: var(--p-primary-color, #10b981)
+    transform: scale(1.1)
+
+  &--danger:hover
+    background: #fef2f2
+    color: #dc2626
+    transform: scale(1.1)
+
+// ─── Drawer form ──────────────────────────────────────────────────────────
+
+.rq-drawer-form
+  display: flex
+  flex-direction: column
+  gap: 1.25rem
+  padding: 0.25rem 0
+
+.rq-field
+  display: flex
+  flex-direction: column
+  gap: 0.4rem
+  flex: 1
+
+  label
+    font-size: 0.73rem
+    font-weight: 700
+    color: var(--p-text-muted-color)
+    text-transform: uppercase
+    letter-spacing: 0.07em
+
+.rq-field-row
+  display: flex
+  gap: 1rem
+
+.rq-required
+  color: #e11d48
+
+.rq-drawer-footer
+  display: flex
+  justify-content: flex-end
+  gap: 0.75rem
+
+// ─── Criteria ─────────────────────────────────────────────────────────────
+
+.rq-criteria-row
+  display: flex
+  gap: 0.5rem
+
+.rq-add-criteria-btn
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  width: 38px
+  height: 38px
+  border: 1px solid var(--p-surface-300)
+  border-radius: 8px
+  background: transparent
+  cursor: pointer
+  color: var(--p-text-muted-color)
+  flex-shrink: 0
+  transition: all 0.15s
+
+  &:hover
+    background: var(--p-primary-50, #ecfdf5)
+    border-color: var(--p-primary-color, #10b981)
+    color: var(--p-primary-color, #10b981)
+
+.rq-criteria-list
+  display: flex
+  flex-direction: column
+  gap: 0.3rem
+  margin-top: 0.5rem
+
+.rq-criteria-item
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.4rem 0.75rem
+  background: var(--p-surface-50)
+  border: 1px solid var(--p-surface-200)
+  border-radius: 8px
+  font-size: 0.825rem
+  color: var(--p-text-color)
+
+  span
+    flex: 1
+
+.rq-criteria-icon
+  font-size: 0.65rem
+  color: #059669
+  flex-shrink: 0
+
+.rq-criteria-remove
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  width: 20px
+  height: 20px
+  border: none
+  background: transparent
+  cursor: pointer
+  color: var(--p-text-muted-color)
+  border-radius: 4px
+  flex-shrink: 0
+  transition: all 0.15s
+
+  &:hover
+    background: #fef2f2
+    color: #dc2626

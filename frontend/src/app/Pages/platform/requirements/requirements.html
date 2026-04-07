@@ -1,0 +1,317 @@
+<!-- ─── Page ──────────────────────────────────────────────────────────────── -->
+<div class="rq-page">
+
+  <!-- ─── Header ──────────────────────────────────────────────────────────── -->
+  <div class="rq-header">
+    <div class="rq-header__title-block">
+      <h1 class="rq-heading">Requisitos</h1>
+      <p class="rq-subheading">Gestión de requisitos funcionales y no funcionales del proyecto</p>
+    </div>
+    <div class="rq-stats">
+      <div class="rq-stat">
+        <span class="rq-stat__num">{{ allRequirements().length }}</span>
+        <span class="rq-stat__lbl">Total</span>
+      </div>
+      <div class="rq-stat rq-stat--fr">
+        <span class="rq-stat__num">{{ functionals().length }}</span>
+        <span class="rq-stat__lbl">Funcionales</span>
+      </div>
+      <div class="rq-stat rq-stat--nfr">
+        <span class="rq-stat__num">{{ nonFunctionals().length }}</span>
+        <span class="rq-stat__lbl">No Funcionales</span>
+      </div>
+      <div class="rq-stat rq-stat--ok">
+        <span class="rq-stat__num">{{ validatedCount() }}</span>
+        <span class="rq-stat__lbl">Validados</span>
+      </div>
+      <div class="rq-stat rq-stat--review">
+        <span class="rq-stat__num">{{ inReviewCount() }}</span>
+        <span class="rq-stat__lbl">En revisión</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Panel ────────────────────────────────────────────────────────────── -->
+  <div class="rq-panel">
+
+    <!-- Toolbar -->
+    <div class="rq-toolbar">
+      <div class="rq-switcher">
+        <button
+          class="rq-switch-btn"
+          [class.rq-switch-btn--active]="activeTab() === 0"
+          (click)="activeTab.set(0)"
+        >
+          Funcionales
+          <span class="rq-switch-count">{{ functionals().length }}</span>
+        </button>
+        <button
+          class="rq-switch-btn"
+          [class.rq-switch-btn--active]="activeTab() === 1"
+          (click)="activeTab.set(1)"
+        >
+          No Funcionales
+          <span class="rq-switch-count">{{ nonFunctionals().length }}</span>
+        </button>
+      </div>
+
+      <button
+        *hasPermission="'requirements:create'"
+        class="rq-new-btn"
+        (click)="activeTab() === 0 ? openCreateFR() : openCreateNFR()"
+      >
+        <i class="pi pi-plus"></i>
+        <span>{{ activeTab() === 0 ? 'Nuevo Funcional' : 'Nuevo No Funcional' }}</span>
+      </button>
+    </div>
+
+    <!-- Loading skeletons -->
+    @if (loading()) {
+      <div class="rq-skeletons">
+        @for (_ of [1, 2, 3]; track $index) {
+          <div class="rq-skeleton"></div>
+        }
+      </div>
+    }
+
+    <!-- Empty state -->
+    @else if (activeList().length === 0) {
+      <div class="rq-empty">
+        <div class="rq-empty__icon">
+          <i [class]="activeTab() === 0 ? 'pi pi-list-check' : 'pi pi-sliders-h'"></i>
+        </div>
+        <p class="rq-empty__title">
+          Sin requisitos {{ activeTab() === 0 ? 'funcionales' : 'no funcionales' }}
+        </p>
+        <span class="rq-empty__hint">Agregá el primero usando el botón de arriba</span>
+      </div>
+    }
+
+    <!-- Requirements list -->
+    @else {
+      <div class="rq-list">
+        @for (req of activeList(); track req.id; let i = $index) {
+          <div [class]="'rq-card rq-card--' + req.priority" [style.animation-delay]="i * 45 + 'ms'">
+
+            <div class="rq-card__accent"></div>
+
+            <div class="rq-card__body">
+
+              <!-- Left: title, description, meta chips -->
+              <div class="rq-card__left">
+                <h3 class="rq-card__title">{{ req.title }}</h3>
+                @if (req.description) {
+                  <p class="rq-card__desc">{{ req.description }}</p>
+                }
+                <div class="rq-card__chips">
+                  @if (req.source) {
+                    <span class="rq-chip">
+                      <i class="pi pi-user"></i>{{ req.source }}
+                    </span>
+                  }
+                  @if (req.createdBy.nombre) {
+                    <span class="rq-chip">
+                      <i class="pi pi-pen-to-square"></i>{{ req.createdBy.nombre }}
+                    </span>
+                  }
+                  @if (req.subtype) {
+                    <span class="rq-chip rq-chip--subtype">{{ getSubtypeLabel(req.subtype) }}</span>
+                  }
+                  @if (req.acceptanceCriteria.length > 0) {
+                    <span class="rq-chip rq-chip--criteria">
+                      <i class="pi pi-check-circle"></i>
+                      {{ req.acceptanceCriteria.length }} criterio{{ req.acceptanceCriteria.length !== 1 ? 's' : '' }}
+                    </span>
+                  }
+                  @if (req.businessValue) {
+                    <span class="rq-chip rq-chip--value">
+                      <i class="pi pi-star"></i>Valor definido
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <!-- Right: priority, status, actions -->
+              <div class="rq-card__right">
+                <span [class]="'rq-priority rq-priority--' + req.priority">
+                  {{ getPriorityLabel(req.priority) }}
+                </span>
+
+                @if (canChangeStatus()) {
+                  <p-select
+                    [ngModel]="req.status"
+                    [options]="statusOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    appendTo="body"
+                    class="rq-status-select"
+                    (ngModelChange)="changeStatus(req, $event)"
+                  />
+                } @else {
+                  <span [class]="'rq-status rq-status--' + req.status">
+                    <span class="rq-status__dot"></span>
+                    {{ getStatusLabel(req.status) }}
+                  </span>
+                }
+
+                <div class="rq-card__actions">
+                  <button
+                    *hasPermission="'requirements:update'"
+                    class="rq-action"
+                    pTooltip="Editar"
+                    tooltipPosition="top"
+                    (click)="openEdit(req)"
+                  >
+                    <i class="pi pi-pencil"></i>
+                  </button>
+                  <button
+                    *hasPermission="'requirements:delete'"
+                    class="rq-action rq-action--danger"
+                    pTooltip="Eliminar"
+                    tooltipPosition="top"
+                    (click)="confirmDelete(req)"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>
+
+<!-- ─── Drawer crear / editar ─────────────────────────────────────────────── -->
+<p-drawer
+  [(visible)]="drawerVisible"
+  [header]="drawerTitle"
+  position="right"
+  [style]="{ width: '520px' }"
+>
+  <div class="rq-drawer-form">
+
+    <div class="rq-field">
+      <label>Título <span class="rq-required">*</span></label>
+      <input pInputText [(ngModel)]="form.title" placeholder="Título del requisito" class="w-full" />
+    </div>
+
+    <div class="rq-field">
+      <label>Descripción <span class="rq-required">*</span></label>
+      <textarea
+        pTextarea
+        [(ngModel)]="form.description"
+        rows="3"
+        placeholder="Descripción detallada del requisito..."
+        style="width: 100%"
+      ></textarea>
+    </div>
+
+    @if (!isFunctionalMode()) {
+      <div class="rq-field">
+        <label>Subtipo <span class="rq-required">*</span></label>
+        <p-select
+          [(ngModel)]="form.subtype"
+          [options]="subtypeOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Seleccioná el tipo de NFR"
+          appendTo="body"
+          class="w-full"
+        />
+      </div>
+    }
+
+    @if (isFunctionalMode()) {
+      <div class="rq-field">
+        <label>User Story</label>
+        <textarea
+          pTextarea
+          [(ngModel)]="form.userStory"
+          rows="2"
+          placeholder="Como [rol], quiero [objetivo], para [beneficio]..."
+          style="width: 100%"
+        ></textarea>
+      </div>
+
+      <div class="rq-field">
+        <label>Criterios de aceptación</label>
+        <div class="rq-criteria-row">
+          <input
+            pInputText
+            [(ngModel)]="criteriaInput"
+            placeholder="Agregar criterio..."
+            class="flex-1"
+            (keyup.enter)="addCriteria()"
+          />
+          <button class="rq-add-criteria-btn" (click)="addCriteria()">
+            <i class="pi pi-plus"></i>
+          </button>
+        </div>
+        @if (form.acceptanceCriteria.length > 0) {
+          <div class="rq-criteria-list">
+            @for (c of form.acceptanceCriteria; track c) {
+              <div class="rq-criteria-item">
+                <i class="pi pi-check rq-criteria-icon"></i>
+                <span>{{ c }}</span>
+                <button class="rq-criteria-remove" (click)="removeCriteria(c)">
+                  <i class="pi pi-times"></i>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <div class="rq-field-row">
+      <div class="rq-field">
+        <label>Prioridad</label>
+        <p-select
+          [(ngModel)]="form.priority"
+          [options]="priorityOptions"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          class="w-full"
+        />
+      </div>
+      <div class="rq-field">
+        <label>Fuente</label>
+        <input pInputText [(ngModel)]="form.source" placeholder="¿Quién lo solicitó?" class="w-full" />
+      </div>
+    </div>
+
+    <div class="rq-field">
+      <label>Valor de negocio</label>
+      <textarea
+        pTextarea
+        [(ngModel)]="form.businessValue"
+        rows="2"
+        placeholder="¿Por qué es importante para el negocio?"
+        style="width: 100%"
+      ></textarea>
+    </div>
+
+  </div>
+
+  <ng-template #footer>
+    <div class="rq-drawer-footer">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="drawerVisible.set(false)"
+      />
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        [loading]="saving()"
+        (onClick)="save()"
+      />
+    </div>
+  </ng-template>
+</p-drawer>

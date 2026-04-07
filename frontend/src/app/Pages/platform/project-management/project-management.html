@@ -121,6 +121,16 @@
               <i class="pi pi-book"></i>
               <span>Wiki</span>
             </button>
+
+            <button
+              *hasPermission="'requirements:read'"
+              class="project-action project-action--requirements"
+              (click)="navigateToRequirements(project.id)"
+              title="Ver requisitos del proyecto"
+            >
+              <i class="pi pi-list-check"></i>
+              <span>Requisitos</span>
+            </button>
           </div>
         </td>
 
@@ -385,6 +395,15 @@
               <div class="wizard-member__actions">
                 <p-tag [value]="getRoleLabel(member.role)" severity="info" />
                 <p-button
+                  icon="pi pi-id-card"
+                  [rounded]="true"
+                  severity="info"
+                  variant="text"
+                  pTooltip="Ver ficha técnica"
+                  tooltipPosition="top"
+                  (onClick)="openFichaDrawer(createdProjectId()!, member)"
+                />
+                <p-button
                   *hasPermission="'projects:update'"
                   icon="pi pi-times"
                   [rounded]="true"
@@ -412,3 +431,139 @@
     />
   </ng-template>
 </p-dialog>
+
+<!-- ─── Ficha técnica del miembro ────────────────────────────────────────── -->
+<p-drawer
+  [(visible)]="fichaDrawerVisible"
+  [header]="'Ficha — ' + fichaUserNombre()"
+  position="right"
+  [style]="{ width: '540px' }"
+>
+  <div class="drawer-form">
+
+    <section class="drawer-section">
+      <h4 class="drawer-section__title">Rol en el proyecto</h4>
+      <div class="drawer-field">
+        <label>Cargo / Título</label>
+        <input pInputText [(ngModel)]="fichaForm.cargo" placeholder="Ej: Tech Lead Frontend" />
+      </div>
+      <div class="drawer-row">
+        <div class="drawer-field">
+          <label>Fecha de ingreso</label>
+          <p-datepicker [(ngModel)]="fichaForm.fechaIngreso" [showIcon]="true" dateFormat="dd/mm/yy" [showButtonBar]="true" />
+        </div>
+        <div class="drawer-field">
+          <label>Horas semanales</label>
+          <p-inputnumber [(ngModel)]="fichaForm.horasSemanalesProyecto" [min]="1" [max]="80" placeholder="40" />
+        </div>
+      </div>
+    </section>
+
+    <section class="drawer-section">
+      <h4 class="drawer-section__title">Responsabilidades y entregables</h4>
+      @for (field of [
+        { key: 'responsabilidades', label: 'Responsabilidades principales', placeholder: 'Ej: Desarrollar API de autenticación' },
+        { key: 'entregables', label: 'Entregables esperados', placeholder: 'Ej: Módulo de login funcional' },
+        { key: 'modulosAsignados', label: 'Módulos asignados', placeholder: 'Ej: auth, dashboard' }
+      ]; track field.key) {
+        <div class="drawer-field">
+          <label>{{ field.label }}</label>
+          <div class="tag-input-row">
+            <input
+              pInputText
+              [(ngModel)]="fichaArrayInputs[field.key]"
+              [placeholder]="field.placeholder"
+              class="tag-input-row__input"
+              (keyup.enter)="addFichaArrayItem($any(field.key))"
+            />
+            <p-button icon="pi pi-plus" size="small" variant="outlined" (onClick)="addFichaArrayItem($any(field.key))" />
+          </div>
+          @if ($any(fichaForm)[field.key].length > 0) {
+            <div class="tag-cloud">
+              @for (item of $any(fichaForm)[field.key]; track item) {
+                <span class="tag-pill">
+                  {{ item }}
+                  <button class="tag-pill__remove" (click)="removeFichaArrayItem($any(field.key), item)">
+                    <i class="pi pi-times"></i>
+                  </button>
+                </span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="drawer-section">
+      <h4 class="drawer-section__title">Participación en ceremonias</h4>
+      <div class="ceremony-grid">
+        <div class="ceremony-item">
+          <p-checkbox [(ngModel)]="fichaForm.participaDaily" [binary]="true" inputId="cb-daily" />
+          <label for="cb-daily">Daily</label>
+        </div>
+        <div class="ceremony-item">
+          <p-checkbox [(ngModel)]="fichaForm.participaPlanning" [binary]="true" inputId="cb-planning" />
+          <label for="cb-planning">Planning</label>
+        </div>
+        <div class="ceremony-item">
+          <p-checkbox [(ngModel)]="fichaForm.participaReview" [binary]="true" inputId="cb-review" />
+          <label for="cb-review">Review</label>
+        </div>
+        <div class="ceremony-item">
+          <p-checkbox [(ngModel)]="fichaForm.participaRetro" [binary]="true" inputId="cb-retro" />
+          <label for="cb-retro">Retro</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="drawer-section">
+      <h4 class="drawer-section__title">Accesos y permisos</h4>
+      <div class="drawer-field">
+        <label>Repositorio (Git)</label>
+        <input pInputText [(ngModel)]="fichaForm.accesos.repositorio" placeholder="Ej: Acceso de escritura al repo principal" />
+      </div>
+      <div class="drawer-field">
+        <label>Ambientes (Dev / QA / Prod)</label>
+        <input pInputText [(ngModel)]="fichaForm.accesos.ambientes" placeholder="Ej: Dev y QA habilitados" />
+      </div>
+      <div class="drawer-field">
+        <label>Herramientas internas</label>
+        <input pInputText [(ngModel)]="fichaForm.accesos.herramientas" placeholder="Ej: Jira, Figma, Datadog" />
+      </div>
+      <div class="drawer-field">
+        <label>Credenciales asignadas</label>
+        <input pInputText [(ngModel)]="fichaForm.accesos.credenciales" placeholder="Ej: AWS IAM user creado" />
+      </div>
+    </section>
+
+    <section class="drawer-section">
+      <h4 class="drawer-section__title">Objetivos y observaciones</h4>
+      <div class="drawer-field">
+        <label>Objetivos individuales</label>
+        <textarea pTextarea [(ngModel)]="fichaForm.objetivos" rows="3" placeholder="Qué se espera lograr en este proyecto..." style="width:100%"></textarea>
+      </div>
+      <div class="drawer-field">
+        <label>Observaciones</label>
+        <textarea pTextarea [(ngModel)]="fichaForm.observaciones" rows="3" placeholder="Fortalezas, áreas de mejora, notas del equipo..." style="width:100%"></textarea>
+      </div>
+    </section>
+
+  </div>
+
+  <ng-template #footer>
+    <div class="drawer-footer">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="fichaDrawerVisible.set(false)"
+      />
+      <p-button
+        label="Guardar ficha"
+        icon="pi pi-check"
+        [loading]="savingFicha()"
+        (onClick)="saveFicha()"
+      />
+    </div>
+  </ng-template>
+</p-drawer>

@@ -1,89 +1,396 @@
-<app-page-header title="Mi Perfil" subtitle="Información de tu cuenta" />
+<app-page-header title="Mi Perfil" subtitle="Tu información profesional" />
 
-@if (user(); as u) {
-  <div class="profile-layout">
+@if (loading()) {
+  <div class="profile-loading">
+    <i class="pi pi-spin pi-spinner"></i>
+  </div>
+} @else if (user(); as u) {
+  <div class="profile-page">
 
-    <!-- ─── Tarjeta de identidad ─────────────────────────────────────────── -->
-    <div class="profile-card">
-      <div class="profile-card__accent"></div>
-      <div class="profile-card__body">
+    <!-- ═══════════════════════════════════════════════════════════
+         HERO — Identidad
+    ════════════════════════════════════════════════════════════ -->
+    <div class="hero-card">
+      <div class="hero-card__bar"></div>
 
-        <div class="profile-avatar-wrap">
-          <p-avatar
-            [label]="u.nombre.charAt(0).toUpperCase()"
-            shape="circle"
-            size="xlarge"
-            styleClass="profile-avatar"
-          />
+      <div class="hero-body">
+        <!-- Avatar -->
+        <div class="hero-avatar-wrap">
+          <button class="hero-avatar" (click)="openAvatarModal()" type="button" pTooltip="Cambiar foto" tooltipPosition="right">
+            @if (u.avatarUrl) {
+              <img [src]="u.avatarUrl" alt="Avatar" class="hero-avatar__img" />
+            } @else {
+              {{ profileForm.nombre.charAt(0).toUpperCase() || u.nombre.charAt(0).toUpperCase() }}
+            }
+            <span class="hero-avatar__overlay"><i class="pi pi-camera"></i></span>
+          </button>
+          @if (isSuperAdmin()) {
+            <span class="hero-avatar__badge" pTooltip="Super Admin" tooltipPosition="right">
+              <i class="pi pi-verified"></i>
+            </span>
+          }
+          <span
+            class="hero-avatar__status"
+            [class.hero-avatar__status--active]="u.activo"
+            pTooltip="{{ u.activo ? 'Activo' : 'Inactivo' }}"
+            tooltipPosition="right"
+          ></span>
         </div>
 
-        <div class="profile-info">
-          <h2 class="profile-info__name">{{ u.nombre }}</h2>
-          <p class="profile-info__email">{{ u.email }}</p>
-          <div class="profile-info__tags">
-            <p-tag
-              [value]="u.activo ? 'Activo' : 'Inactivo'"
-              [severity]="u.activo ? 'success' : 'danger'"
-            />
-            @if (isSuperAdmin()) {
-              <p-tag value="Super Admin" severity="success" />
+        <!-- Identidad editable -->
+        <div class="hero-identity">
+          <input
+            pInputText
+            [(ngModel)]="profileForm.nombre"
+            class="hero-name-input"
+            placeholder="Tu nombre completo"
+          />
+          <span class="hero-email">{{ u.email }}</span>
+
+          <!-- Pills de contexto rápido -->
+          <div class="hero-context">
+            @if (profileForm.area) {
+              <span class="ctx-pill ctx-pill--area">{{ getAreaLabel(profileForm.area) }}</span>
+            }
+            @if (profileForm.senioridad) {
+              <span class="ctx-pill ctx-pill--level">
+                @switch (profileForm.senioridad) {
+                  @case ('JUNIOR') { Junior }
+                  @case ('SEMI_SENIOR') { Semi Senior }
+                  @case ('SENIOR') { Senior }
+                  @case ('LEAD') { Lead }
+                  @case ('PRINCIPAL') { Principal }
+                }
+              </span>
+            }
+            @if (profileForm.horasSemanales) {
+              <span class="ctx-pill ctx-pill--hours">{{ profileForm.horasSemanales }}h/sem</span>
+            }
+            @if (u.activo) {
+              <span class="ctx-pill ctx-pill--active">Activo</span>
             }
           </div>
         </div>
+      </div>
 
-        <div class="profile-meta">
-          <div class="profile-meta__row">
-            <span class="profile-meta__label">
-              <i class="pi pi-user"></i>ID de usuario
-            </span>
-            <code class="profile-meta__value">#{{ u.id }}</code>
-          </div>
-          <div class="profile-meta__row">
-            <span class="profile-meta__label">
-              <i class="pi pi-envelope"></i>Email
-            </span>
-            <span class="profile-meta__value">{{ u.email }}</span>
-          </div>
-        </div>
-
+      <!-- Bio -->
+      <div class="hero-bio-wrap">
+        <textarea
+          pTextarea
+          [(ngModel)]="profileForm.bio"
+          rows="3"
+          placeholder="Describí tu experiencia, fortalezas y lo que aportás al equipo…"
+          class="hero-bio-input"
+        ></textarea>
       </div>
     </div>
 
-    <!-- ─── Panel de permisos ─────────────────────────────────────────────── -->
-    <div class="perms-panel">
-      <div class="perms-panel__head">
-        <h3 class="perms-panel__title">Permisos Efectivos</h3>
-        @if (!isSuperAdmin()) {
-          <span class="perms-panel__count">{{ permissions().length }}</span>
+    <!-- ═══════════════════════════════════════════════════════════
+         FILA PRINCIPAL — Contacto | Perfil | Stack
+    ════════════════════════════════════════════════════════════ -->
+    <div class="main-grid">
+
+      <!-- Contacto -->
+      <div class="section-card">
+        <h3 class="section-card__title">
+          <i class="pi pi-at"></i>Contacto
+        </h3>
+        <div class="field-list">
+          <div class="field-item">
+            <label class="field-item__label">Teléfono / Slack / Teams</label>
+            <input
+              pInputText
+              [(ngModel)]="profileForm.telefono"
+              placeholder="+54 11 0000-0000 · @usuario"
+            />
+          </div>
+          <div class="field-item">
+            <label class="field-item__label">Zona horaria</label>
+            <input
+              pInputText
+              [(ngModel)]="profileForm.zonaHoraria"
+              placeholder="America/Buenos_Aires"
+            />
+          </div>
+          <div class="field-item">
+            <label class="field-item__label">Horas semanales</label>
+            <p-inputnumber
+              [(ngModel)]="profileForm.horasSemanales"
+              [min]="1"
+              [max]="80"
+              placeholder="40"
+              suffix=" hs"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Perfil profesional -->
+      <div class="section-card">
+        <h3 class="section-card__title">
+          <i class="pi pi-briefcase"></i>Perfil Profesional
+        </h3>
+        <div class="field-list">
+          <div class="field-item">
+            <label class="field-item__label">Área</label>
+            <p-select
+              [(ngModel)]="profileForm.area"
+              [options]="areaOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Seleccionar área"
+              [showClear]="true"
+            />
+          </div>
+          <div class="field-item">
+            <label class="field-item__label">Senioridad</label>
+            <div class="pill-group">
+              @for (opt of senioridadOptions; track opt.value) {
+                <button
+                  class="pill-btn"
+                  [class.pill-btn--active]="profileForm.senioridad === opt.value"
+                  (click)="togglePill('senioridad', opt.value)"
+                  type="button"
+                >{{ opt.label }}</button>
+              }
+            </div>
+          </div>
+          <div class="field-item">
+            <label class="field-item__label">Disponibilidad</label>
+            <div class="pill-group">
+              @for (opt of disponibilidadOptions; track opt.value) {
+                <button
+                  class="pill-btn"
+                  [class.pill-btn--active]="profileForm.disponibilidad === opt.value"
+                  (click)="togglePill('disponibilidad', opt.value)"
+                  type="button"
+                >{{ opt.label }}</button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stack Tecnológico -->
+      <div class="section-card">
+        <h3 class="section-card__title">
+          <i class="pi pi-code"></i>Stack Tecnológico
+        </h3>
+        <div class="stack-grid">
+          @for (field of stackFields; track field.key) {
+            <div class="stack-col">
+              <label class="stack-col__label">{{ field.label }}</label>
+              <div class="tag-input">
+                <input
+                  pInputText
+                  [(ngModel)]="stackInputs[field.key]"
+                  [placeholder]="field.placeholder"
+                  class="tag-input__field"
+                  (keyup.enter)="addStackItem(field.key)"
+                />
+                <button
+                  class="tag-input__btn"
+                  (click)="addStackItem(field.key)"
+                  type="button"
+                  pTooltip="Agregar"
+                  tooltipPosition="top"
+                >
+                  <i class="pi pi-plus"></i>
+                </button>
+              </div>
+              <div class="tag-list">
+                @for (item of $any(profileForm)[field.key]; track item) {
+                  <span class="tag-item">
+                    {{ item }}
+                    <button
+                      class="tag-item__del"
+                      (click)="removeStackItem(field.key, item)"
+                      type="button"
+                    ><i class="pi pi-times"></i></button>
+                  </span>
+                } @empty {
+                  <span class="tag-list__empty">Sin entradas</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         GUARDAR PERFIL
+    ════════════════════════════════════════════════════════════ -->
+    <div class="save-bar">
+      <p-button
+        label="Guardar cambios"
+        icon="pi pi-check"
+        [loading]="savingProfile()"
+        (onClick)="saveProfile()"
+        size="large"
+      />
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         FILA INFERIOR — Skills | Permisos
+    ════════════════════════════════════════════════════════════ -->
+    <div class="bottom-grid">
+
+      <!-- Nivel de Competencia -->
+      <div class="section-card">
+        <div class="section-card__head">
+          <h3 class="section-card__title section-card__title--no-mb">
+            <i class="pi pi-chart-bar"></i>Nivel de Competencia
+          </h3>
+          <span class="count-pill">{{ skills().length }}</span>
+        </div>
+
+        <div class="skill-add">
+          <input
+            pInputText
+            [(ngModel)]="newSkillTecnologia"
+            placeholder="Tecnología (ej: Angular, Docker…)"
+            class="skill-add__input"
+            (keyup.enter)="addSkill()"
+          />
+          <p-select
+            [(ngModel)]="newSkillNivel"
+            [options]="nivelOptions"
+            optionLabel="label"
+            optionValue="value"
+            class="skill-add__level"
+          />
+          <p-button
+            icon="pi pi-plus"
+            (onClick)="addSkill()"
+            pTooltip="Agregar habilidad"
+            tooltipPosition="top"
+          />
+        </div>
+
+        @if (skills().length === 0) {
+          <div class="empty-state">
+            <i class="pi pi-code"></i>
+            <p>Agregá tus tecnologías y nivel de dominio</p>
+          </div>
+        } @else {
+          <div class="skills-wrap">
+            @for (skill of skills(); track skill.tecnologia) {
+              <div class="skill-chip">
+                <span class="skill-chip__name">{{ skill.tecnologia }}</span>
+                <span class="skill-chip__level skill-chip__level--{{ skill.nivel.toLowerCase() }}">
+                  {{ getNivelLabel(skill.nivel) }}
+                </span>
+                <button
+                  class="skill-chip__del"
+                  (click)="removeSkill(skill.tecnologia)"
+                  type="button"
+                ><i class="pi pi-times"></i></button>
+              </div>
+            }
+          </div>
+
+          <div class="save-bar save-bar--compact">
+            <p-button
+              label="Guardar habilidades"
+              icon="pi pi-check"
+              size="small"
+              [loading]="savingSkills()"
+              (onClick)="saveSkills()"
+            />
+          </div>
         }
       </div>
-      <div class="perms-panel__body">
+
+      <!-- Permisos Efectivos -->
+      <div class="section-card">
+        <div class="section-card__head">
+          <h3 class="section-card__title section-card__title--no-mb">
+            <i class="pi pi-shield"></i>Permisos Efectivos
+          </h3>
+          @if (!isSuperAdmin()) {
+            <span class="count-pill">{{ permissions().length }}</span>
+          }
+        </div>
 
         @if (isSuperAdmin()) {
           <div class="superadmin-banner">
-            <div class="superadmin-banner__icon">
-              <i class="pi pi-verified"></i>
-            </div>
+            <i class="pi pi-verified"></i>
             <div>
-              <p class="superadmin-banner__title">Super Administrador</p>
-              <p class="superadmin-banner__subtitle">Acceso total al sistema sin restricciones</p>
+              <p class="superadmin-banner__name">Super Administrador</p>
+              <p class="superadmin-banner__sub">Acceso total al sistema sin restricciones</p>
             </div>
           </div>
         } @else if (permissions().length === 0) {
-          <div class="perms-empty">
+          <div class="empty-state">
             <i class="pi pi-lock-open"></i>
             <p>Sin permisos asignados</p>
           </div>
         } @else {
-          <div class="perms-cloud">
+          <div class="perms-wrap">
             @for (perm of permissions(); track perm) {
-              <span class="permission-badge">{{ perm }}</span>
+              <span class="perm-badge">{{ perm }}</span>
             }
           </div>
         }
-
       </div>
+
     </div>
 
   </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MODAL — Avatar Upload
+  ════════════════════════════════════════════════════════════ -->
+  <p-dialog
+    [(visible)]="avatarModalVisible"
+    header="Cambiar foto de perfil"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    styleClass="avatar-dialog"
+  >
+    <div class="avatar-modal">
+      <div class="avatar-preview-wrap">
+        @if (avatarPreview()) {
+          <img [src]="avatarPreview()!" alt="Preview" class="avatar-preview__img" />
+        } @else if (u.avatarUrl) {
+          <img [src]="u.avatarUrl" alt="Avatar actual" class="avatar-preview__img" />
+        } @else {
+          <div class="avatar-preview__initials">
+            {{ profileForm.nombre.charAt(0).toUpperCase() || u.nombre.charAt(0).toUpperCase() }}
+          </div>
+        }
+      </div>
+
+      <label class="avatar-file-label">
+        <i class="pi pi-upload"></i>
+        <span>{{ selectedAvatarFile ? selectedAvatarFile.name : 'Seleccionar imagen' }}</span>
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/jpg,image/webp"
+          (change)="onAvatarFileSelected($event)"
+          class="avatar-file-input"
+        />
+      </label>
+      <p class="avatar-hint">PNG, JPG, WebP · máx. 5 MB</p>
+    </div>
+
+    <ng-template #footer>
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        (onClick)="avatarModalVisible.set(false)"
+      />
+      <p-button
+        label="Guardar foto"
+        icon="pi pi-check"
+        [loading]="avatarUploading()"
+        [disabled]="!selectedAvatarFile"
+        (onClick)="confirmAvatarUpload()"
+      />
+    </ng-template>
+  </p-dialog>
 }
