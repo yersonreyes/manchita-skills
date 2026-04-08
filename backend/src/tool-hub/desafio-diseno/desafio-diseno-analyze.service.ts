@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { DesafioDisenoAnalyzeReqDto } from './dto/desafio-diseno-analyze.req.dto';
-import { DesafioDisenoAnalyzeResDto, DesafioDisenoReportDto } from './dto/desafio-diseno-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  DesafioDisenoAnalyzeResDto,
+  DesafioDisenoReportDto,
+} from './dto/desafio-diseno-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class DesafioDisenoAnalyzeService {
@@ -12,13 +22,20 @@ export class DesafioDisenoAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: DesafioDisenoAnalyzeReqDto): Promise<DesafioDisenoAnalyzeResDto> {
+  async execute(
+    dto: DesafioDisenoAnalyzeReqDto,
+  ): Promise<DesafioDisenoAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +45,9 @@ export class DesafioDisenoAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as DesafioDisenoReportDto;
     } catch {
       console.error('[DesafioDisenoAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -114,8 +133,12 @@ REGLAS:
         if (d.usuario) lines.push(`Usuario: ${d.usuario}`);
         if (d.contexto) lines.push(`Contexto/Restricciones: ${d.contexto}`);
         if (d.resultado) lines.push(`Resultado esperado: ${d.resultado}`);
-        if (d.constraints?.length) lines.push(`Constraints adicionales: ${d.constraints.join(', ')}`);
-        if (d.criteriosExito?.length) lines.push(`Criterios de éxito definidos: ${d.criteriosExito.join(', ')}`);
+        if (d.constraints?.length)
+          lines.push(`Constraints adicionales: ${d.constraints.join(', ')}`);
+        if (d.criteriosExito?.length)
+          lines.push(
+            `Criterios de éxito definidos: ${d.criteriosExito.join(', ')}`,
+          );
 
         if (d.accion && d.usuario) {
           let enunciado = `Enunciado: ¿Cómo podemos ${d.accion} para ${d.usuario}`;

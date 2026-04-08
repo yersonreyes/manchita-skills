@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { PrototipoFuncionalAnalyzeReqDto } from './dto/prototipo-funcional-analyze.req.dto';
-import { PrototipoFuncionalAnalyzeResDto, PrototipoFuncionalReportDto } from './dto/prototipo-funcional-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  PrototipoFuncionalAnalyzeResDto,
+  PrototipoFuncionalReportDto,
+} from './dto/prototipo-funcional-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   mvp: 'MVP (Producto Mínimo Viable)',
@@ -37,13 +47,20 @@ export class PrototipoFuncionalAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: PrototipoFuncionalAnalyzeReqDto): Promise<PrototipoFuncionalAnalyzeResDto> {
+  async execute(
+    dto: PrototipoFuncionalAnalyzeReqDto,
+  ): Promise<PrototipoFuncionalAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -53,7 +70,9 @@ export class PrototipoFuncionalAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as PrototipoFuncionalReportDto;
     } catch {
       console.error('[PrototipoFuncionalAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -113,21 +132,28 @@ REGLAS:
     const lines: string[] = ['=== PROTOTIPO FUNCIONAL ==='];
 
     if (data.objetivo) lines.push(`\nOBJETIVO:\n"${data.objetivo}"`);
-    if (data.tipo) lines.push(`\nTIPO DE PROTOTIPO: ${TIPO_LABELS[data.tipo] ?? data.tipo}`);
-    if (data.herramientas?.length) lines.push(`\nHERRAMIENTAS USADAS:\n${data.herramientas.map(h => `  • ${h}`).join('\n')}`);
+    if (data.tipo)
+      lines.push(`\nTIPO DE PROTOTIPO: ${TIPO_LABELS[data.tipo] ?? data.tipo}`);
+    if (data.herramientas?.length)
+      lines.push(
+        `\nHERRAMIENTAS USADAS:\n${data.herramientas.map((h) => `  • ${h}`).join('\n')}`,
+      );
 
     if (data.flujosCriticos?.length) {
       lines.push(`\nFLUJOS CRÍTICOS (${data.flujosCriticos.length}):`);
       data.flujosCriticos.forEach((f, i) => {
-        const estado = ESTADO_LABELS[f.estado ?? ''] ?? f.estado ?? 'sin estado';
-        lines.push(`\n  Flujo ${i + 1}: ${f.nombre || '(sin nombre)'} — ${estado}`);
+        const estado =
+          ESTADO_LABELS[f.estado ?? ''] ?? f.estado ?? 'sin estado';
+        lines.push(
+          `\n  Flujo ${i + 1}: ${f.nombre || '(sin nombre)'} — ${estado}`,
+        );
         if (f.descripcion) lines.push(`  Descripción: "${f.descripcion}"`);
       });
     }
 
     if (data.features?.length) {
       lines.push(`\nFEATURES PRIORIZADAS (${data.features.length}):`);
-      data.features.forEach(f => {
+      data.features.forEach((f) => {
         const estado = f.incluida ? 'INCLUIDA' : 'EXCLUIDA';
         const prio = PRIORIDAD_LABELS[f.prioridad ?? ''] ?? f.prioridad ?? '';
         lines.push(`  • [${estado}] ${f.nombre || '(sin nombre)'} — ${prio}`);
@@ -136,9 +162,11 @@ REGLAS:
     }
 
     if (data.hallazgos?.length) {
-      const pendientes = data.hallazgos.filter(h => !h.resuelto);
-      const resueltos = data.hallazgos.filter(h => h.resuelto);
-      lines.push(`\nHALLAZGOS DEL TESTING (${data.hallazgos.length} total, ${pendientes.length} pendientes, ${resueltos.length} resueltos):`);
+      const pendientes = data.hallazgos.filter((h) => !h.resuelto);
+      const resueltos = data.hallazgos.filter((h) => h.resuelto);
+      lines.push(
+        `\nHALLAZGOS DEL TESTING (${data.hallazgos.length} total, ${pendientes.length} pendientes, ${resueltos.length} resueltos):`,
+      );
       data.hallazgos.forEach((h, i) => {
         const tipo = TIPO_HALLAZGO_LABELS[h.tipo ?? ''] ?? h.tipo ?? '';
         const estado = h.resuelto ? '[RESUELTO]' : '[PENDIENTE]';
@@ -149,7 +177,9 @@ REGLAS:
 
     if (data.proximosPasos?.length) {
       lines.push(`\nPRÓXIMOS PASOS PLANIFICADOS:`);
-      data.proximosPasos.forEach(p => { if (p) lines.push(`  • ${p}`); });
+      data.proximosPasos.forEach((p) => {
+        if (p) lines.push(`  • ${p}`);
+      });
     }
 
     return lines.join('\n');

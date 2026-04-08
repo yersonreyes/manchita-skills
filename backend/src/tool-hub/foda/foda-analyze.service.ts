@@ -1,9 +1,16 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { FodaAnalyzeReqDto, FodaItemsDto } from './dto/foda-analyze.req.dto';
 import { FodaAnalyzeResDto, FodaReportDto } from './dto/foda-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class FodaAnalyzeService {
@@ -12,13 +19,21 @@ export class FodaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: FodaAnalyzeReqDto, currentVersion: number): Promise<FodaAnalyzeResDto> {
+  async execute(
+    dto: FodaAnalyzeReqDto,
+    currentVersion: number,
+  ): Promise<FodaAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const itemsText = this.formatItems(dto.items);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `Aquí está el análisis FODA completo para analizar:\n\n${itemsText}\n\nGenerá el informe en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `Aquí está el análisis FODA completo para analizar:\n\n${itemsText}\n\nGenerá el informe en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -27,7 +42,9 @@ export class FodaAnalyzeService {
     try {
       report = JSON.parse(this.extractJson(raw));
     } catch {
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -79,7 +96,9 @@ REGLAS:
 
   private formatItems(items: FodaItemsDto): string {
     const format = (arr: string[]) =>
-      arr.length ? arr.map((v, i) => `${i + 1}. ${v}`).join('\n') : '(sin completar)';
+      arr.length
+        ? arr.map((v, i) => `${i + 1}. ${v}`).join('\n')
+        : '(sin completar)';
 
     return `=== FORTALEZAS (Strengths) ===
 ${format(items.fortalezas)}

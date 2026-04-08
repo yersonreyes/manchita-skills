@@ -26,11 +26,20 @@ export class PrototipoRapidoDataDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsIn(['sketch', 'paper-prototype', 'wizard-of-oz', 'clickable-mockup', 'mvp-code'])
+  @IsIn([
+    'sketch',
+    'paper-prototype',
+    'wizard-of-oz',
+    'clickable-mockup',
+    'mvp-code',
+  ])
   tecnica?: string | null;
 
   @ApiPropertyOptional() @IsOptional() @IsString() tiempoInvertido?: string;
-  @ApiPropertyOptional() @IsOptional() @IsString() descripcionPrototipo?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  descripcionPrototipo?: string;
 
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()

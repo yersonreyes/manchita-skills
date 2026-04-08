@@ -19,7 +19,10 @@ export class CjmEtapaDto {
   @IsString()
   nombre?: string;
 
-  @ApiProperty({ type: [String], example: ['Busca en Google', 'Ve ads en redes'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Busca en Google', 'Ve ads en redes'],
+  })
   @IsArray()
   @IsString({ each: true })
   acciones: string[];
@@ -39,19 +42,26 @@ export class CjmEtapaDto {
   @IsString({ each: true })
   painPoints: string[];
 
-  @ApiProperty({ type: [String], example: ['Simplificar comparación de precios'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Simplificar comparación de precios'],
+  })
   @IsArray()
   @IsString({ each: true })
   oportunidades: string[];
 }
 
 export class CustomerJourneyMapDataDto {
-  @ApiPropertyOptional({ example: 'María, 35 años, compradora online frecuente' })
+  @ApiPropertyOptional({
+    example: 'María, 35 años, compradora online frecuente',
+  })
   @IsOptional()
   @IsString()
   personaje?: string;
 
-  @ApiPropertyOptional({ example: 'Usuario comprando por primera vez en la app' })
+  @ApiPropertyOptional({
+    example: 'Usuario comprando por primera vez en la app',
+  })
   @IsOptional()
   @IsString()
   escenario?: string;

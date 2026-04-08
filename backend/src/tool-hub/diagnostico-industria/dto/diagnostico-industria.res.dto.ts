@@ -35,7 +35,11 @@ export class DiagnosticoReportDto {
   @ApiProperty({ type: DiagnosticoForceAnalysisDto })
   forceAnalysis: DiagnosticoForceAnalysisDto;
 
-  @ApiProperty({ example: 6, description: 'Atractivo de la industria: 1 (muy hostil) a 10 (muy atractiva)' })
+  @ApiProperty({
+    example: 6,
+    description:
+      'Atractivo de la industria: 1 (muy hostil) a 10 (muy atractiva)',
+  })
   industryScore: number;
 
   @ApiProperty({ type: [String] })

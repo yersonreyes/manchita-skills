@@ -1,4 +1,11 @@
-import { IsArray, IsInt, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -56,7 +63,9 @@ export class PersonaDataDto {
   @IsOptional()
   comportamiento?: string;
 
-  @ApiProperty({ example: 'Necesito algo que me explique en palabras simples.' })
+  @ApiProperty({
+    example: 'Necesito algo que me explique en palabras simples.',
+  })
   @IsString()
   @IsOptional()
   cita?: string;

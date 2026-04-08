@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { SeleccionIdeasAnalyzeReqDto } from './dto/seleccion-ideas-analyze.req.dto';
-import { SeleccionIdeasAnalyzeResDto, SeleccionIdeasReportDto } from './dto/seleccion-ideas-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  SeleccionIdeasAnalyzeResDto,
+  SeleccionIdeasReportDto,
+} from './dto/seleccion-ideas-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class SeleccionIdeasAnalyzeService {
@@ -12,13 +22,20 @@ export class SeleccionIdeasAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: SeleccionIdeasAnalyzeReqDto): Promise<SeleccionIdeasAnalyzeResDto> {
+  async execute(
+    dto: SeleccionIdeasAnalyzeReqDto,
+  ): Promise<SeleccionIdeasAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +45,9 @@ export class SeleccionIdeasAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as SeleccionIdeasReportDto;
     } catch {
       console.error('[SeleccionIdeasAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -110,7 +129,7 @@ REGLAS:
     if (data.criterios?.length) {
       const totalPeso = data.criterios.reduce((s, c) => s + (c.peso ?? 0), 0);
       lines.push(`\nCRITERIOS DE EVALUACIÓN (peso total: ${totalPeso}):`);
-      data.criterios.forEach(c => {
+      data.criterios.forEach((c) => {
         lines.push(`  • ${c.nombre} (peso: ${c.peso ?? 0})`);
       });
     }
@@ -125,49 +144,58 @@ REGLAS:
         return sb - sa;
       });
 
-      const seleccionadas = sorted.filter(i => i.estado === 'seleccionada');
-      const backlog = sorted.filter(i => i.estado === 'backlog');
-      const descartadas = sorted.filter(i => i.estado === 'descartada');
-      const pendientes = sorted.filter(i => i.estado === 'pendiente' || !i.estado);
+      const seleccionadas = sorted.filter((i) => i.estado === 'seleccionada');
+      const backlog = sorted.filter((i) => i.estado === 'backlog');
+      const descartadas = sorted.filter((i) => i.estado === 'descartada');
+      const pendientes = sorted.filter(
+        (i) => i.estado === 'pendiente' || !i.estado,
+      );
 
-      const formatIdea = (idea: typeof sorted[0]) => {
+      const formatIdea = (idea: (typeof sorted)[0]) => {
         const score = ideaScores?.[idea.id];
-        const scoreStr = score !== undefined ? ` [Score: ${score.toFixed(1)}/5]` : '';
-        const lines: string[] = [`  • ${idea.texto || '[Sin texto]'}${scoreStr}`];
+        const scoreStr =
+          score !== undefined ? ` [Score: ${score.toFixed(1)}/5]` : '';
+        const lines: string[] = [
+          `  • ${idea.texto || '[Sin texto]'}${scoreStr}`,
+        ];
 
         if (data.criterios?.length && idea.puntuaciones?.length) {
-          data.criterios.forEach(c => {
-            const p = idea.puntuaciones.find(pu => pu.criterioId === c.id);
+          data.criterios.forEach((c) => {
+            const p = idea.puntuaciones.find((pu) => pu.criterioId === c.id);
             if (p?.valor) lines.push(`      ${c.nombre}: ${p.valor}/5`);
           });
         }
 
-        if (idea.siguientePaso) lines.push(`      Siguiente paso: ${idea.siguientePaso}`);
+        if (idea.siguientePaso)
+          lines.push(`      Siguiente paso: ${idea.siguientePaso}`);
         return lines.join('\n');
       };
 
       if (seleccionadas.length) {
         lines.push('\nIDEAS SELECCIONADAS:');
-        seleccionadas.forEach(i => lines.push(formatIdea(i)));
+        seleccionadas.forEach((i) => lines.push(formatIdea(i)));
       }
 
       if (backlog.length) {
         lines.push('\nIDEAS EN BACKLOG:');
-        backlog.forEach(i => lines.push(formatIdea(i)));
+        backlog.forEach((i) => lines.push(formatIdea(i)));
       }
 
       if (descartadas.length) {
         lines.push('\nIDEAS DESCARTADAS:');
-        descartadas.forEach(i => lines.push(`  • ${i.texto || '[Sin texto]'}`));
+        descartadas.forEach((i) =>
+          lines.push(`  • ${i.texto || '[Sin texto]'}`),
+        );
       }
 
       if (pendientes.length) {
         lines.push('\nIDEAS PENDIENTES DE CLASIFICAR:');
-        pendientes.forEach(i => lines.push(formatIdea(i)));
+        pendientes.forEach((i) => lines.push(formatIdea(i)));
       }
     }
 
-    if (data.decision) lines.push(`\nDECISIÓN FINAL DOCUMENTADA:\n"${data.decision}"`);
+    if (data.decision)
+      lines.push(`\nDECISIÓN FINAL DOCUMENTADA:\n"${data.decision}"`);
 
     return lines.join('\n');
   }

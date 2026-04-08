@@ -1,9 +1,23 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { DiagramaSistemaAnalyzeReqDto, SistemaActorDto, SistemaConexionDto } from './dto/diagrama-sistema-analyze.req.dto';
-import { DiagramaSistemaAnalyzeResDto, SistemaReportDto } from './dto/diagrama-sistema-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  DiagramaSistemaAnalyzeReqDto,
+  SistemaActorDto,
+  SistemaConexionDto,
+} from './dto/diagrama-sistema-analyze.req.dto';
+import {
+  DiagramaSistemaAnalyzeResDto,
+  SistemaReportDto,
+} from './dto/diagrama-sistema-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class DiagramaSistemaAnalyzeService {
@@ -12,13 +26,21 @@ export class DiagramaSistemaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: DiagramaSistemaAnalyzeReqDto, currentVersion: number): Promise<DiagramaSistemaAnalyzeResDto> {
+  async execute(
+    dto: DiagramaSistemaAnalyzeReqDto,
+    currentVersion: number,
+  ): Promise<DiagramaSistemaAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el informe en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el informe en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -27,7 +49,9 @@ export class DiagramaSistemaAnalyzeService {
     try {
       report = JSON.parse(this.extractJson(raw));
     } catch {
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -88,18 +112,26 @@ REGLAS:
   private formatData(dto: DiagramaSistemaAnalyzeReqDto): string {
     const formatActores = (actores: SistemaActorDto[]) =>
       actores.length > 0
-        ? actores.map((a, i) =>
-            `${i + 1}. [${a.tipo.toUpperCase()}] ${a.nombre || '(sin nombre)'} — frontera: ${a.frontera}`,
-          ).join('\n')
+        ? actores
+            .map(
+              (a, i) =>
+                `${i + 1}. [${a.tipo.toUpperCase()}] ${a.nombre || '(sin nombre)'} — frontera: ${a.frontera}`,
+            )
+            .join('\n')
         : '(ninguno registrado)';
 
-    const formatConexiones = (conexiones: SistemaConexionDto[], actores: SistemaActorDto[]) => {
+    const formatConexiones = (
+      conexiones: SistemaConexionDto[],
+      actores: SistemaActorDto[],
+    ) => {
       if (conexiones.length === 0) return '(ninguna registrada)';
-      return conexiones.map((c, i) => {
-        const from = actores.find(a => a.id === c.fromId);
-        const to = actores.find(a => a.id === c.toId);
-        return `${i + 1}. [${c.tipo.toUpperCase()}] ${from?.nombre ?? c.fromId} → ${to?.nombre ?? c.toId}: ${c.descripcion || '(sin descripción)'}`;
-      }).join('\n');
+      return conexiones
+        .map((c, i) => {
+          const from = actores.find((a) => a.id === c.fromId);
+          const to = actores.find((a) => a.id === c.toId);
+          return `${i + 1}. [${c.tipo.toUpperCase()}] ${from?.nombre ?? c.fromId} → ${to?.nombre ?? c.toId}: ${c.descripcion || '(sin descripción)'}`;
+        })
+        .join('\n');
     };
 
     return `=== ALCANCE DEL SISTEMA ===

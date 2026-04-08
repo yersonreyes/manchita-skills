@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { PrototipoEmpatizarAnalyzeReqDto } from './dto/prototipo-empatizar-analyze.req.dto';
-import { PrototipoEmpatizarAnalyzeResDto, PrototipoEmpatizarReportDto } from './dto/prototipo-empatizar-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  PrototipoEmpatizarAnalyzeResDto,
+  PrototipoEmpatizarReportDto,
+} from './dto/prototipo-empatizar-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   'role-play': 'Role-play (actuar la experiencia)',
@@ -19,13 +29,20 @@ export class PrototipoEmpatizarAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: PrototipoEmpatizarAnalyzeReqDto): Promise<PrototipoEmpatizarAnalyzeResDto> {
+  async execute(
+    dto: PrototipoEmpatizarAnalyzeReqDto,
+  ): Promise<PrototipoEmpatizarAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -35,7 +52,9 @@ export class PrototipoEmpatizarAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as PrototipoEmpatizarReportDto;
     } catch {
       console.error('[PrototipoEmpatizarAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -108,7 +127,9 @@ REGLAS:
     const lines: string[] = ['=== PROTOTIPO PARA EMPATIZAR ==='];
 
     if (data.tipoPrototipo) {
-      lines.push(`\nTIPO DE PROTOTIPO: ${TIPO_LABELS[data.tipoPrototipo] ?? data.tipoPrototipo}`);
+      lines.push(
+        `\nTIPO DE PROTOTIPO: ${TIPO_LABELS[data.tipoPrototipo] ?? data.tipoPrototipo}`,
+      );
     }
 
     if (data.objetivo) lines.push(`\nOBJETIVO:\n"${data.objetivo}"`);
@@ -122,23 +143,30 @@ REGLAS:
       lines.push(`\nPASOS DE LA SESIÓN (${data.pasos.length}):`);
       data.pasos.forEach((paso, i) => {
         lines.push(`\n  ${i + 1}. ${paso.descripcion || '(sin descripción)'}`);
-        if (paso.observacion) lines.push(`     → Observación: "${paso.observacion}"`);
+        if (paso.observacion)
+          lines.push(`     → Observación: "${paso.observacion}"`);
       });
     }
 
     if (data.insightsEmocionales?.length) {
       lines.push(`\nINSIGHTS EMOCIONALES CAPTURADOS:`);
-      data.insightsEmocionales.forEach(i => { if (i) lines.push(`  • "${i}"`); });
+      data.insightsEmocionales.forEach((i) => {
+        if (i) lines.push(`  • "${i}"`);
+      });
     }
 
     if (data.friccionesIdentificadas?.length) {
       lines.push(`\nFRICCIONES IDENTIFICADAS:`);
-      data.friccionesIdentificadas.forEach(f => { if (f) lines.push(`  • "${f}"`); });
+      data.friccionesIdentificadas.forEach((f) => {
+        if (f) lines.push(`  • "${f}"`);
+      });
     }
 
     if (data.supuestosValidados?.length) {
       lines.push(`\nSUPUESTOS A VALIDAR:`);
-      data.supuestosValidados.forEach(s => { if (s) lines.push(`  • "${s}"`); });
+      data.supuestosValidados.forEach((s) => {
+        if (s) lines.push(`  • "${s}"`);
+      });
     }
 
     if (data.notas) lines.push(`\nNOTAS ADICIONALES:\n"${data.notas}"`);

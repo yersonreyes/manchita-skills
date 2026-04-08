@@ -1,4 +1,4 @@
-import { EtapaProyecto, ProjectMemberRole, ProjectStatus, TipoProyecto } from './project.req.dto';
+import { EtapaProyecto, Moneda, ProjectMemberRole, ProjectStatus, TipoProyecto } from './project.req.dto';
 import { ProjectPhaseResDto } from '../projectPhaseService/project-phase.res.dto';
 
 export interface ProjectUserDto {
@@ -35,6 +35,8 @@ export interface ProjectResDto {
   sector?: string | null;
   contexto?: string | null;
   estado: ProjectStatus;
+  presupuesto?: number | null;
+  moneda?: Moneda | null;
   activo: boolean;
   owner: ProjectUserDto;
   members: ProjectMemberDto[];

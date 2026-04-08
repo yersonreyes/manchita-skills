@@ -10,7 +10,8 @@ export class AnalisisConceptoDto {
 export class HibridacionSintesisReportDto {
   @ApiProperty() executiveSummary: string;
   @ApiProperty() evaluacionNivel: string;
-  @ApiProperty({ type: [AnalisisConceptoDto] }) analisisConceptos: AnalisisConceptoDto[];
+  @ApiProperty({ type: [AnalisisConceptoDto] })
+  analisisConceptos: AnalisisConceptoDto[];
   @ApiProperty({ type: [String] }) puntosConexionClave: string[];
   @ApiProperty() nuevaEsencia: string;
   @ApiProperty() diferenciacionParadigmatica: string;
@@ -21,5 +22,6 @@ export class HibridacionSintesisReportDto {
 export class HibridacionSintesisAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: HibridacionSintesisReportDto }) report: HibridacionSintesisReportDto;
+  @ApiProperty({ type: HibridacionSintesisReportDto })
+  report: HibridacionSintesisReportDto;
 }

@@ -1,15 +1,25 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { HibridacionAgregacionAnalyzeReqDto } from './dto/hibridacion-agregacion-analyze.req.dto';
-import { HibridacionAgregacionAnalyzeResDto, HibridacionAgregacionReportDto } from './dto/hibridacion-agregacion-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  HibridacionAgregacionAnalyzeResDto,
+  HibridacionAgregacionReportDto,
+} from './dto/hibridacion-agregacion-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TECNICA_LABELS: Record<string, string> = {
   'feature-stacking': 'Feature Stacking (sumar features)',
   'best-of-each': 'Best of Each (lo mejor de cada idea)',
   'plus-minus': 'Plus/Minus (agregar y quitar)',
-  'mashup': 'Mashup (combinar productos/servicios)',
+  mashup: 'Mashup (combinar productos/servicios)',
 };
 
 @Injectable()
@@ -19,23 +29,37 @@ export class HibridacionAgregacionAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: HibridacionAgregacionAnalyzeReqDto): Promise<HibridacionAgregacionAnalyzeResDto> {
+  async execute(
+    dto: HibridacionAgregacionAnalyzeReqDto,
+  ): Promise<HibridacionAgregacionAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
 
     let report: HibridacionAgregacionReportDto;
     try {
-      report = JSON.parse(this.extractJson(raw)) as HibridacionAgregacionReportDto;
+      report = JSON.parse(
+        this.extractJson(raw),
+      ) as HibridacionAgregacionReportDto;
     } catch {
-      console.error('[HibridacionAgregacionAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[HibridacionAgregacionAnalyzeService] Raw AI response:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -101,16 +125,20 @@ REGLAS:
     const lines: string[] = ['=== HIBRIDACIÓN POR AGREGACIÓN ==='];
 
     if (data.contexto) lines.push(`\nCONTEXTO DEL RETO:\n"${data.contexto}"`);
-    if (data.tecnica) lines.push(`\nTÉCNICA DE AGREGACIÓN: ${TECNICA_LABELS[data.tecnica] ?? data.tecnica}`);
+    if (data.tecnica)
+      lines.push(
+        `\nTÉCNICA DE AGREGACIÓN: ${TECNICA_LABELS[data.tecnica] ?? data.tecnica}`,
+      );
 
     if (data.ideasBase?.length) {
       lines.push(`\nIDEAS BASE (${data.ideasBase.length}):`);
       data.ideasBase.forEach((idea, i) => {
         lines.push(`\n  ${i + 1}. ${idea.nombre || '[Sin nombre]'}`);
-        if (idea.descripcion) lines.push(`     Descripción: ${idea.descripcion}`);
+        if (idea.descripcion)
+          lines.push(`     Descripción: ${idea.descripcion}`);
         if (idea.elementos?.length) {
           lines.push(`     Elementos/Features:`);
-          idea.elementos.forEach(el => lines.push(`       • ${el}`));
+          idea.elementos.forEach((el) => lines.push(`       • ${el}`));
         }
       });
     }
@@ -119,14 +147,18 @@ REGLAS:
       lines.push(`\nCOMBINACIONES DOCUMENTADAS:`);
       data.combinaciones.forEach((comb, i) => {
         if (comb.elementoA || comb.elementoB) {
-          lines.push(`\n  ${i + 1}. ${comb.elementoA || '[Elemento A]'} + ${comb.elementoB || '[Elemento B]'}`);
+          lines.push(
+            `\n  ${i + 1}. ${comb.elementoA || '[Elemento A]'} + ${comb.elementoB || '[Elemento B]'}`,
+          );
           if (comb.resultado) lines.push(`     Resultado: ${comb.resultado}`);
         }
       });
     }
 
-    if (data.ideaHibrida) lines.push(`\nIDEA HÍBRIDA RESULTANTE:\n"${data.ideaHibrida}"`);
-    if (data.propuestaValor) lines.push(`\nPROPUESTA DE VALOR:\n"${data.propuestaValor}"`);
+    if (data.ideaHibrida)
+      lines.push(`\nIDEA HÍBRIDA RESULTANTE:\n"${data.ideaHibrida}"`);
+    if (data.propuestaValor)
+      lines.push(`\nPROPUESTA DE VALOR:\n"${data.propuestaValor}"`);
 
     return lines.join('\n');
   }

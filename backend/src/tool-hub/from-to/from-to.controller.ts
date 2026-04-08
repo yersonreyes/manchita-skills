@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { FromToAnalyzeService } from './from-to-analyze.service';
 import { FromToAnalyzeReqDto } from './dto/from-to-analyze.req.dto';

@@ -1,9 +1,16 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { CincoPorquesAnalyzeReqDto } from './dto/cinco-porques.req.dto';
 import { CincoPorquesAnalyzeResDto } from './dto/cinco-porques.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class CincoPorquesAnalyzeService {
@@ -12,16 +19,26 @@ export class CincoPorquesAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: CincoPorquesAnalyzeReqDto): Promise<CincoPorquesAnalyzeResDto> {
+  async execute(
+    dto: CincoPorquesAnalyzeReqDto,
+  ): Promise<CincoPorquesAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
 
     const transcript = dto.history
-      .map((m) => `${m.role === 'user' ? 'Usuario' : 'Facilitador IA'}: ${m.content}`)
+      .map(
+        (m) =>
+          `${m.role === 'user' ? 'Usuario' : 'Facilitador IA'}: ${m.content}`,
+      )
       .join('\n\n');
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `Aquí está la conversación completa para analizar:\n\n${transcript}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `Aquí está la conversación completa para analizar:\n\n${transcript}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       1024,
     );
@@ -30,7 +47,9 @@ export class CincoPorquesAnalyzeService {
     try {
       analysis = JSON.parse(this.extractJson(raw));
     } catch {
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return { analysis };

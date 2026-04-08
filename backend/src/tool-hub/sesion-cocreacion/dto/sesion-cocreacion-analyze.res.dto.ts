@@ -19,5 +19,6 @@ export class SesionCocreacionReportDto {
 export class SesionCocreacionAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: SesionCocreacionReportDto }) report: SesionCocreacionReportDto;
+  @ApiProperty({ type: SesionCocreacionReportDto })
+  report: SesionCocreacionReportDto;
 }

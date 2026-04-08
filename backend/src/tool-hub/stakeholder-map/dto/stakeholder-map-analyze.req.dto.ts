@@ -1,8 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsString, Min, ValidateNested, IsArray, IsIn, IsOptional } from 'class-validator';
+import {
+  IsInt,
+  IsString,
+  Min,
+  ValidateNested,
+  IsArray,
+  IsIn,
+  IsOptional,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
-const TIPOS_VALIDOS = ['usuario', 'organizacion', 'gobierno', 'proveedor', 'competidor', 'regulador', 'otro'] as const;
+const TIPOS_VALIDOS = [
+  'usuario',
+  'organizacion',
+  'gobierno',
+  'proveedor',
+  'competidor',
+  'regulador',
+  'otro',
+] as const;
 
 export class StakeholderItemDto {
   @ApiProperty({ example: 'uuid-1234' })

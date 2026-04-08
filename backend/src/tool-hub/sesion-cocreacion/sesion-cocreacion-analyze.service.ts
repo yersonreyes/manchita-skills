@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { SesionCocreacionAnalyzeReqDto } from './dto/sesion-cocreacion-analyze.req.dto';
-import { SesionCocreacionAnalyzeResDto, SesionCocreacionReportDto } from './dto/sesion-cocreacion-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  SesionCocreacionAnalyzeResDto,
+  SesionCocreacionReportDto,
+} from './dto/sesion-cocreacion-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const MODALIDAD_LABELS: Record<string, string> = {
   presencial: 'Presencial',
@@ -26,13 +36,20 @@ export class SesionCocreacionAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: SesionCocreacionAnalyzeReqDto): Promise<SesionCocreacionAnalyzeResDto> {
+  async execute(
+    dto: SesionCocreacionAnalyzeReqDto,
+  ): Promise<SesionCocreacionAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -42,7 +59,9 @@ export class SesionCocreacionAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as SesionCocreacionReportDto;
     } catch {
       console.error('[SesionCocreacionAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -114,19 +133,21 @@ REGLAS:
     if (data.objetivo) lines.push(`\nOBJETIVO:\n"${data.objetivo}"`);
 
     if (data.modalidad) {
-      lines.push(`\nMODALIDAD: ${MODALIDAD_LABELS[data.modalidad] ?? data.modalidad}`);
+      lines.push(
+        `\nMODALIDAD: ${MODALIDAD_LABELS[data.modalidad] ?? data.modalidad}`,
+      );
     }
 
     if (data.participantes?.length) {
       const total = data.participantes.reduce((sum, p) => sum + p.cantidad, 0);
       lines.push(`\nPARTICIPANTES (${total} en total):`);
-      data.participantes.forEach(p => {
+      data.participantes.forEach((p) => {
         if (p.perfil) lines.push(`  • ${p.cantidad}x ${p.perfil}`);
       });
     }
 
     if (data.fasesCumplidas?.length) {
-      const fasesLabels = data.fasesCumplidas.map(f => FASE_LABELS[f] ?? f);
+      const fasesLabels = data.fasesCumplidas.map((f) => FASE_LABELS[f] ?? f);
       lines.push(`\nFASES CUMPLIDAS: ${fasesLabels.join(', ')}`);
     }
 
@@ -135,26 +156,34 @@ REGLAS:
     }
 
     if (data.ideas?.length) {
-      const seleccionadas = data.ideas.filter(i => i.seleccionada);
-      const noSeleccionadas = data.ideas.filter(i => !i.seleccionada);
-      const ordenadas = [...seleccionadas, ...noSeleccionadas].sort((a, b) => b.votos - a.votos);
+      const seleccionadas = data.ideas.filter((i) => i.seleccionada);
+      const noSeleccionadas = data.ideas.filter((i) => !i.seleccionada);
+      const ordenadas = [...seleccionadas, ...noSeleccionadas].sort(
+        (a, b) => b.votos - a.votos,
+      );
 
       lines.push(`\nIDEAS GENERADAS (${data.ideas.length}):`);
       ordenadas.forEach((idea, i) => {
         const sel = idea.seleccionada ? ' ★ SELECCIONADA' : '';
-        lines.push(`\n  ${i + 1}. [${idea.votos} votos]${sel} — ${idea.grupo || 'Sin grupo'}`);
+        lines.push(
+          `\n  ${i + 1}. [${idea.votos} votos]${sel} — ${idea.grupo || 'Sin grupo'}`,
+        );
         if (idea.descripcion) lines.push(`     "${idea.descripcion}"`);
       });
     }
 
     if (data.decisiones?.length) {
       lines.push(`\nDECISIONES TOMADAS:`);
-      data.decisiones.forEach(d => { if (d) lines.push(`  • ${d}`); });
+      data.decisiones.forEach((d) => {
+        if (d) lines.push(`  • ${d}`);
+      });
     }
 
     if (data.aprendizajes?.length) {
       lines.push(`\nAPRENDIZAJES DEL EQUIPO:`);
-      data.aprendizajes.forEach(a => { if (a) lines.push(`  • ${a}`); });
+      data.aprendizajes.forEach((a) => {
+        if (a) lines.push(`  • ${a}`);
+      });
     }
 
     return lines.join('\n');

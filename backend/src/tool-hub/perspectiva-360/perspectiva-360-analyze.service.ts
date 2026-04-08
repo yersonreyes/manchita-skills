@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { Perspectiva360AnalyzeReqDto, PerspectivaSectionDto } from './dto/perspectiva-360-analyze.req.dto';
-import { Perspectiva360AnalyzeResDto, Perspectiva360ReportDto } from './dto/perspectiva-360-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  Perspectiva360AnalyzeReqDto,
+  PerspectivaSectionDto,
+} from './dto/perspectiva-360-analyze.req.dto';
+import {
+  Perspectiva360AnalyzeResDto,
+  Perspectiva360ReportDto,
+} from './dto/perspectiva-360-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const PERSPECTIVA_LABELS: Record<string, string> = {
   usuario: 'Usuario',
@@ -22,13 +35,20 @@ export class Perspectiva360AnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: Perspectiva360AnalyzeReqDto): Promise<Perspectiva360AnalyzeResDto> {
+  async execute(
+    dto: Perspectiva360AnalyzeReqDto,
+  ): Promise<Perspectiva360AnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -38,7 +58,9 @@ export class Perspectiva360AnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as Perspectiva360ReportDto;
     } catch {
       console.error('[Perspectiva360AnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -121,12 +143,13 @@ REGLAS:
       if (!section?.insights?.length) continue;
       const label = PERSPECTIVA_LABELS[key] ?? key;
       lines.push(`\n--- ${label.toUpperCase()} ---`);
-      section.insights.forEach(ins => lines.push(`• ${ins}`));
+      section.insights.forEach((ins) => lines.push(`• ${ins}`));
       if (section.fuentes) lines.push(`Fuentes: ${section.fuentes}`);
       if (section.notas) lines.push(`Notas: ${section.notas}`);
     }
 
-    if (data.sintesis) lines.push(`\n--- SÍNTESIS DEL EQUIPO ---\n${data.sintesis}`);
+    if (data.sintesis)
+      lines.push(`\n--- SÍNTESIS DEL EQUIPO ---\n${data.sintesis}`);
 
     return lines.join('\n');
   }

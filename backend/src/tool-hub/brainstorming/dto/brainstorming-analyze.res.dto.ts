@@ -10,7 +10,8 @@ export class AnalisisTopIdeaDto {
 export class BrainstormingReportDto {
   @ApiProperty() executiveSummary: string;
   @ApiProperty() calidadSesion: string;
-  @ApiProperty({ type: [AnalisisTopIdeaDto] }) analisisTopIdeas: AnalisisTopIdeaDto[];
+  @ApiProperty({ type: [AnalisisTopIdeaDto] })
+  analisisTopIdeas: AnalisisTopIdeaDto[];
   @ApiProperty({ type: [String] }) clustersDestacados: string[];
   @ApiProperty({ type: [String] }) ideasInnovadoras: string[];
   @ApiProperty({ type: [String] }) ideasAExplorar: string[];

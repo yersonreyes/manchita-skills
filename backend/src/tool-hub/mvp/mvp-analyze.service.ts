@@ -1,15 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { MvpAnalyzeReqDto } from './dto/mvp-analyze.req.dto';
 import { MvpAnalyzeResDto, MvpReportDto } from './dto/mvp-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   'wizard-of-oz': 'Wizard of Oz (humanos simulan el sistema)',
-  'concierge': 'Concierge (servicio manual antes de automatizar)',
+  concierge: 'Concierge (servicio manual antes de automatizar)',
   'landing-email': 'Landing + Email (validar interés con landing page)',
-  'crowdfunding': 'Crowdfunding (video prototipo para validar demanda)',
+  crowdfunding: 'Crowdfunding (video prototipo para validar demanda)',
   'feature-mvp': 'Feature MVP (solo el core feature que resuelve el problema)',
 };
 
@@ -26,7 +33,12 @@ export class MvpAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -36,7 +48,9 @@ export class MvpAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as MvpReportDto;
     } catch {
       console.error('[MvpAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -87,45 +101,67 @@ REGLAS:
     const { data } = dto;
     const lines: string[] = ['=== MVP (MÍNIMO PRODUCTO VIABLE) ==='];
 
-    if (data.hipotesisPrincipal) lines.push(`\nHIPÓTESIS PRINCIPAL:\n"${data.hipotesisPrincipal}"`);
-    if (data.tipo) lines.push(`\nTIPO DE MVP: ${TIPO_LABELS[data.tipo] ?? data.tipo}`);
-    if (data.coreFeature) lines.push(`\nCORE FEATURE (la única cosa que debe funcionar):\n"${data.coreFeature}"`);
+    if (data.hipotesisPrincipal)
+      lines.push(`\nHIPÓTESIS PRINCIPAL:\n"${data.hipotesisPrincipal}"`);
+    if (data.tipo)
+      lines.push(`\nTIPO DE MVP: ${TIPO_LABELS[data.tipo] ?? data.tipo}`);
+    if (data.coreFeature)
+      lines.push(
+        `\nCORE FEATURE (la única cosa que debe funcionar):\n"${data.coreFeature}"`,
+      );
 
     if (data.features?.length) {
-      const incluidas = data.features.filter(f => f.incluida);
-      const excluidas = data.features.filter(f => !f.incluida);
+      const incluidas = data.features.filter((f) => f.incluida);
+      const excluidas = data.features.filter((f) => !f.incluida);
       lines.push(`\nMATRIZ DE FEATURES (${data.features.length} total):`);
       if (incluidas.length) {
         lines.push('\n  INCLUIDAS EN EL MVP:');
-        incluidas.forEach(f => {
+        incluidas.forEach((f) => {
           const cat = this.getCategoria(f.valorUsuario, f.esfuerzo);
-          lines.push(`  • [${cat}] ${f.nombre || '(sin nombre)'} — Valor usuario: ${f.valorUsuario ?? '?'}, Esfuerzo: ${f.esfuerzo ?? '?'}`);
+          lines.push(
+            `  • [${cat}] ${f.nombre || '(sin nombre)'} — Valor usuario: ${f.valorUsuario ?? '?'}, Esfuerzo: ${f.esfuerzo ?? '?'}`,
+          );
         });
       }
       if (excluidas.length) {
         lines.push('\n  EXCLUIDAS:');
-        excluidas.forEach(f => {
+        excluidas.forEach((f) => {
           const cat = this.getCategoria(f.valorUsuario, f.esfuerzo);
-          lines.push(`  • [${cat}] ${f.nombre || '(sin nombre)'} — Valor usuario: ${f.valorUsuario ?? '?'}, Esfuerzo: ${f.esfuerzo ?? '?'}`);
+          lines.push(
+            `  • [${cat}] ${f.nombre || '(sin nombre)'} — Valor usuario: ${f.valorUsuario ?? '?'}, Esfuerzo: ${f.esfuerzo ?? '?'}`,
+          );
         });
       }
     }
 
     if (data.criteriosLanzamiento?.length) {
       lines.push(`\nCRITERIOS DE LANZAMIENTO:`);
-      data.criteriosLanzamiento.forEach(c => { if (c) lines.push(`  ✓ ${c}`); });
+      data.criteriosLanzamiento.forEach((c) => {
+        if (c) lines.push(`  ✓ ${c}`);
+      });
     }
 
     if (data.metricas?.length) {
       lines.push(`\nMÉTRICAS A MEDIR:`);
-      data.metricas.forEach(m => { if (m) lines.push(`  • ${m}`); });
+      data.metricas.forEach((m) => {
+        if (m) lines.push(`  • ${m}`);
+      });
     }
 
     if (data.aprendizajes?.length) {
-      lines.push(`\nAPRENDIZAJES POST-LANZAMIENTO (${data.aprendizajes.length}):`);
+      lines.push(
+        `\nAPRENDIZAJES POST-LANZAMIENTO (${data.aprendizajes.length}):`,
+      );
       data.aprendizajes.forEach((ap, i) => {
-        const estado = ap.validada === true ? 'VALIDADA' : ap.validada === false ? 'INVALIDADA' : 'PENDIENTE';
-        lines.push(`\n  ${i + 1}. Hipótesis [${estado}]: "${ap.hipotesis || '(sin hipótesis)'}"`);
+        const estado =
+          ap.validada === true
+            ? 'VALIDADA'
+            : ap.validada === false
+              ? 'INVALIDADA'
+              : 'PENDIENTE';
+        lines.push(
+          `\n  ${i + 1}. Hipótesis [${estado}]: "${ap.hipotesis || '(sin hipótesis)'}"`,
+        );
         if (ap.metrica) lines.push(`     Métrica observada: "${ap.metrica}"`);
         if (ap.resultado) lines.push(`     Resultado: "${ap.resultado}"`);
       });

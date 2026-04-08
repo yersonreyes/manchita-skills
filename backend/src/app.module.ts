@@ -21,6 +21,8 @@ import { TaskModule } from './task/task.module';
 import { TaskActivityModule } from './task-activity/task-activity.module';
 import { WikiModule } from './wiki/wiki.module';
 import { RequirementModule } from './requirement/requirement.module';
+import { ProjectBudgetModule } from './project-budget/project-budget.module';
+import { ProjectIncomeModule } from './project-income/project-income.module';
 
 @Module({
   imports: [
@@ -47,15 +49,17 @@ import { RequirementModule } from './requirement/requirement.module';
     TaskActivityModule,
     WikiModule,
     RequirementModule,
+    ProjectBudgetModule,
+    ProjectIncomeModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,     // PRIMERO: Autenticar (valida el JWT)
+      useClass: JwtAuthGuard, // PRIMERO: Autenticar (valida el JWT)
     },
     {
       provide: APP_GUARD,
-      useClass: PermissionGuard,  // SEGUNDO: Autorizar (valida los permisos)
+      useClass: PermissionGuard, // SEGUNDO: Autorizar (valida los permisos)
     },
   ],
 })

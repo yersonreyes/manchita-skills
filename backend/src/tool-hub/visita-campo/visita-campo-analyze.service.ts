@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { VisitaCampoAnalyzeReqDto, VisitaDto } from './dto/visita-campo-analyze.req.dto';
-import { VisitaCampoAnalyzeResDto, VisitaCampoReportDto } from './dto/visita-campo-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  VisitaCampoAnalyzeReqDto,
+  VisitaDto,
+} from './dto/visita-campo-analyze.req.dto';
+import {
+  VisitaCampoAnalyzeResDto,
+  VisitaCampoReportDto,
+} from './dto/visita-campo-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   observar: 'Observación',
@@ -19,13 +32,20 @@ export class VisitaCampoAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: VisitaCampoAnalyzeReqDto): Promise<VisitaCampoAnalyzeResDto> {
+  async execute(
+    dto: VisitaCampoAnalyzeReqDto,
+  ): Promise<VisitaCampoAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -35,7 +55,9 @@ export class VisitaCampoAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as VisitaCampoReportDto;
     } catch {
       console.error('[VisitaCampoAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -132,7 +154,7 @@ REGLAS:
         if (v.equipo) lines.push(`Equipo: ${v.equipo}`);
         if (v.hallazgos?.length) {
           lines.push(`Hallazgos (${v.hallazgos.length}):`);
-          v.hallazgos.forEach(h => {
+          v.hallazgos.forEach((h) => {
             const tipoLabel = TIPO_LABELS[h.tipo ?? ''] ?? h.tipo ?? '';
             const parts: string[] = [];
             if (tipoLabel) parts.push(`[${tipoLabel}]`);

@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { FromToAnalyzeReqDto } from './dto/from-to-analyze.req.dto';
-import { FromToAnalyzeResDto, FromToReportDto } from './dto/from-to-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  FromToAnalyzeResDto,
+  FromToReportDto,
+} from './dto/from-to-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class FromToAnalyzeService {
@@ -18,7 +28,12 @@ export class FromToAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +43,9 @@ export class FromToAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as FromToReportDto;
     } catch {
       console.error('[FromToAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -110,8 +127,10 @@ REGLAS:
     const lines: string[] = ['=== FROM-TO ==='];
 
     if (data.titulo) lines.push(`Título: ${data.titulo}`);
-    if (data.contextoActual) lines.push(`\nContexto actual (FROM): ${data.contextoActual}`);
-    if (data.visionFuturo) lines.push(`Visión de futuro (TO): ${data.visionFuturo}`);
+    if (data.contextoActual)
+      lines.push(`\nContexto actual (FROM): ${data.contextoActual}`);
+    if (data.visionFuturo)
+      lines.push(`Visión de futuro (TO): ${data.visionFuturo}`);
 
     if (data.transformaciones?.length) {
       lines.push(`\n--- PARES FROM-TO (${data.transformaciones.length}) ---`);

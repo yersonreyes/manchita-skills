@@ -32,7 +32,10 @@ export class AiChatResDto {
   @IsString()
   assistantMessage: string;
 
-  @ApiProperty({ example: 2, description: 'Número de intercambios completados' })
+  @ApiProperty({
+    example: 2,
+    description: 'Número de intercambios completados',
+  })
   turnCount: number;
 }
 

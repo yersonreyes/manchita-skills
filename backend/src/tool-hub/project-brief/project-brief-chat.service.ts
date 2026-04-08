@@ -3,7 +3,10 @@ import { AiService } from '../../ai/ai.service';
 import { ProjectBriefChatReqDto } from './dto/project-brief.req.dto';
 import { ProjectBriefChatResDto } from './dto/project-brief.res.dto';
 import { AiMessage } from '../../ai/providers/ai-provider.interface';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   STARTUP: 'Startup / Emprendimiento',
@@ -37,13 +40,19 @@ export class ProjectBriefChatService {
       { role: 'user', content: dto.userMessage },
     ];
 
-    const assistantMessage = await this.aiService.chat(messages, systemPrompt, 512);
+    const assistantMessage = await this.aiService.chat(
+      messages,
+      systemPrompt,
+      512,
+    );
     const turnCount = Math.floor(dto.history.length / 2) + 1;
 
     return { assistantMessage, turnCount };
   }
 
-  private buildSystemPrompt(ctx: ProjectBriefChatReqDto['projectContext']): string {
+  private buildSystemPrompt(
+    ctx: ProjectBriefChatReqDto['projectContext'],
+  ): string {
     const tipo = ctx.tipo ? (TIPO_LABELS[ctx.tipo] ?? ctx.tipo) : null;
     const etapa = ctx.etapa ? (ETAPA_LABELS[ctx.etapa] ?? ctx.etapa) : null;
 

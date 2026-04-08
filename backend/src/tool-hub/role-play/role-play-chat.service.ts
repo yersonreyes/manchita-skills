@@ -4,7 +4,10 @@ import { AiService } from '../../ai/ai.service';
 import { RolePlayChatReqDto } from './dto/role-play.req.dto';
 import { RolePlayChatResDto } from './dto/role-play.res.dto';
 import { AiMessage } from '../../ai/providers/ai-provider.interface';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class RolePlayChatService {
@@ -22,7 +25,11 @@ export class RolePlayChatService {
       { role: 'user', content: dto.userMessage },
     ];
 
-    const assistantMessage = await this.aiService.chat(messages, systemPrompt, 1024);
+    const assistantMessage = await this.aiService.chat(
+      messages,
+      systemPrompt,
+      1024,
+    );
     const turnCount = Math.floor(dto.history.length / 2) + 1;
 
     return { assistantMessage, turnCount };

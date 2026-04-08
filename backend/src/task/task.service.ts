@@ -30,14 +30,20 @@ export class TaskService {
       where: { id: dto.projectId },
     });
     if (!project) {
-      throw new NotFoundException({ message: 'Proyecto no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Proyecto no encontrado',
+        code: 1,
+      });
     }
 
     const status = await this.prisma.taskStatus.findUnique({
       where: { id: dto.statusId },
     });
     if (!status || status.projectId !== dto.projectId) {
-      throw new NotFoundException({ message: 'Estado de tarea no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Estado de tarea no encontrado',
+        code: 1,
+      });
     }
 
     if (dto.parentId) {
@@ -45,7 +51,10 @@ export class TaskService {
         where: { id: dto.parentId },
       });
       if (!parent || parent.projectId !== dto.projectId) {
-        throw new NotFoundException({ message: 'Tarea padre no encontrada', code: 1 });
+        throw new NotFoundException({
+          message: 'Tarea padre no encontrada',
+          code: 1,
+        });
       }
     }
 
@@ -61,7 +70,9 @@ export class TaskService {
         descripcion: dto.descripcion?.trim() ?? null,
         prioridad: dto.prioridad ?? 'MEDIUM',
         fechaInicio: dto.fechaInicio ? new Date(dto.fechaInicio) : null,
-        fechaVencimiento: dto.fechaVencimiento ? new Date(dto.fechaVencimiento) : null,
+        fechaVencimiento: dto.fechaVencimiento
+          ? new Date(dto.fechaVencimiento)
+          : null,
         estimacion: dto.estimacion ?? null,
         orden: dto.orden ?? 0,
       },
@@ -103,8 +114,10 @@ export class TaskService {
     }
     if (filters?.fechaDesde || filters?.fechaHasta) {
       where.fechaVencimiento = {};
-      if (filters.fechaDesde) where.fechaVencimiento.gte = new Date(filters.fechaDesde);
-      if (filters.fechaHasta) where.fechaVencimiento.lte = new Date(filters.fechaHasta);
+      if (filters.fechaDesde)
+        where.fechaVencimiento.gte = new Date(filters.fechaDesde);
+      if (filters.fechaHasta)
+        where.fechaVencimiento.lte = new Date(filters.fechaHasta);
     }
 
     const tasks = await this.prisma.task.findMany({
@@ -113,7 +126,9 @@ export class TaskService {
       orderBy: [{ orden: 'asc' }, { createdAt: 'asc' }],
     });
 
-    const res = await Promise.all(tasks.map((t) => this.enrichWithSubtaskCounts(t)));
+    const res = await Promise.all(
+      tasks.map((t) => this.enrichWithSubtaskCounts(t)),
+    );
 
     return { res, code: 0, message: 'Tareas encontradas' };
   }
@@ -159,7 +174,12 @@ export class TaskService {
     }
 
     const data: any = {};
-    const activities: { accion: TaskAction; campoModificado?: string; valorAnterior?: string; valorNuevo?: string }[] = [];
+    const activities: {
+      accion: TaskAction;
+      campoModificado?: string;
+      valorAnterior?: string;
+      valorNuevo?: string;
+    }[] = [];
 
     if (dto.titulo !== undefined && dto.titulo !== existing.titulo) {
       data.titulo = dto.titulo.trim();
@@ -187,7 +207,9 @@ export class TaskService {
 
     if (dto.statusId !== undefined && dto.statusId !== existing.statusId) {
       data.statusId = dto.statusId;
-      const newStatus = await this.prisma.taskStatus.findUnique({ where: { id: dto.statusId } });
+      const newStatus = await this.prisma.taskStatus.findUnique({
+        where: { id: dto.statusId },
+      });
       activities.push({
         accion: TaskAction.STATUS_CHANGED,
         campoModificado: 'statusId',
@@ -202,10 +224,16 @@ export class TaskService {
       }
     }
 
-    if (dto.assigneeId !== undefined && dto.assigneeId !== existing.assigneeId) {
+    if (
+      dto.assigneeId !== undefined &&
+      dto.assigneeId !== existing.assigneeId
+    ) {
       data.assigneeId = dto.assigneeId;
       const newAssignee = dto.assigneeId
-        ? await this.prisma.user.findUnique({ where: { id: dto.assigneeId }, select: { nombre: true } })
+        ? await this.prisma.user.findUnique({
+            where: { id: dto.assigneeId },
+            select: { nombre: true },
+          })
         : null;
       activities.push({
         accion: TaskAction.ASSIGNED,
@@ -215,9 +243,14 @@ export class TaskService {
       });
     }
 
-    if (dto.toolApplicationId !== undefined) data.toolApplicationId = dto.toolApplicationId;
-    if (dto.fechaInicio !== undefined) data.fechaInicio = dto.fechaInicio ? new Date(dto.fechaInicio) : null;
-    if (dto.fechaVencimiento !== undefined) data.fechaVencimiento = dto.fechaVencimiento ? new Date(dto.fechaVencimiento) : null;
+    if (dto.toolApplicationId !== undefined)
+      data.toolApplicationId = dto.toolApplicationId;
+    if (dto.fechaInicio !== undefined)
+      data.fechaInicio = dto.fechaInicio ? new Date(dto.fechaInicio) : null;
+    if (dto.fechaVencimiento !== undefined)
+      data.fechaVencimiento = dto.fechaVencimiento
+        ? new Date(dto.fechaVencimiento)
+        : null;
     if (dto.estimacion !== undefined) data.estimacion = dto.estimacion;
 
     if (Object.keys(data).length === 0) {
@@ -257,7 +290,10 @@ export class TaskService {
       where: { id: dto.statusId },
     });
     if (!newStatus) {
-      throw new NotFoundException({ message: 'Estado destino no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Estado destino no encontrado',
+        code: 1,
+      });
     }
 
     const data: any = { statusId: dto.statusId, orden: dto.orden };
@@ -327,7 +363,11 @@ export class TaskService {
       include: TASK_INCLUDE,
     });
 
-    return { res: await this.enrichWithSubtaskCounts(res), code: 0, message: 'Tarea reordenada' };
+    return {
+      res: await this.enrichWithSubtaskCounts(res),
+      code: 0,
+      message: 'Tarea reordenada',
+    };
   }
 
   // ─── SOFT DELETE ──────────────────────────────────────────────────────────
@@ -370,7 +410,11 @@ export class TaskService {
       include: TASK_INCLUDE,
     });
 
-    return { res: await this.enrichWithSubtaskCounts(res), code: 0, message: 'Etiqueta asignada' };
+    return {
+      res: await this.enrichWithSubtaskCounts(res),
+      code: 0,
+      message: 'Etiqueta asignada',
+    };
   }
 
   // ─── REMOVE TAG ───────────────────────────────────────────────────────────
@@ -379,7 +423,10 @@ export class TaskService {
       where: { taskId_tagId: { taskId, tagId } },
     });
     if (!assignment) {
-      throw new NotFoundException({ message: 'Etiqueta no asignada a esta tarea', code: 1 });
+      throw new NotFoundException({
+        message: 'Etiqueta no asignada a esta tarea',
+        code: 1,
+      });
     }
 
     await this.prisma.taskTagAssignment.delete({
@@ -391,7 +438,11 @@ export class TaskService {
       include: TASK_INCLUDE,
     });
 
-    return { res: await this.enrichWithSubtaskCounts(res), code: 0, message: 'Etiqueta removida' };
+    return {
+      res: await this.enrichWithSubtaskCounts(res),
+      code: 0,
+      message: 'Etiqueta removida',
+    };
   }
 
   // ─── HELPERS ──────────────────────────────────────────────────────────────

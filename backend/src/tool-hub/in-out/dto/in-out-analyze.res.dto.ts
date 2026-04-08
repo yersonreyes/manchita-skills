@@ -4,16 +4,30 @@ export class InOutReportDto {
   @ApiProperty({ description: 'Resumen ejecutivo del análisis del diagrama' })
   executiveSummary: string;
 
-  @ApiProperty({ type: [String], description: 'Inputs que no fueron considerados y podrían impactar el sistema' })
+  @ApiProperty({
+    type: [String],
+    description:
+      'Inputs que no fueron considerados y podrían impactar el sistema',
+  })
   inputsOcultos: string[];
 
-  @ApiProperty({ type: [String], description: 'Outputs que no fueron considerados y el sistema genera implícitamente' })
+  @ApiProperty({
+    type: [String],
+    description:
+      'Outputs que no fueron considerados y el sistema genera implícitamente',
+  })
   outputsOcultos: string[];
 
-  @ApiProperty({ type: [String], description: 'Brechas o desconexiones en el flujo del sistema' })
+  @ApiProperty({
+    type: [String],
+    description: 'Brechas o desconexiones en el flujo del sistema',
+  })
   gapsIdentificados: string[];
 
-  @ApiProperty({ type: [String], description: 'Recomendaciones priorizadas para mejorar el sistema' })
+  @ApiProperty({
+    type: [String],
+    description: 'Recomendaciones priorizadas para mejorar el sistema',
+  })
   recommendations: string[];
 }
 

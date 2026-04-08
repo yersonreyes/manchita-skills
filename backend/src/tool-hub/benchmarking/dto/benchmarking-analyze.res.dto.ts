@@ -12,25 +12,42 @@ export class BenchmarkingBrechaDto {
 }
 
 export class BenchmarkingReportDto {
-  @ApiProperty({ example: 'El análisis revela una posición competitiva media...' })
+  @ApiProperty({
+    example: 'El análisis revela una posición competitiva media...',
+  })
   executiveSummary: string;
 
-  @ApiProperty({ example: 'Producto en desarrollo con ventaja en educación integrada pero brecha en UX.' })
+  @ApiProperty({
+    example:
+      'Producto en desarrollo con ventaja en educación integrada pero brecha en UX.',
+  })
   posicionamiento: string;
 
   @ApiProperty({ type: [BenchmarkingBrechaDto] })
   brechas: BenchmarkingBrechaDto[];
 
-  @ApiProperty({ type: [String], example: ['Educación integrada única en el mercado'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Educación integrada única en el mercado'],
+  })
   ventajasCompetitivas: string[];
 
-  @ApiProperty({ type: [String], example: ['Onboarding 2x más lento que el líder'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Onboarding 2x más lento que el líder'],
+  })
   amenazas: string[];
 
-  @ApiProperty({ type: [String], example: ['Ningún competidor combina simplicidad con educación'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Ningún competidor combina simplicidad con educación'],
+  })
   oportunidadesDeDiferenciacion: string[];
 
-  @ApiProperty({ type: [String], example: ['Reducir el onboarding a 2 pasos clave'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Reducir el onboarding a 2 pasos clave'],
+  })
   recommendations: string[];
 }
 

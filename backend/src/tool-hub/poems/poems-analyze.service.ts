@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { PoemsAnalyzeReqDto } from './dto/poems-analyze.req.dto';
-import { PoemsAnalyzeResDto, PoemsReportDto } from './dto/poems-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  PoemsAnalyzeResDto,
+  PoemsReportDto,
+} from './dto/poems-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class PoemsAnalyzeService {
@@ -18,7 +28,12 @@ export class PoemsAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +43,9 @@ export class PoemsAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as PoemsReportDto;
     } catch {
       console.error('[PoemsAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -126,7 +143,7 @@ REGLAS:
     for (const dim of dimensions) {
       if (dim.items.length > 0) {
         lines.push(`\n--- ${dim.label} ---`);
-        dim.items.forEach(item => lines.push(`  • ${item}`));
+        dim.items.forEach((item) => lines.push(`  • ${item}`));
       }
     }
 

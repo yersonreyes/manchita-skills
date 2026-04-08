@@ -59,11 +59,15 @@ export class PermissionController {
   // ─── OVERRIDE INDIVIDUAL DE USUARIO ──────────────────────────────────────
   @Patch('user-override')
   @RequirePermission('permissions:update')
-  @ApiOperation({ summary: 'Concede o deniega un permiso específico a un usuario' })
+  @ApiOperation({
+    summary: 'Concede o deniega un permiso específico a un usuario',
+  })
   @ApiBody({ type: UpdateUserPermissionOverrideRequestDto })
   @ApiResponse({ status: 200, type: RoleResponseDto })
   @ApiResponse({ status: 404, type: ErrorResponseDto })
-  setUserPermissionOverride(@Body() dto: UpdateUserPermissionOverrideRequestDto) {
+  setUserPermissionOverride(
+    @Body() dto: UpdateUserPermissionOverrideRequestDto,
+  ) {
     return this.service.setUserPermissionOverride(dto);
   }
 }

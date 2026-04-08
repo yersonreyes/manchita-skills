@@ -1,9 +1,16 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { PovAnalyzeReqDto } from './dto/pov-analyze.req.dto';
 import { PovAnalyzeResDto, PovReportDto } from './dto/pov-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class PovAnalyzeService {
@@ -18,7 +25,12 @@ export class PovAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +40,9 @@ export class PovAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as PovReportDto;
     } catch {
       console.error('[PovAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -99,7 +113,8 @@ REGLAS:
     const { data } = dto;
     const lines: string[] = ['=== POINT OF VIEW ==='];
 
-    if (data.contexto) lines.push(`Contexto de investigación: ${data.contexto}`);
+    if (data.contexto)
+      lines.push(`Contexto de investigación: ${data.contexto}`);
 
     if (data.povs?.length) {
       lines.push(`\nTotal de POVs definidos: ${data.povs.length}`);
@@ -109,7 +124,9 @@ REGLAS:
         if (pov.necesidad) lines.push(`Necesidad: ${pov.necesidad}`);
         if (pov.insight) lines.push(`Insight: ${pov.insight}`);
         if (pov.usuario && pov.necesidad && pov.insight) {
-          lines.push(`Enunciado completo: "${pov.usuario} necesita ${pov.necesidad} porque ${pov.insight}."`);
+          lines.push(
+            `Enunciado completo: "${pov.usuario} necesita ${pov.necesidad} porque ${pov.insight}."`,
+          );
         }
       });
     }

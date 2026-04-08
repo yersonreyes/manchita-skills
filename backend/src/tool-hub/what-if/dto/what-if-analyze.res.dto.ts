@@ -10,7 +10,8 @@ export class AnalisisPreguntaDto {
 
 export class WhatIfReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [AnalisisPreguntaDto] }) preguntasMasDisruptivas: AnalisisPreguntaDto[];
+  @ApiProperty({ type: [AnalisisPreguntaDto] })
+  preguntasMasDisruptivas: AnalisisPreguntaDto[];
   @ApiProperty({ type: [String] }) patronesDePensamiento: string[];
   @ApiProperty({ type: [String] }) insightsDerivados: string[];
   @ApiProperty({ type: [String] }) temasEmergentes: string[];

@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { DiagnosticoIndustriaReqDto, DiagnosticoInputsDto } from './dto/diagnostico-industria.req.dto';
-import { DiagnosticoIndustriaResDto, DiagnosticoReportDto } from './dto/diagnostico-industria.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  DiagnosticoIndustriaReqDto,
+  DiagnosticoInputsDto,
+} from './dto/diagnostico-industria.req.dto';
+import {
+  DiagnosticoIndustriaResDto,
+  DiagnosticoReportDto,
+} from './dto/diagnostico-industria.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class DiagnosticoIndustriaAnalyzeService {
@@ -12,13 +25,20 @@ export class DiagnosticoIndustriaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: DiagnosticoIndustriaReqDto): Promise<DiagnosticoIndustriaResDto> {
+  async execute(
+    dto: DiagnosticoIndustriaReqDto,
+  ): Promise<DiagnosticoIndustriaResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const inputsText = this.formatInputs(dto.inputs);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `Aquí está el diagnóstico de industria para analizar:\n\n${inputsText}\n\nGenerá el informe en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `Aquí está el diagnóstico de industria para analizar:\n\n${inputsText}\n\nGenerá el informe en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2500,
     );
@@ -27,7 +47,9 @@ export class DiagnosticoIndustriaAnalyzeService {
     try {
       report = JSON.parse(this.extractJson(raw));
     } catch {
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {

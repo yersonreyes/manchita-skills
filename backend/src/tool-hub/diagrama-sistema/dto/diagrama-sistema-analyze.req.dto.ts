@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsIn, IsInt, IsString, IsUUID, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsIn,
+  IsInt,
+  IsString,
+  IsUUID,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
 export class SistemaActorDto {
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
@@ -11,7 +19,9 @@ export class SistemaActorDto {
   @IsString()
   nombre: string;
 
-  @ApiProperty({ enum: ['usuario', 'organizacion', 'sistema', 'gobierno', 'externo'] })
+  @ApiProperty({
+    enum: ['usuario', 'organizacion', 'sistema', 'gobierno', 'externo'],
+  })
   @IsIn(['usuario', 'organizacion', 'sistema', 'gobierno', 'externo'])
   tipo: 'usuario' | 'organizacion' | 'sistema' | 'gobierno' | 'externo';
 
@@ -33,9 +43,31 @@ export class SistemaConexionDto {
   @IsUUID()
   toId: string;
 
-  @ApiProperty({ enum: ['relacion', 'flujo-dinero', 'flujo-informacion', 'flujo-producto', 'regulacion', 'bucle'] })
-  @IsIn(['relacion', 'flujo-dinero', 'flujo-informacion', 'flujo-producto', 'regulacion', 'bucle'])
-  tipo: 'relacion' | 'flujo-dinero' | 'flujo-informacion' | 'flujo-producto' | 'regulacion' | 'bucle';
+  @ApiProperty({
+    enum: [
+      'relacion',
+      'flujo-dinero',
+      'flujo-informacion',
+      'flujo-producto',
+      'regulacion',
+      'bucle',
+    ],
+  })
+  @IsIn([
+    'relacion',
+    'flujo-dinero',
+    'flujo-informacion',
+    'flujo-producto',
+    'regulacion',
+    'bucle',
+  ])
+  tipo:
+    | 'relacion'
+    | 'flujo-dinero'
+    | 'flujo-informacion'
+    | 'flujo-producto'
+    | 'regulacion'
+    | 'bucle';
 
   @ApiProperty({ example: 'Regula el acceso al crédito' })
   @IsString()

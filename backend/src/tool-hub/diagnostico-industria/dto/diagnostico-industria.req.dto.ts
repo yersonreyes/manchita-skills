@@ -1,34 +1,52 @@
-import { IsInt, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class DiagnosticoInputsDto {
-  @ApiPropertyOptional({ example: 'Hay 3 jugadores dominantes con precios agresivos.' })
+  @ApiPropertyOptional({
+    example: 'Hay 3 jugadores dominantes con precios agresivos.',
+  })
   @IsOptional()
   @IsString()
   rivalidad?: string;
 
-  @ApiPropertyOptional({ example: 'Las barreras regulatorias son altas, capital inicial elevado.' })
+  @ApiPropertyOptional({
+    example: 'Las barreras regulatorias son altas, capital inicial elevado.',
+  })
   @IsOptional()
   @IsString()
   nuevosEntrantes?: string;
 
-  @ApiPropertyOptional({ example: 'Pocos proveedores especializados con precios fijos.' })
+  @ApiPropertyOptional({
+    example: 'Pocos proveedores especializados con precios fijos.',
+  })
   @IsOptional()
   @IsString()
   proveedores?: string;
 
-  @ApiPropertyOptional({ example: 'Grandes corporaciones que negocian contratos anuales.' })
+  @ApiPropertyOptional({
+    example: 'Grandes corporaciones que negocian contratos anuales.',
+  })
   @IsOptional()
   @IsString()
   clientes?: string;
 
-  @ApiPropertyOptional({ example: 'Soluciones manuales o planillas de cálculo como alternativa.' })
+  @ApiPropertyOptional({
+    example: 'Soluciones manuales o planillas de cálculo como alternativa.',
+  })
   @IsOptional()
   @IsString()
   sustitutos?: string;
 
-  @ApiPropertyOptional({ example: 'Crecimiento del sector tech, regulación de datos en expansión.' })
+  @ApiPropertyOptional({
+    example: 'Crecimiento del sector tech, regulación de datos en expansión.',
+  })
   @IsOptional()
   @IsString()
   tendencias?: string;

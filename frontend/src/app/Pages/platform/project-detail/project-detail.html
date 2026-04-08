@@ -26,6 +26,14 @@
     (onClick)="goToWiki()"
   />
   <p-button
+    *hasPermission="'project-budget:read'"
+    label="Presupuesto"
+    icon="pi pi-wallet"
+    severity="secondary"
+    variant="outlined"
+    (onClick)="goToBudget()"
+  />
+  <p-button
     *hasPermission="'project-phases:create'"
     label="Agregar fase"
     icon="pi pi-plus"

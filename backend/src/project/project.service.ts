@@ -82,7 +82,10 @@ export class ProjectService {
     });
 
     if (!res) {
-      throw new NotFoundException({ message: 'Proyecto no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Proyecto no encontrado',
+        code: 1,
+      });
     }
 
     return { res, code: 0, message: 'Proyecto encontrado' };
@@ -92,18 +95,25 @@ export class ProjectService {
   async update(id: number, dto: UpdateProjectRequestDto) {
     const existing = await this.prisma.project.findUnique({ where: { id } });
     if (!existing) {
-      throw new NotFoundException({ message: 'Proyecto no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Proyecto no encontrado',
+        code: 1,
+      });
     }
 
     const data: any = {};
 
     if (dto.nombre !== undefined) data.nombre = dto.nombre.trim();
-    if (dto.descripcion !== undefined) data.descripcion = dto.descripcion?.trim() ?? null;
+    if (dto.descripcion !== undefined)
+      data.descripcion = dto.descripcion?.trim() ?? null;
     if (dto.tipo !== undefined) data.tipo = dto.tipo ?? null;
     if (dto.etapa !== undefined) data.etapa = dto.etapa ?? null;
     if (dto.sector !== undefined) data.sector = dto.sector?.trim() ?? null;
-    if (dto.contexto !== undefined) data.contexto = dto.contexto?.trim() ?? null;
+    if (dto.contexto !== undefined)
+      data.contexto = dto.contexto?.trim() ?? null;
     if (dto.estado !== undefined) data.estado = dto.estado;
+    if (dto.presupuesto !== undefined) data.presupuesto = dto.presupuesto;
+    if (dto.moneda !== undefined) data.moneda = dto.moneda;
     if (dto.activo !== undefined) data.activo = dto.activo;
 
     if (Object.keys(data).length === 0) {
@@ -111,7 +121,11 @@ export class ProjectService {
         where: { id },
         include: PROJECT_INCLUDE,
       });
-      return { res: current, code: 0, message: 'No hay cambios para actualizar' };
+      return {
+        res: current,
+        code: 0,
+        message: 'No hay cambios para actualizar',
+      };
     }
 
     const res = await this.prisma.project.update({
@@ -125,14 +139,24 @@ export class ProjectService {
 
   // ─── UPSERT MEMBER ────────────────────────────────────────────────────────
   async upsertMember(projectId: number, dto: UpsertProjectMemberRequestDto) {
-    const project = await this.prisma.project.findUnique({ where: { id: projectId } });
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+    });
     if (!project) {
-      throw new NotFoundException({ message: 'Proyecto no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Proyecto no encontrado',
+        code: 1,
+      });
     }
 
-    const user = await this.prisma.user.findUnique({ where: { id: dto.userId } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: dto.userId },
+    });
     if (!user) {
-      throw new NotFoundException({ message: 'Usuario no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Usuario no encontrado',
+        code: 1,
+      });
     }
 
     const fichaData = {
@@ -171,7 +195,10 @@ export class ProjectService {
       where: { projectId_userId: { projectId, userId } },
     });
     if (!member) {
-      throw new NotFoundException({ message: 'Miembro no encontrado en el proyecto', code: 1 });
+      throw new NotFoundException({
+        message: 'Miembro no encontrado en el proyecto',
+        code: 1,
+      });
     }
 
     await this.prisma.projectMember.delete({

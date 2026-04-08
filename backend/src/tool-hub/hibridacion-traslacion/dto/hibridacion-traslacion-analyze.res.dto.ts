@@ -11,7 +11,8 @@ export class AnalisisTraslacionDto {
 export class HibridacionTraslacionReportDto {
   @ApiProperty() executiveSummary: string;
   @ApiProperty() evaluacionTraslacion: string;
-  @ApiProperty({ type: [AnalisisTraslacionDto] }) analisisTraslaciones: AnalisisTraslacionDto[];
+  @ApiProperty({ type: [AnalisisTraslacionDto] })
+  analisisTraslaciones: AnalisisTraslacionDto[];
   @ApiProperty() mecanismoClavePotenciado: string;
   @ApiProperty({ type: [String] }) riesgosContextuales: string[];
   @ApiProperty() diferenciacionCompetitiva: string;
@@ -21,5 +22,6 @@ export class HibridacionTraslacionReportDto {
 export class HibridacionTraslacionAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: HibridacionTraslacionReportDto }) report: HibridacionTraslacionReportDto;
+  @ApiProperty({ type: HibridacionTraslacionReportDto })
+  report: HibridacionTraslacionReportDto;
 }

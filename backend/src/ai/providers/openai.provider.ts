@@ -5,11 +5,18 @@ export class OpenAiProvider implements IAiProvider {
   readonly name = 'openai';
   private client: OpenAI;
 
-  constructor(apiKey: string, private readonly model = 'gpt-4o-mini') {
+  constructor(
+    apiKey: string,
+    private readonly model = 'gpt-4o-mini',
+  ) {
     this.client = new OpenAI({ apiKey });
   }
 
-  async chat(messages: AiMessage[], systemPrompt: string, maxTokens = 512): Promise<string> {
+  async chat(
+    messages: AiMessage[],
+    systemPrompt: string,
+    maxTokens = 512,
+  ): Promise<string> {
     const response = await this.client.chat.completions.create({
       model: this.model,
       max_tokens: maxTokens,

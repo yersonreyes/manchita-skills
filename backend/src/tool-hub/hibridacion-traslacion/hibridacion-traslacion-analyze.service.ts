@@ -1,16 +1,26 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { HibridacionTraslacionAnalyzeReqDto } from './dto/hibridacion-traslacion-analyze.req.dto';
-import { HibridacionTraslacionAnalyzeResDto, HibridacionTraslacionReportDto } from './dto/hibridacion-traslacion-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  HibridacionTraslacionAnalyzeResDto,
+  HibridacionTraslacionReportDto,
+} from './dto/hibridacion-traslacion-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const FUENTE_LABELS: Record<string, string> = {
   'industria-similar': 'Industria similar',
   'industria-diferente': 'Industria diferente',
-  'naturaleza': 'Naturaleza / Biomímesis',
+  naturaleza: 'Naturaleza / Biomímesis',
   'vida-cotidiana': 'Vida cotidiana',
-  'tecnologia': 'Tecnología de otro campo',
+  tecnologia: 'Tecnología de otro campo',
 };
 
 @Injectable()
@@ -20,23 +30,37 @@ export class HibridacionTraslacionAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: HibridacionTraslacionAnalyzeReqDto): Promise<HibridacionTraslacionAnalyzeResDto> {
+  async execute(
+    dto: HibridacionTraslacionAnalyzeReqDto,
+  ): Promise<HibridacionTraslacionAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
 
     let report: HibridacionTraslacionReportDto;
     try {
-      report = JSON.parse(this.extractJson(raw)) as HibridacionTraslacionReportDto;
+      report = JSON.parse(
+        this.extractJson(raw),
+      ) as HibridacionTraslacionReportDto;
     } catch {
-      console.error('[HibridacionTraslacionAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[HibridacionTraslacionAnalyzeService] Raw AI response:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -111,16 +135,24 @@ REGLAS:
     if (data.traslaciones?.length) {
       lines.push(`\nTRASLACIONES DOCUMENTADAS (${data.traslaciones.length}):`);
       data.traslaciones.forEach((t, i) => {
-        const fuenteLabel = t.fuenteTipo ? ` [${FUENTE_LABELS[t.fuenteTipo] ?? t.fuenteTipo}]` : '';
-        lines.push(`\n  ${i + 1}. Dominio origen: ${t.dominioOrigen || '[Sin nombre]'}${fuenteLabel}`);
-        if (t.mecanismo) lines.push(`     Mecanismo subyacente: ${t.mecanismo}`);
+        const fuenteLabel = t.fuenteTipo
+          ? ` [${FUENTE_LABELS[t.fuenteTipo] ?? t.fuenteTipo}]`
+          : '';
+        lines.push(
+          `\n  ${i + 1}. Dominio origen: ${t.dominioOrigen || '[Sin nombre]'}${fuenteLabel}`,
+        );
+        if (t.mecanismo)
+          lines.push(`     Mecanismo subyacente: ${t.mecanismo}`);
         if (t.como) lines.push(`     Cómo lo resuelven allá: ${t.como}`);
-        if (t.traduccion) lines.push(`     Traducción al contexto actual: ${t.traduccion}`);
+        if (t.traduccion)
+          lines.push(`     Traducción al contexto actual: ${t.traduccion}`);
       });
     }
 
-    if (data.mecanismoClave) lines.push(`\nMECANISMO CLAVE IDENTIFICADO: "${data.mecanismoClave}"`);
-    if (data.ideaResultante) lines.push(`\nIDEA RESULTANTE:\n"${data.ideaResultante}"`);
+    if (data.mecanismoClave)
+      lines.push(`\nMECANISMO CLAVE IDENTIFICADO: "${data.mecanismoClave}"`);
+    if (data.ideaResultante)
+      lines.push(`\nIDEA RESULTANTE:\n"${data.ideaResultante}"`);
 
     return lines.join('\n');
   }

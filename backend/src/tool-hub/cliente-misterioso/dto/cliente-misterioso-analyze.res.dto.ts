@@ -9,7 +9,8 @@ export class IssuePriorizadoDto {
 
 export class ClienteMisteriosoReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [IssuePriorizadoDto] }) issuesPriorizados: IssuePriorizadoDto[];
+  @ApiProperty({ type: [IssuePriorizadoDto] })
+  issuesPriorizados: IssuePriorizadoDto[];
   @ApiProperty({ type: [String] }) patronesDeExperiencia: string[];
   @ApiProperty({ type: [String] }) fortalezasDetectadas: string[];
   @ApiProperty({ type: [String] }) friccionesCriticas: string[];
@@ -21,5 +22,6 @@ export class ClienteMisteriosoReportDto {
 export class ClienteMisteriosoAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: ClienteMisteriosoReportDto }) report: ClienteMisteriosoReportDto;
+  @ApiProperty({ type: ClienteMisteriosoReportDto })
+  report: ClienteMisteriosoReportDto;
 }

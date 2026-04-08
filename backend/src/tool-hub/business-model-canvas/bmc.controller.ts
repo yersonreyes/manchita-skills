@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { BmcAnalyzeService } from './bmc-analyze.service';
 import { BmcAnalyzeReqDto } from './dto/bmc.req.dto';

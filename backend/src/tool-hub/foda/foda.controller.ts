@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { FodaAnalyzeService } from './foda-analyze.service';
 import { FodaAnalyzeReqDto } from './dto/foda-analyze.req.dto';

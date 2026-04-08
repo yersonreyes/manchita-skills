@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { BenchmarkingAnalyzeReqDto } from './dto/benchmarking-analyze.req.dto';
@@ -6,7 +10,10 @@ import {
   BenchmarkingAnalyzeResDto,
   BenchmarkingReportDto,
 } from './dto/benchmarking-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class BenchmarkingAnalyzeService {
@@ -15,13 +22,20 @@ export class BenchmarkingAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: BenchmarkingAnalyzeReqDto): Promise<BenchmarkingAnalyzeResDto> {
+  async execute(
+    dto: BenchmarkingAnalyzeReqDto,
+  ): Promise<BenchmarkingAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -31,7 +45,9 @@ export class BenchmarkingAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as BenchmarkingReportDto;
     } catch {
       console.error('[BenchmarkingAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -106,14 +122,16 @@ REGLAS:
     if (!data.criterios.length) return lines.join('\n');
 
     // Build comparison table
-    const compNames = data.competidores.map(c => c.nombre || '(Sin nombre)');
+    const compNames = data.competidores.map((c) => c.nombre || '(Sin nombre)');
     const header = ['Criterio', data.miProducto || 'Mi Producto', ...compNames];
     lines.push(`\n${header.join(' | ')}`);
     lines.push(header.map(() => '---').join(' | '));
 
     for (const criterio of data.criterios) {
       const miVal = data.miValores[criterio.id] || '—';
-      const compVals = data.competidores.map(c => c.valores[criterio.id] || '—');
+      const compVals = data.competidores.map(
+        (c) => c.valores[criterio.id] || '—',
+      );
       const row = [criterio.nombre || '(Sin nombre)', miVal, ...compVals];
       lines.push(row.join(' | '));
     }

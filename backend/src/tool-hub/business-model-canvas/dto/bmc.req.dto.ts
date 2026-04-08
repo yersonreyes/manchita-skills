@@ -1,4 +1,11 @@
-import { IsInt, IsNotEmpty, IsObject, IsString, Min, ValidateNested } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsObject,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -210,7 +217,10 @@ export class BmcAnalyzeReqDto {
   @Type(() => BmcBlocksDto)
   blocks: BmcBlocksDto;
 
-  @ApiProperty({ example: 0, description: 'Cantidad de informes ya existentes (para calcular versión)' })
+  @ApiProperty({
+    example: 0,
+    description: 'Cantidad de informes ya existentes (para calcular versión)',
+  })
   @IsInt()
   @Min(0)
   currentVersion: number;

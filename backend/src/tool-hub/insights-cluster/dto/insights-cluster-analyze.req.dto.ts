@@ -48,7 +48,10 @@ export class InsightClusterDto {
 }
 
 export class InsightsClusterDataDto {
-  @ApiProperty({ example: '20 entrevistas con usuarios de e-commerce', required: false })
+  @ApiProperty({
+    example: '20 entrevistas con usuarios de e-commerce',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   contexto?: string;

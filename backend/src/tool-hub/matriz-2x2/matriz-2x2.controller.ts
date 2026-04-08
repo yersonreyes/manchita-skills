@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { Matriz2x2AnalyzeService } from './matriz-2x2-analyze.service';
 import { Matriz2x2AnalyzeReqDto } from './dto/matriz-2x2-analyze.req.dto';
@@ -15,7 +20,9 @@ export class Matriz2x2Controller {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un análisis AI de la Matriz 2×2' })
   @ApiResponse({ status: 201, type: Matriz2x2AnalyzeResDto })
-  analyze(@Body() dto: Matriz2x2AnalyzeReqDto): Promise<Matriz2x2AnalyzeResDto> {
+  analyze(
+    @Body() dto: Matriz2x2AnalyzeReqDto,
+  ): Promise<Matriz2x2AnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

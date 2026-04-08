@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import {
@@ -9,7 +13,10 @@ import {
   CustomerJourneyMapAnalyzeResDto,
   CustomerJourneyMapReportDto,
 } from './dto/customer-journey-map-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class CustomerJourneyMapAnalyzeService {
@@ -18,13 +25,20 @@ export class CustomerJourneyMapAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: CustomerJourneyMapAnalyzeReqDto): Promise<CustomerJourneyMapAnalyzeResDto> {
+  async execute(
+    dto: CustomerJourneyMapAnalyzeReqDto,
+  ): Promise<CustomerJourneyMapAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el informe en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el informe en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -34,7 +48,9 @@ export class CustomerJourneyMapAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as CustomerJourneyMapReportDto;
     } catch {
       console.error('[CustomerJourneyMapAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -111,23 +127,23 @@ REGLAS:
 
       if (etapa.acciones?.length) {
         lines.push('ACCIONES:');
-        etapa.acciones.forEach(a => lines.push(`  • ${a}`));
+        etapa.acciones.forEach((a) => lines.push(`  • ${a}`));
       }
       if (etapa.emociones?.length) {
         lines.push('EMOCIONES:');
-        etapa.emociones.forEach(e => lines.push(`  • ${e}`));
+        etapa.emociones.forEach((e) => lines.push(`  • ${e}`));
       }
       if (etapa.touchpoints?.length) {
         lines.push('TOUCHPOINTS:');
-        etapa.touchpoints.forEach(t => lines.push(`  • ${t}`));
+        etapa.touchpoints.forEach((t) => lines.push(`  • ${t}`));
       }
       if (etapa.painPoints?.length) {
         lines.push('PAIN POINTS:');
-        etapa.painPoints.forEach(p => lines.push(`  • ${p}`));
+        etapa.painPoints.forEach((p) => lines.push(`  • ${p}`));
       }
       if (etapa.oportunidades?.length) {
         lines.push('OPORTUNIDADES:');
-        etapa.oportunidades.forEach(o => lines.push(`  • ${o}`));
+        etapa.oportunidades.forEach((o) => lines.push(`  • ${o}`));
       }
     }
 

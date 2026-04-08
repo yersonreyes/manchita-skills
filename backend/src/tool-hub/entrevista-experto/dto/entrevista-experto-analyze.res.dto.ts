@@ -9,7 +9,8 @@ export class EntrevistaExpertoInsightDto {
 export class EntrevistaExpertoReportDto {
   @ApiProperty() executiveSummary: string;
   @ApiProperty() perfilExperto: string;
-  @ApiProperty({ type: [EntrevistaExpertoInsightDto] }) insights: EntrevistaExpertoInsightDto[];
+  @ApiProperty({ type: [EntrevistaExpertoInsightDto] })
+  insights: EntrevistaExpertoInsightDto[];
   @ApiProperty({ type: [String] }) tendenciasClave: string[];
   @ApiProperty({ type: [String] }) barrerasYDesafios: string[];
   @ApiProperty({ type: [String] }) oportunidadesIdentificadas: string[];
@@ -20,5 +21,6 @@ export class EntrevistaExpertoReportDto {
 export class EntrevistaExpertoAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: EntrevistaExpertoReportDto }) report: EntrevistaExpertoReportDto;
+  @ApiProperty({ type: EntrevistaExpertoReportDto })
+  report: EntrevistaExpertoReportDto;
 }

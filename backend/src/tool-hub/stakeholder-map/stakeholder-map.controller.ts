@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { StakeholderMapAnalyzeService } from './stakeholder-map-analyze.service';
 import { StakeholderMapAnalyzeReqDto } from './dto/stakeholder-map-analyze.req.dto';
@@ -15,7 +20,9 @@ export class StakeholderMapController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un informe AI del Stakeholder Map' })
   @ApiResponse({ status: 201, type: StakeholderMapAnalyzeResDto })
-  analyze(@Body() dto: StakeholderMapAnalyzeReqDto): Promise<StakeholderMapAnalyzeResDto> {
+  analyze(
+    @Body() dto: StakeholderMapAnalyzeReqDto,
+  ): Promise<StakeholderMapAnalyzeResDto> {
     return this.analyzeService.execute(dto, dto.currentVersion);
   }
 }

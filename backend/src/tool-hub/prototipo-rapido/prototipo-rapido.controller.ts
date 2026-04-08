@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { PrototipoRapidoAnalyzeService } from './prototipo-rapido-analyze.service';
 import { PrototipoRapidoAnalyzeReqDto } from './dto/prototipo-rapido-analyze.req.dto';
@@ -15,7 +20,9 @@ export class PrototipoRapidoController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un análisis AI del Prototipo Rápido' })
   @ApiResponse({ status: 201, type: PrototipoRapidoAnalyzeResDto })
-  analyze(@Body() dto: PrototipoRapidoAnalyzeReqDto): Promise<PrototipoRapidoAnalyzeResDto> {
+  analyze(
+    @Body() dto: PrototipoRapidoAnalyzeReqDto,
+  ): Promise<PrototipoRapidoAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

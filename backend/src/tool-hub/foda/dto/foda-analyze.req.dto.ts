@@ -1,4 +1,11 @@
-import { IsArray, IsInt, IsObject, IsString, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsObject,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -8,7 +15,9 @@ export class FodaItemsDto {
   @IsString({ each: true })
   fortalezas: string[];
 
-  @ApiProperty({ example: ['Mercado en crecimiento', 'Nueva regulación favorable'] })
+  @ApiProperty({
+    example: ['Mercado en crecimiento', 'Nueva regulación favorable'],
+  })
   @IsArray()
   @IsString({ each: true })
   oportunidades: string[];
@@ -36,7 +45,10 @@ export class FodaAnalyzeReqDto {
   @Type(() => FodaItemsDto)
   items: FodaItemsDto;
 
-  @ApiProperty({ example: 0, description: 'Cantidad de informes ya existentes (para calcular versión)' })
+  @ApiProperty({
+    example: 0,
+    description: 'Cantidad de informes ya existentes (para calcular versión)',
+  })
   @IsInt()
   @Min(0)
   currentVersion: number;

@@ -1,16 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PersonaReportDto {
-  @ApiProperty({ example: 'María representa a una profesional joven con capacidad de ahorro...' })
+  @ApiProperty({
+    example:
+      'María representa a una profesional joven con capacidad de ahorro...',
+  })
   executiveSummary: string;
 
-  @ApiProperty({ type: [String], example: ['Priorizar lenguaje cotidiano sobre jerga técnica'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Priorizar lenguaje cotidiano sobre jerga técnica'],
+  })
   insightsDeDiseno: string[];
 
-  @ApiProperty({ type: [String], example: ['Crear onboarding educativo en formato video corto'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Crear onboarding educativo en formato video corto'],
+  })
   oportunidades: string[];
 
-  @ApiProperty({ type: [String], example: ['Simplificar la terminología financiera en toda la UI'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Simplificar la terminología financiera en toda la UI'],
+  })
   recommendations: string[];
 }
 

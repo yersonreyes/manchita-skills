@@ -9,7 +9,8 @@ export class ObservacionDestacadaShadowingDto {
 
 export class ShadowingReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [ObservacionDestacadaShadowingDto] }) observacionesDestacadas: ObservacionDestacadaShadowingDto[];
+  @ApiProperty({ type: [ObservacionDestacadaShadowingDto] })
+  observacionesDestacadas: ObservacionDestacadaShadowingDto[];
   @ApiProperty({ type: [String] }) flujosDeTrabajo: string[];
   @ApiProperty({ type: [String] }) workaroundsEncontrados: string[];
   @ApiProperty({ type: [String] }) painPointsCriticos: string[];

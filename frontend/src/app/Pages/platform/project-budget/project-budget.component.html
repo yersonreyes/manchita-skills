@@ -1,0 +1,1271 @@
+<app-page-header
+  [title]="projectName() || 'Presupuesto'"
+  subtitle="Distribucion de presupuesto y recursos"
+>
+  <p-button
+    label="Volver"
+    icon="pi pi-arrow-left"
+    severity="secondary"
+    variant="outlined"
+    (onClick)="goBack()"
+  />
+</app-page-header>
+
+@if (loading()) {
+  <div class="loading-state">
+    <div class="loading-pulse"></div>
+    <div class="loading-pulse loading-pulse--short"></div>
+    <div class="loading-pulse loading-pulse--med"></div>
+  </div>
+} @else {
+  <!-- ─── Dashboard combinado ────────────────────────────────────────── -->
+  @if (summary() && incomeSummary()) {
+    <div class="combined-dashboard">
+      <div class="combined-dashboard__card">
+        <div class="combined-dashboard__icon combined-dashboard__icon--income">
+          <i class="pi pi-arrow-down-left"></i>
+        </div>
+        <div class="combined-dashboard__data">
+          <span class="combined-dashboard__value saldo--positivo">
+            {{ monedaSymbol() }}{{ incomeSummary()?.totalCobrado | number:'1.0-0' }}
+          </span>
+          <span class="combined-dashboard__label">Cobrado</span>
+        </div>
+      </div>
+      <div class="combined-dashboard__card">
+        <div class="combined-dashboard__icon combined-dashboard__icon--expense">
+          <i class="pi pi-arrow-up-right"></i>
+        </div>
+        <div class="combined-dashboard__data">
+          <span class="combined-dashboard__value">
+            {{ monedaSymbol() }}{{ summary()?.totalBruto | number:'1.0-0' }}
+          </span>
+          <span class="combined-dashboard__label">Gastado</span>
+        </div>
+      </div>
+      <div class="combined-dashboard__card">
+        <div class="combined-dashboard__icon" [class]="flujoNeto() >= 0 ? 'combined-dashboard__icon--positive' : 'combined-dashboard__icon--negative'">
+          <i [class]="flujoNeto() >= 0 ? 'pi pi-check-circle' : 'pi pi-exclamation-triangle'"></i>
+        </div>
+        <div class="combined-dashboard__data">
+          <span class="combined-dashboard__value" [class]="flujoNetoClass()">
+            {{ monedaSymbol() }}{{ flujoNeto() | number:'1.0-0' }}
+          </span>
+          <span class="combined-dashboard__label">Flujo neto</span>
+        </div>
+      </div>
+      <div class="combined-dashboard__card">
+        <div class="combined-dashboard__icon combined-dashboard__icon--pending">
+          <i class="pi pi-clock"></i>
+        </div>
+        <div class="combined-dashboard__data">
+          <span class="combined-dashboard__value">
+            {{ monedaSymbol() }}{{ incomeSummary()?.totalPendiente | number:'1.0-0' }}
+          </span>
+          <span class="combined-dashboard__label">Por cobrar</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ─── Tabs ───────────────────────────────────────────────────────── -->
+  <p-tabs [value]="activeTab()" (valueChange)="onTabChange($event ?? 0)">
+    <p-tablist>
+      <p-tab [value]="0">
+        <i class="pi pi-arrow-up-right"></i>
+        Egresos
+      </p-tab>
+      <p-tab [value]="1">
+        <i class="pi pi-arrow-down-left"></i>
+        Ingresos
+        @if (incomeSummary()?.totalVencido && incomeSummary()!.totalVencido > 0) {
+          <span class="tab-alert-dot"></span>
+        }
+      </p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel [value]="0">
+
+  <!-- ─── Hero financiero ──────────────────────────────────────────────── -->
+  <div class="budget-hero" [attr.data-health]="healthStatus()">
+    <div class="budget-hero__inner">
+
+      @if (!editingBudget()) {
+        <!-- Vista lectura -->
+        <div class="budget-hero__main">
+          <div class="budget-hero__left">
+            <div class="budget-hero__health-dot"></div>
+            <div class="budget-hero__amounts">
+              <span class="budget-hero__tag">{{ monedaCode() }}</span>
+              <span class="budget-hero__total">
+                {{ monedaSymbol() }}{{ summary()?.presupuesto | number:'1.0-0' }}
+              </span>
+              <span class="budget-hero__label">presupuesto total</span>
+            </div>
+          </div>
+
+          <p-button
+            *hasPermission="'project-budget:update'"
+            icon="pi pi-pencil"
+            severity="secondary"
+            variant="text"
+            [rounded]="true"
+            pTooltip="Editar presupuesto"
+            tooltipPosition="left"
+            (onClick)="startEditBudget()"
+          />
+        </div>
+
+        <!-- Progress gauge -->
+        <div class="budget-gauge">
+          <div class="budget-gauge__track">
+            <div
+              class="budget-gauge__fill"
+              [style.width.%]="progressValue()"
+            ></div>
+          </div>
+          <span class="budget-gauge__pct">{{ summary()?.porcentajeUsado | number:'1.0-1' }}% utilizado</span>
+        </div>
+
+        <!-- Metric cards -->
+        <div class="budget-metrics">
+          <div class="budget-metric-card">
+            <div class="budget-metric-card__icon budget-metric-card__icon--assigned">
+              <i class="pi pi-arrow-up-right"></i>
+            </div>
+            <div class="budget-metric-card__data">
+              <span class="budget-metric-card__value">
+                {{ monedaSymbol() }}{{ summary()?.totalAsignado | number:'1.0-0' }}
+              </span>
+              <span class="budget-metric-card__label">Asignado (bruto)</span>
+            </div>
+          </div>
+
+          <div class="budget-metric-card">
+            <div class="budget-metric-card__icon" [class]="'budget-metric-card__icon--' + healthStatus()">
+              @if (healthStatus() === 'danger') {
+                <i class="pi pi-exclamation-triangle"></i>
+              } @else if (healthStatus() === 'warning') {
+                <i class="pi pi-info-circle"></i>
+              } @else {
+                <i class="pi pi-check-circle"></i>
+              }
+            </div>
+            <div class="budget-metric-card__data">
+              <span class="budget-metric-card__value" [class]="saldoClass()">
+                {{ monedaSymbol() }}{{ summary()?.saldo | number:'1.0-0' }}
+              </span>
+              <span class="budget-metric-card__label">Saldo disponible</span>
+            </div>
+          </div>
+
+          <div class="budget-metric-card">
+            <div class="budget-metric-card__icon budget-metric-card__icon--count">
+              <i class="pi pi-objects-column"></i>
+            </div>
+            <div class="budget-metric-card__data">
+              <span class="budget-metric-card__value">{{ summary()?.recursos?.length ?? 0 }}</span>
+              <span class="budget-metric-card__label">Recursos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- IVA + Estado row -->
+        @if (summary()?.totalIva && summary()!.totalIva > 0) {
+          <div class="budget-iva-row">
+            <div class="budget-iva-item">
+              <span class="budget-iva-item__label">Neto</span>
+              <span class="budget-iva-item__value">{{ monedaSymbol() }}{{ summary()?.totalNeto | number:'1.0-0' }}</span>
+            </div>
+            <div class="budget-iva-item budget-iva-item--iva">
+              <span class="budget-iva-item__label">IVA</span>
+              <span class="budget-iva-item__value">{{ monedaSymbol() }}{{ summary()?.totalIva | number:'1.0-0' }}</span>
+            </div>
+            <div class="budget-iva-item">
+              <span class="budget-iva-item__label">Bruto</span>
+              <span class="budget-iva-item__value">{{ monedaSymbol() }}{{ summary()?.totalBruto | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        }
+
+        <!-- Estado stats -->
+        @if ((estadoStats().pendientes + estadoStats().pagados) > 0) {
+          <div class="budget-estado-row">
+            @if (estadoStats().pagados > 0) {
+              <span class="estado-badge estado-badge--pagado">
+                <i class="pi pi-check-circle"></i>
+                {{ estadoStats().pagados }} pagado{{ estadoStats().pagados > 1 ? 's' : '' }}
+              </span>
+            }
+            @if (estadoStats().pendientes > 0) {
+              <span class="estado-badge estado-badge--pendiente">
+                <i class="pi pi-clock"></i>
+                {{ estadoStats().pendientes }} pendiente{{ estadoStats().pendientes > 1 ? 's' : '' }}
+              </span>
+            }
+          </div>
+        }
+
+      } @else {
+        <!-- Vista edicion -->
+        <div class="budget-edit">
+          <div class="budget-edit__header">
+            <i class="pi pi-wallet"></i>
+            <span>Configurar presupuesto</span>
+          </div>
+          <div class="budget-edit__fields">
+            <div class="budget-edit__field budget-edit__field--main">
+              <label>Monto total</label>
+              <p-inputnumber
+                [(ngModel)]="budgetForm.presupuesto"
+                [min]="0"
+                mode="decimal"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="2"
+                class="w-full"
+              />
+            </div>
+            <div class="budget-edit__field">
+              <label>Moneda</label>
+              <p-select
+                [(ngModel)]="budgetForm.moneda"
+                [options]="monedaOptions"
+                optionLabel="label"
+                optionValue="value"
+                appendTo="body"
+                class="w-full"
+              />
+            </div>
+          </div>
+          <div class="budget-edit__actions">
+            <p-button
+              label="Cancelar"
+              severity="secondary"
+              variant="outlined"
+              size="small"
+              (onClick)="cancelEditBudget()"
+            />
+            <p-button
+              label="Guardar presupuesto"
+              icon="pi pi-check"
+              size="small"
+              [loading]="saving()"
+              (onClick)="saveBudget()"
+            />
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ─── Recursos ─────────────────────────────────────────────────────── -->
+  <div class="recursos-section">
+    <div class="recursos-section__header">
+      <div class="recursos-section__title-area">
+        <h2 class="recursos-section__title">Recursos del proyecto</h2>
+        <span class="recursos-section__subtitle">
+          @if (summary()?.recursos?.length) {
+            {{ summary()!.recursos.length }} {{ summary()!.recursos.length === 1 ? 'recurso asignado' : 'recursos asignados' }}
+          } @else {
+            Sin recursos asignados
+          }
+        </span>
+      </div>
+      <div class="recursos-section__actions">
+        @if (summary()?.recursos?.length) {
+          <p-button
+            [label]="desgloseVisible() ? 'Ocultar desglose' : 'Ver desglose mensual'"
+            icon="pi pi-calendar"
+            severity="secondary"
+            variant="outlined"
+            size="small"
+            [loading]="loadingDesglose()"
+            (onClick)="toggleDesglose()"
+          />
+        }
+        <p-button
+          *hasPermission="'project-budget:update'"
+          label="Agregar recurso"
+          icon="pi pi-plus"
+          size="small"
+          (onClick)="openCreateRecurso()"
+        />
+      </div>
+    </div>
+
+    @if (!summary()?.recursos?.length) {
+      <div class="recursos-empty">
+        <div class="recursos-empty__visual">
+          <div class="recursos-empty__circle">
+            <i class="pi pi-wallet"></i>
+          </div>
+        </div>
+        <p class="recursos-empty__title">Empeza a distribuir tu presupuesto</p>
+        <p class="recursos-empty__desc">Agrega personas, servidores, licencias y otros costos para ver como se distribuye el dinero.</p>
+        <p-button
+          *hasPermission="'project-budget:update'"
+          label="Agregar primer recurso"
+          icon="pi pi-plus"
+          severity="secondary"
+          variant="outlined"
+          (onClick)="openCreateRecurso()"
+        />
+      </div>
+    } @else {
+      <!-- Grouped by type -->
+      @for (group of groupedRecursos(); track group.tipo) {
+        <div class="recurso-group" [class]="getTipoColor(group.tipo)">
+          <div class="recurso-group__header">
+            <div class="recurso-group__type-badge">
+              <i [class]="group.icon"></i>
+              <span>{{ group.label }}</span>
+            </div>
+            <span class="recurso-group__subtotal">
+              {{ monedaSymbol() }}{{ group.subtotal | number:'1.0-0' }}
+            </span>
+          </div>
+
+          <div class="recurso-group__items">
+            @for (recurso of group.items; track recurso.id) {
+              <div class="recurso-card">
+                <div class="recurso-card__bar"></div>
+                <div class="recurso-card__body">
+                  <div class="recurso-card__info">
+                    <div class="recurso-card__name-row">
+                      <span class="recurso-card__name">{{ recurso.nombre }}</span>
+                      <span
+                        class="estado-badge estado-badge--sm"
+                        [class]="getEstadoBadgeClass(recurso.estadoPago)"
+                      >{{ getEstadoLabel(recurso.estadoPago) }}</span>
+                    </div>
+                    <span class="recurso-card__detail">
+                      {{ monedaSymbol() }}{{ recurso.costo | number:'1.0-2' }}{{ getFrecuenciaShort(recurso.frecuencia) }}
+                      @if (recurso.cantidad > 1) {
+                        <span class="recurso-card__qty">&times; {{ recurso.cantidad }}</span>
+                      }
+                      @if (recurso.ivaPorcentaje > 0) {
+                        <span class="recurso-card__iva-tag">IVA {{ recurso.ivaPorcentaje }}%</span>
+                      }
+                    </span>
+                    @if (formatFechaRecurso(recurso)) {
+                      <span class="recurso-card__fecha">
+                        <i class="pi pi-calendar"></i>
+                        {{ formatFechaRecurso(recurso) }}
+                      </span>
+                    }
+                    @if (recurso.notas) {
+                      <span class="recurso-card__notas">{{ recurso.notas }}</span>
+                    }
+                  </div>
+                  <div class="recurso-card__right">
+                    <div class="recurso-card__totals">
+                      <span class="recurso-card__total">
+                        {{ monedaSymbol() }}{{ recurso.costoTotal | number:'1.0-0' }}
+                      </span>
+                      @if (recurso.ivaPorcentaje > 0) {
+                        <span class="recurso-card__iva-detail">
+                          Neto {{ monedaSymbol() }}{{ recurso.valorNeto * recurso.cantidad | number:'1.0-0' }} + IVA {{ monedaSymbol() }}{{ recurso.valorIva * recurso.cantidad | number:'1.0-0' }}
+                        </span>
+                      }
+                    </div>
+                    <div class="recurso-card__meta">
+                      @if (recurso.adjuntos.length) {
+                        <span
+                          class="recurso-card__adjuntos-count"
+                          pTooltip="{{ recurso.adjuntos.length }} adjunto{{ recurso.adjuntos.length > 1 ? 's' : '' }}"
+                          tooltipPosition="top"
+                        >
+                          <i class="pi pi-paperclip"></i>
+                          {{ recurso.adjuntos.length }}
+                        </span>
+                      }
+                      <div class="recurso-card__actions">
+                        <label
+                          *hasPermission="'project-budget:update'"
+                          class="recurso-card__btn"
+                          pTooltip="Adjuntar archivo"
+                          tooltipPosition="top"
+                        >
+                          <i class="pi pi-paperclip"></i>
+                          <input
+                            type="file"
+                            accept="image/*,application/pdf"
+                            hidden
+                            (change)="onFileSelected($event, recurso)"
+                          />
+                        </label>
+                        <button
+                          *hasPermission="'project-budget:update'"
+                          class="recurso-card__btn"
+                          pTooltip="Editar"
+                          tooltipPosition="top"
+                          (click)="openEditRecurso(recurso)"
+                        >
+                          <i class="pi pi-pencil"></i>
+                        </button>
+                        <button
+                          *hasPermission="'project-budget:update'"
+                          class="recurso-card__btn recurso-card__btn--danger"
+                          pTooltip="Eliminar"
+                          tooltipPosition="top"
+                          (click)="deleteRecurso(recurso)"
+                        >
+                          <i class="pi pi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Adjuntos list -->
+                @if (recurso.adjuntos.length) {
+                  <div class="recurso-card__adjuntos">
+                    @for (adj of recurso.adjuntos; track adj.id) {
+                      <div class="adjunto-item">
+                        <i [class]="adj.tipo === 'PDF' ? 'pi pi-file-pdf' : 'pi pi-image'"></i>
+                        <a [href]="adj.url" target="_blank" class="adjunto-item__name">{{ adj.nombre }}</a>
+                        @if (adj.size) {
+                          <span class="adjunto-item__size">{{ formatFileSize(adj.size) }}</span>
+                        }
+                        <button
+                          *hasPermission="'project-budget:update'"
+                          class="adjunto-item__delete"
+                          pTooltip="Eliminar"
+                          tooltipPosition="top"
+                          (click)="deleteAdjunto(recurso, adj)"
+                        >
+                          <i class="pi pi-times"></i>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Footer total -->
+      <div class="recursos-total">
+        <span class="recursos-total__label">Total asignado</span>
+        <span class="recursos-total__value">
+          {{ monedaSymbol() }}{{ summary()?.totalAsignado | number:'1.0-0' }}
+          <span class="recursos-total__code">{{ monedaCode() }}</span>
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- ─── Desglose mensual ─────────────────────────────────────────────── -->
+  @if (desgloseVisible() && desgloseMensual().length > 0) {
+    <div class="desglose-section">
+      <h2 class="desglose-section__title">
+        <i class="pi pi-calendar"></i>
+        Desglose mensual
+      </h2>
+
+      <div class="desglose-pills">
+        @for (item of desgloseMensual(); track item.mes) {
+          <button
+            class="desglose-pill"
+            [class.desglose-pill--active]="mesSeleccionado() === item.mes"
+            (click)="selectMes(item.mes)"
+          >
+            <span class="desglose-pill__label">{{ formatMesLabel(item.mes) }}</span>
+            <span class="desglose-pill__total">{{ monedaSymbol() }}{{ item.totalBruto | number:'1.0-0' }}</span>
+          </button>
+        }
+      </div>
+
+      @if (mesSeleccionadoData(); as mesData) {
+        <div class="desglose-detail">
+          <div class="desglose-detail__header">
+            <span class="desglose-detail__mes">{{ formatMesLabel(mesData.mes) }}</span>
+            <div class="desglose-detail__totals">
+              <span class="desglose-detail__total-item">
+                <span class="desglose-detail__total-label">Neto</span>
+                {{ monedaSymbol() }}{{ mesData.totalNeto | number:'1.0-0' }}
+              </span>
+              @if (mesData.totalIva > 0) {
+                <span class="desglose-detail__total-item desglose-detail__total-item--iva">
+                  <span class="desglose-detail__total-label">IVA</span>
+                  {{ monedaSymbol() }}{{ mesData.totalIva | number:'1.0-0' }}
+                </span>
+              }
+              <span class="desglose-detail__total-item desglose-detail__total-item--bruto">
+                <span class="desglose-detail__total-label">Total</span>
+                {{ monedaSymbol() }}{{ mesData.totalBruto | number:'1.0-0' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="desglose-detail__recursos">
+            @for (recurso of mesData.recursos; track recurso.id) {
+              <div class="desglose-recurso">
+                <div class="desglose-recurso__left">
+                  <i [class]="getTipoIcon(recurso.tipo)" class="desglose-recurso__icon" [class]="getTipoColor(recurso.tipo)"></i>
+                  <div>
+                    <span class="desglose-recurso__name">{{ recurso.nombre }}</span>
+                    <span class="desglose-recurso__detail">
+                      {{ monedaSymbol() }}{{ recurso.costo | number:'1.0-2' }}{{ getFrecuenciaShort(recurso.frecuencia) }}
+                      @if (recurso.cantidad > 1) { &times; {{ recurso.cantidad }} }
+                    </span>
+                  </div>
+                </div>
+                <div class="desglose-recurso__right">
+                  <span
+                    class="estado-badge estado-badge--xs"
+                    [class]="getEstadoBadgeClass(recurso.estadoPago)"
+                  >{{ getEstadoLabel(recurso.estadoPago) }}</span>
+                  <span class="desglose-recurso__total">{{ monedaSymbol() }}{{ recurso.costoTotal | number:'1.0-0' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+      </p-tabpanel>
+
+      <!-- ═══════════════════════════════════════════════════════════════ -->
+      <!-- ─── TAB INGRESOS ─────────────────────────────────────────── -->
+      <!-- ═══════════════════════════════════════════════════════════════ -->
+      <p-tabpanel [value]="1">
+        @if (loadingIncome()) {
+          <div class="loading-state">
+            <div class="loading-pulse"></div>
+            <div class="loading-pulse loading-pulse--short"></div>
+          </div>
+        } @else {
+          <!-- Income summary cards -->
+          @if (incomeSummary()) {
+            <div class="income-hero" [attr.data-health]="ingresoHealthStatus()">
+              <div class="income-hero__inner">
+                <div class="budget-metrics">
+                  <div class="budget-metric-card">
+                    <div class="budget-metric-card__icon budget-metric-card__icon--assigned">
+                      <i class="pi pi-wallet"></i>
+                    </div>
+                    <div class="budget-metric-card__data">
+                      <span class="budget-metric-card__value">
+                        {{ monedaSymbol() }}{{ incomeSummary()?.totalEsperado | number:'1.0-0' }}
+                      </span>
+                      <span class="budget-metric-card__label">Total esperado</span>
+                    </div>
+                  </div>
+
+                  <div class="budget-metric-card">
+                    <div class="budget-metric-card__icon budget-metric-card__icon--healthy">
+                      <i class="pi pi-check-circle"></i>
+                    </div>
+                    <div class="budget-metric-card__data">
+                      <span class="budget-metric-card__value saldo--positivo">
+                        {{ monedaSymbol() }}{{ incomeSummary()?.totalCobrado | number:'1.0-0' }}
+                      </span>
+                      <span class="budget-metric-card__label">Cobrado</span>
+                    </div>
+                  </div>
+
+                  <div class="budget-metric-card">
+                    <div class="budget-metric-card__icon budget-metric-card__icon--count">
+                      <i class="pi pi-percentage"></i>
+                    </div>
+                    <div class="budget-metric-card__data">
+                      <span class="budget-metric-card__value">
+                        {{ incomeSummary()?.porcentajeCobrado | number:'1.0-1' }}%
+                      </span>
+                      <span class="budget-metric-card__label">Cobrado</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Estado row -->
+                <div class="budget-estado-row" style="margin-top: 1rem">
+                  @if (incomeSummary()?.totalPendiente && incomeSummary()!.totalPendiente > 0) {
+                    <span class="estado-badge estado-badge--pendiente">
+                      <i class="pi pi-clock"></i>
+                      {{ monedaSymbol() }}{{ incomeSummary()!.totalPendiente | number:'1.0-0' }} pendiente
+                    </span>
+                  }
+                  @if (incomeSummary()?.totalVencido && incomeSummary()!.totalVencido > 0) {
+                    <span class="estado-badge estado-badge--vencido">
+                      <i class="pi pi-exclamation-triangle"></i>
+                      {{ monedaSymbol() }}{{ incomeSummary()!.totalVencido | number:'1.0-0' }} vencido
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Ingresos list -->
+          <div class="recursos-section">
+            <div class="recursos-section__header">
+              <div class="recursos-section__title-area">
+                <h2 class="recursos-section__title">Ingresos del proyecto</h2>
+                <span class="recursos-section__subtitle">
+                  @if (incomeSummary()?.ingresos?.length) {
+                    {{ incomeSummary()!.ingresos.length }} {{ incomeSummary()!.ingresos.length === 1 ? 'ingreso registrado' : 'ingresos registrados' }}
+                  } @else {
+                    Sin ingresos registrados
+                  }
+                </span>
+              </div>
+              <div class="recursos-section__actions">
+                <p-button
+                  *hasPermission="'project-budget:update'"
+                  label="Agregar ingreso"
+                  icon="pi pi-plus"
+                  size="small"
+                  (onClick)="openCreateIngreso()"
+                />
+              </div>
+            </div>
+
+            @if (!incomeSummary()?.ingresos?.length) {
+              <div class="recursos-empty">
+                <div class="recursos-empty__visual">
+                  <div class="recursos-empty__circle">
+                    <i class="pi pi-arrow-down-left"></i>
+                  </div>
+                </div>
+                <p class="recursos-empty__title">Registra tus fuentes de ingreso</p>
+                <p class="recursos-empty__desc">Agrega los pagos esperados de clientes, cuotas y cobros para tener el panorama financiero completo.</p>
+                <p-button
+                  *hasPermission="'project-budget:update'"
+                  label="Agregar primer ingreso"
+                  icon="pi pi-plus"
+                  severity="secondary"
+                  variant="outlined"
+                  (onClick)="openCreateIngreso()"
+                />
+              </div>
+            } @else {
+              <!-- Filters -->
+              <div class="ingreso-filters">
+                <p-select
+                  [(ngModel)]="ingresoFilterEstado"
+                  [options]="estadoCobroFilterOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Estado"
+                  appendTo="body"
+                  class="ingreso-filter-select"
+                />
+                <input
+                  pInputText
+                  [(ngModel)]="ingresoFilterEmpresa"
+                  placeholder="Filtrar por empresa..."
+                  class="ingreso-filter-input"
+                />
+              </div>
+
+              <!-- Ingresos table -->
+              <div class="ingreso-table">
+                @for (ingreso of filteredIngresos(); track ingreso.id) {
+                  <div class="ingreso-row" [class]="getIngresoRowClass(ingreso)">
+                    <div class="ingreso-row__body">
+                      <div class="ingreso-row__info">
+                        <div class="ingreso-row__name-row">
+                          <span class="ingreso-row__concepto">{{ ingreso.concepto }}</span>
+                          <span
+                            class="estado-badge estado-badge--sm"
+                            [class]="getEstadoCobroBadgeClass(ingreso.estadoCobro)"
+                          >{{ getEstadoCobroLabel(ingreso.estadoCobro) }}</span>
+                        </div>
+                        <span class="ingreso-row__empresa">
+                          <i class="pi pi-building"></i>
+                          {{ ingreso.empresaPagadora }}
+                        </span>
+                        @if (ingreso.numeroFactura) {
+                          <span class="ingreso-row__factura">
+                            <i class="pi pi-file"></i>
+                            {{ ingreso.numeroFactura }}
+                          </span>
+                        }
+                        <span class="ingreso-row__fecha">
+                          <i class="pi pi-calendar"></i>
+                          Vence: {{ formatFechaIngreso(ingreso.fechaVencimiento) }}
+                          @if (ingreso.fechaCobro) {
+                            &nbsp;|&nbsp; Cobrado: {{ formatFechaIngreso(ingreso.fechaCobro) }}
+                          }
+                        </span>
+                        @if (ingreso.notas) {
+                          <span class="ingreso-row__notas">{{ ingreso.notas }}</span>
+                        }
+                      </div>
+                      <div class="recurso-card__right">
+                        <div class="recurso-card__totals">
+                          <span class="recurso-card__total">
+                            {{ monedaSymbol() }}{{ ingreso.valorBruto | number:'1.0-0' }}
+                          </span>
+                          @if (ingreso.ivaPorcentaje > 0) {
+                            <span class="recurso-card__iva-detail">
+                              Neto {{ monedaSymbol() }}{{ ingreso.valorNeto | number:'1.0-0' }}
+                              + IVA {{ monedaSymbol() }}{{ ingreso.valorIva | number:'1.0-0' }}
+                            </span>
+                          }
+                        </div>
+                        <div class="recurso-card__meta">
+                          @if (ingreso.adjuntos.length) {
+                            <span
+                              class="recurso-card__adjuntos-count"
+                              pTooltip="{{ ingreso.adjuntos.length }} adjunto{{ ingreso.adjuntos.length > 1 ? 's' : '' }}"
+                              tooltipPosition="top"
+                            >
+                              <i class="pi pi-paperclip"></i>
+                              {{ ingreso.adjuntos.length }}
+                            </span>
+                          }
+                          <div class="recurso-card__actions" style="opacity: 1">
+                            @if (ingreso.estadoCobro === 'PENDIENTE') {
+                              <button
+                                *hasPermission="'project-budget:update'"
+                                class="recurso-card__btn"
+                                pTooltip="Marcar como cobrado"
+                                tooltipPosition="top"
+                                (click)="cambiarEstadoCobro(ingreso, 'COBRADO')"
+                              >
+                                <i class="pi pi-check"></i>
+                              </button>
+                            }
+                            <label
+                              *hasPermission="'project-budget:update'"
+                              class="recurso-card__btn"
+                              pTooltip="Adjuntar archivo"
+                              tooltipPosition="top"
+                            >
+                              <i class="pi pi-paperclip"></i>
+                              <input
+                                type="file"
+                                accept="image/*,application/pdf"
+                                hidden
+                                (change)="onIngresoFileSelected($event, ingreso)"
+                              />
+                            </label>
+                            <button
+                              *hasPermission="'project-budget:update'"
+                              class="recurso-card__btn"
+                              pTooltip="Editar"
+                              tooltipPosition="top"
+                              (click)="openEditIngreso(ingreso)"
+                            >
+                              <i class="pi pi-pencil"></i>
+                            </button>
+                            <button
+                              *hasPermission="'project-budget:update'"
+                              class="recurso-card__btn recurso-card__btn--danger"
+                              pTooltip="Eliminar"
+                              tooltipPosition="top"
+                              (click)="deleteIngreso(ingreso)"
+                            >
+                              <i class="pi pi-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Adjuntos -->
+                    @if (ingreso.adjuntos.length) {
+                      <div class="recurso-card__adjuntos">
+                        @for (adj of ingreso.adjuntos; track adj.id) {
+                          <div class="adjunto-item">
+                            <i [class]="adj.tipo === 'PDF' ? 'pi pi-file-pdf' : 'pi pi-image'"></i>
+                            <a [href]="adj.url" target="_blank" class="adjunto-item__name">{{ adj.nombre }}</a>
+                            @if (adj.size) {
+                              <span class="adjunto-item__size">{{ formatFileSize(adj.size) }}</span>
+                            }
+                            <button
+                              *hasPermission="'project-budget:update'"
+                              class="adjunto-item__delete"
+                              pTooltip="Eliminar"
+                              tooltipPosition="top"
+                              (click)="deleteIngresoAdjunto(ingreso, adj)"
+                            >
+                              <i class="pi pi-times"></i>
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Total footer -->
+              <div class="recursos-total">
+                <span class="recursos-total__label">Total esperado</span>
+                <span class="recursos-total__value">
+                  {{ monedaSymbol() }}{{ incomeSummary()?.totalEsperado | number:'1.0-0' }}
+                  <span class="recursos-total__code">{{ monedaCode() }}</span>
+                </span>
+              </div>
+            }
+          </div>
+        }
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+}
+
+<!-- ─── Dialog recurso ─────────────────────────────────────────────────── -->
+<p-dialog
+  [(visible)]="recursoDialogVisible"
+  [modal]="true"
+  [style]="{ width: '600px', maxWidth: '95vw' }"
+  [closable]="true"
+  [draggable]="false"
+>
+  <ng-template #header>
+    <div class="dlg-header">
+      <div class="dlg-header__badge" [class]="getTipoColor(recursoForm.tipo)">
+        <i [class]="getTipoIcon(recursoForm.tipo)"></i>
+      </div>
+      <div>
+        <p class="dlg-header__title">
+          {{ editingRecurso() ? 'Editar recurso' : 'Nuevo recurso' }}
+        </p>
+        <p class="dlg-header__sub">{{ getTipoLabel(recursoForm.tipo) }}</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="dlg-body">
+    <!-- Type selector pills -->
+    <div class="dlg-field">
+      <label class="dlg-label">Tipo de recurso</label>
+      <div class="tipo-pills">
+        @for (opt of tipoRecursoOptions; track opt.value) {
+          <button
+            class="tipo-pill"
+            [class]="getTipoColor(opt.value)"
+            [class.tipo-pill--active]="recursoForm.tipo === opt.value"
+            (click)="recursoForm.tipo = opt.value"
+            type="button"
+          >
+            <i [class]="getTipoIcon(opt.value)"></i>
+            <span>{{ opt.label }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="dlg-field">
+      <label class="dlg-label">Nombre <span class="text-red-400">*</span></label>
+      <input
+        pInputText
+        [(ngModel)]="recursoForm.nombre"
+        placeholder="Ej: Juan — Frontend Dev, AWS EC2, Figma Pro..."
+        class="w-full"
+      />
+    </div>
+
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Costo <span class="text-red-400">*</span></label>
+        <p-inputnumber
+          [(ngModel)]="recursoForm.costo"
+          [min]="0"
+          mode="decimal"
+          [minFractionDigits]="0"
+          [maxFractionDigits]="2"
+          class="w-full"
+        />
+      </div>
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Frecuencia</label>
+        <p-select
+          [(ngModel)]="recursoForm.frecuencia"
+          [options]="frecuenciaOptions"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          class="w-full"
+        />
+      </div>
+      <div class="dlg-field dlg-field--narrow">
+        <label class="dlg-label">Cantidad</label>
+        <p-inputnumber
+          [(ngModel)]="recursoForm.cantidad"
+          [min]="1"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          decrementButtonIcon="pi pi-minus"
+          incrementButtonIcon="pi pi-plus"
+          inputStyleClass="text-center"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Fecha + Duracion + Recurrencia -->
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Fecha inicio</label>
+        <p-datepicker
+          [(ngModel)]="recursoForm.fechaInicioDate"
+          (ngModelChange)="onFechaInicioChange($event)"
+          view="month"
+          dateFormat="mm/yy"
+          [showIcon]="true"
+          appendTo="body"
+          placeholder="Mes/Anio"
+          class="w-full"
+        />
+      </div>
+      <div class="dlg-field dlg-field--narrow">
+        <label class="dlg-label">Meses</label>
+        <p-inputnumber
+          [(ngModel)]="recursoForm.duracionMeses"
+          [min]="1"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          decrementButtonIcon="pi pi-minus"
+          incrementButtonIcon="pi pi-plus"
+          inputStyleClass="text-center"
+          class="w-full"
+        />
+      </div>
+      <div class="dlg-field dlg-field--toggle">
+        <label class="dlg-label">Recurrente</label>
+        <p-toggleswitch [(ngModel)]="recursoForm.esRecurrente" />
+      </div>
+    </div>
+
+    <!-- IVA -->
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">IVA</label>
+        <p-select
+          [ngModel]="ivaPresetValue()"
+          (ngModelChange)="onIvaPresetChange($event)"
+          [options]="ivaPresets"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          placeholder="Seleccionar IVA"
+          class="w-full"
+        />
+      </div>
+      @if (ivaPresetValue() === -1) {
+        <div class="dlg-field dlg-field--narrow">
+          <label class="dlg-label">% IVA</label>
+          <p-inputnumber
+            [(ngModel)]="recursoForm.ivaPorcentaje"
+            [min]="0"
+            [max]="100"
+            suffix="%"
+            class="w-full"
+          />
+        </div>
+      }
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Estado de pago</label>
+        <p-select
+          [(ngModel)]="recursoForm.estadoPago"
+          [options]="estadoPagoOptions"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Live cost preview with IVA -->
+    @if (recursoForm.costo > 0 && recursoForm.cantidad > 0) {
+      <div class="dlg-cost-preview" [class]="getTipoColor(recursoForm.tipo)">
+        <div class="dlg-cost-preview__breakdown">
+          <span>{{ monedaSymbol() }}{{ recursoForm.costo | number:'1.0-2' }}</span>
+          <span class="dlg-cost-preview__op">{{ getFrecuenciaShort(recursoForm.frecuencia) }}</span>
+          @if (recursoForm.cantidad > 1) {
+            <span class="dlg-cost-preview__op">&times;</span>
+            <span>{{ recursoForm.cantidad }}</span>
+          }
+          @if (recursoForm.ivaPorcentaje > 0) {
+            <span class="dlg-cost-preview__op">+ IVA {{ recursoForm.ivaPorcentaje }}%</span>
+          }
+          <span class="dlg-cost-preview__op">=</span>
+        </div>
+        <div class="dlg-cost-preview__totals">
+          <span class="dlg-cost-preview__total">
+            {{ monedaSymbol() }}{{ formCostoTotal() | number:'1.0-2' }}
+          </span>
+          @if (recursoForm.ivaPorcentaje > 0) {
+            <span class="dlg-cost-preview__iva-detail">
+              Neto {{ monedaSymbol() }}{{ formValorNeto() * recursoForm.cantidad | number:'1.0-2' }}
+              + IVA {{ monedaSymbol() }}{{ formValorIva() * recursoForm.cantidad | number:'1.0-2' }}
+            </span>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="dlg-field">
+      <label class="dlg-label">Notas <span class="dlg-label__opt">opcional</span></label>
+      <textarea
+        pTextarea
+        [(ngModel)]="recursoForm.notas"
+        [rows]="2"
+        [autoResize]="true"
+        placeholder="Observaciones, justificacion del gasto..."
+        class="w-full"
+      ></textarea>
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      variant="outlined"
+      (onClick)="recursoDialogVisible.set(false)"
+    />
+    <p-button
+      [label]="editingRecurso() ? 'Guardar cambios' : 'Agregar al presupuesto'"
+      icon="pi pi-check"
+      [loading]="saving()"
+      (onClick)="submitRecurso()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- ─── Dialog ingreso ─────────────────────────────────────────────────── -->
+<p-dialog
+  [(visible)]="ingresoDialogVisible"
+  [modal]="true"
+  [style]="{ width: '650px', maxWidth: '95vw' }"
+  [closable]="true"
+  [draggable]="false"
+>
+  <ng-template #header>
+    <div class="dlg-header">
+      <div class="dlg-header__badge" style="background: #ecfdf5; color: #10b981; border-color: #a7f3d0">
+        <i class="pi pi-arrow-down-left"></i>
+      </div>
+      <div>
+        <p class="dlg-header__title">
+          {{ editingIngreso() ? 'Editar ingreso' : 'Nuevo ingreso' }}
+        </p>
+        <p class="dlg-header__sub">Registro de pago o cuota</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="dlg-body">
+    <div class="dlg-field">
+      <label class="dlg-label">Concepto <span class="text-red-400">*</span></label>
+      <input
+        pInputText
+        [(ngModel)]="ingresoForm.concepto"
+        placeholder="Ej: Pago inicial, Cuota 2/6, Entrega fase Discover..."
+        class="w-full"
+      />
+    </div>
+
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Monto <span class="text-red-400">*</span></label>
+        <p-inputnumber
+          [(ngModel)]="ingresoForm.monto"
+          [min]="0"
+          mode="decimal"
+          [minFractionDigits]="0"
+          [maxFractionDigits]="2"
+          class="w-full"
+        />
+      </div>
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Moneda <span class="dlg-label__opt">hereda del proyecto</span></label>
+        <p-select
+          [(ngModel)]="ingresoForm.moneda"
+          [options]="monedaOptions"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          placeholder="Del proyecto"
+          [showClear]="true"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Empresa pagadora -->
+    <div class="dlg-field">
+      <label class="dlg-label">Empresa pagadora <span class="text-red-400">*</span></label>
+      <input
+        pInputText
+        [(ngModel)]="ingresoForm.empresaPagadora"
+        placeholder="Nombre de la empresa o cliente"
+        class="w-full"
+      />
+    </div>
+
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Contacto <span class="dlg-label__opt">opcional</span></label>
+        <input
+          pInputText
+          [(ngModel)]="ingresoForm.contactoPagadora"
+          placeholder="Persona de contacto"
+          class="w-full"
+        />
+      </div>
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Email <span class="dlg-label__opt">opcional</span></label>
+        <input
+          pInputText
+          [(ngModel)]="ingresoForm.emailPagadora"
+          placeholder="email@empresa.com"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Factura -->
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">N° Factura <span class="dlg-label__opt">opcional</span></label>
+        <input
+          pInputText
+          [(ngModel)]="ingresoForm.numeroFactura"
+          placeholder="FAC-2026-001"
+          class="w-full"
+        />
+      </div>
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Fecha emision</label>
+        <p-datepicker
+          [(ngModel)]="ingresoForm.fechaEmisionDate"
+          (ngModelChange)="onIngresoFechaEmisionChange($event)"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          appendTo="body"
+          placeholder="dd/mm/aaaa"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Fechas de cobro -->
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Fecha vencimiento <span class="text-red-400">*</span></label>
+        <p-datepicker
+          [(ngModel)]="ingresoForm.fechaVencimientoDate"
+          (ngModelChange)="onIngresoFechaVencimientoChange($event)"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          appendTo="body"
+          placeholder="dd/mm/aaaa"
+          class="w-full"
+        />
+      </div>
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Fecha cobro <span class="dlg-label__opt">opcional</span></label>
+        <p-datepicker
+          [(ngModel)]="ingresoForm.fechaCobroDate"
+          (ngModelChange)="onIngresoFechaCobroChange($event)"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          appendTo="body"
+          placeholder="dd/mm/aaaa"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- IVA + Estado -->
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">IVA</label>
+        <p-select
+          [ngModel]="ingresoIvaPresetValue()"
+          (ngModelChange)="onIngresoIvaPresetChange($event)"
+          [options]="ivaPresets"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          placeholder="Seleccionar IVA"
+          class="w-full"
+        />
+      </div>
+      @if (ingresoIvaPresetValue() === -1) {
+        <div class="dlg-field dlg-field--narrow">
+          <label class="dlg-label">% IVA</label>
+          <p-inputnumber
+            [(ngModel)]="ingresoForm.ivaPorcentaje"
+            [min]="0"
+            [max]="100"
+            suffix="%"
+            class="w-full"
+          />
+        </div>
+      }
+      <div class="dlg-field dlg-field--grow">
+        <label class="dlg-label">Estado de cobro</label>
+        <p-select
+          [(ngModel)]="ingresoForm.estadoCobro"
+          [options]="estadoCobroOptions"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Live preview -->
+    @if (ingresoForm.monto > 0) {
+      <div class="dlg-cost-preview" style="--tipo-bg: #ecfdf5; --tipo-border: #a7f3d0; --tipo-color: #10b981">
+        <div class="dlg-cost-preview__breakdown">
+          <span>{{ monedaSymbol() }}{{ ingresoForm.monto | number:'1.0-2' }}</span>
+          @if (ingresoForm.ivaPorcentaje > 0) {
+            <span class="dlg-cost-preview__op">+ IVA {{ ingresoForm.ivaPorcentaje }}%</span>
+          }
+          <span class="dlg-cost-preview__op">=</span>
+        </div>
+        <div class="dlg-cost-preview__totals">
+          <span class="dlg-cost-preview__total">
+            {{ monedaSymbol() }}{{ ingresoFormValorBruto() | number:'1.0-2' }}
+          </span>
+          @if (ingresoForm.ivaPorcentaje > 0) {
+            <span class="dlg-cost-preview__iva-detail">
+              Neto {{ monedaSymbol() }}{{ ingresoFormValorNeto() | number:'1.0-2' }}
+              + IVA {{ monedaSymbol() }}{{ ingresoFormValorIva() | number:'1.0-2' }}
+            </span>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="dlg-field">
+      <label class="dlg-label">Notas <span class="dlg-label__opt">opcional</span></label>
+      <textarea
+        pTextarea
+        [(ngModel)]="ingresoForm.notas"
+        [rows]="2"
+        [autoResize]="true"
+        placeholder="Observaciones sobre este pago..."
+        class="w-full"
+      ></textarea>
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      variant="outlined"
+      (onClick)="ingresoDialogVisible.set(false)"
+    />
+    <p-button
+      [label]="editingIngreso() ? 'Guardar cambios' : 'Agregar ingreso'"
+      icon="pi pi-check"
+      [loading]="saving()"
+      (onClick)="submitIngreso()"
+    />
+  </ng-template>
+</p-dialog>

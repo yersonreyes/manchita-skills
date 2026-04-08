@@ -9,7 +9,8 @@ export class HallazgoDestacadoDto {
 
 export class VisitaCampoReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [HallazgoDestacadoDto] }) hallazgosDestacados: HallazgoDestacadoDto[];
+  @ApiProperty({ type: [HallazgoDestacadoDto] })
+  hallazgosDestacados: HallazgoDestacadoDto[];
   @ApiProperty({ type: [String] }) patronesContextuales: string[];
   @ApiProperty({ type: [String] }) elementosInvisibles: string[];
   @ApiProperty({ type: [String] }) workaroundsEncontrados: string[];

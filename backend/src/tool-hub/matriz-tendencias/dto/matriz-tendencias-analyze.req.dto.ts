@@ -37,7 +37,10 @@ export class TendenciaDto {
   @IsString()
   nombre: string;
 
-  @ApiProperty({ example: 'Los modelos de lenguaje están siendo adoptados...', required: false })
+  @ApiProperty({
+    example: 'Los modelos de lenguaje están siendo adoptados...',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   descripcion?: string;
@@ -56,7 +59,10 @@ export class TendenciaDto {
 }
 
 export class MatrizTendenciasDataDto {
-  @ApiProperty({ example: 'Fintech planificando roadmap 2025-2026', required: false })
+  @ApiProperty({
+    example: 'Fintech planificando roadmap 2025-2026',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   contexto?: string;

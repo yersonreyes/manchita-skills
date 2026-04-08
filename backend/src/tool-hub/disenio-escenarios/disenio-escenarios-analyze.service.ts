@@ -1,15 +1,28 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { DisenioEscenariosAnalyzeReqDto, EscenarioDto } from './dto/disenio-escenarios-analyze.req.dto';
-import { DisenioEscenariosAnalyzeResDto, DisenioEscenariosReportDto } from './dto/disenio-escenarios-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  DisenioEscenariosAnalyzeReqDto,
+  EscenarioDto,
+} from './dto/disenio-escenarios-analyze.req.dto';
+import {
+  DisenioEscenariosAnalyzeResDto,
+  DisenioEscenariosReportDto,
+} from './dto/disenio-escenarios-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   'happy-path': 'Happy Path',
   'edge-case': 'Edge Case',
-  'error': 'Error / Failure',
-  'contextual': 'Contextual',
+  error: 'Error / Failure',
+  contextual: 'Contextual',
   'day-in-life': 'Day in the Life',
 };
 
@@ -20,13 +33,20 @@ export class DisenioEscenariosAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: DisenioEscenariosAnalyzeReqDto): Promise<DisenioEscenariosAnalyzeResDto> {
+  async execute(
+    dto: DisenioEscenariosAnalyzeReqDto,
+  ): Promise<DisenioEscenariosAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -36,7 +56,9 @@ export class DisenioEscenariosAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as DisenioEscenariosReportDto;
     } catch {
       console.error('[DisenioEscenariosAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -113,14 +135,19 @@ REGLAS:
     const { data } = dto;
     const lines: string[] = ['=== DISEÑO DE ESCENARIOS ==='];
 
-    if (data.contextoGeneral) lines.push(`\nCONTEXTO DEL PRODUCTO/SERVICIO:\n"${data.contextoGeneral}"`);
+    if (data.contextoGeneral)
+      lines.push(
+        `\nCONTEXTO DEL PRODUCTO/SERVICIO:\n"${data.contextoGeneral}"`,
+      );
 
     if (data.escenarios?.length) {
       lines.push(`\nESCENARIOS DOCUMENTADOS (${data.escenarios.length}):`);
       data.escenarios.forEach((e, i) => {
         const tipoLabel = e.tipo ? ` [${TIPO_LABELS[e.tipo] ?? e.tipo}]` : '';
         lines.push(`\n${'─'.repeat(50)}`);
-        lines.push(`ESCENARIO ${i + 1}: ${e.nombre || '[Sin nombre]'}${tipoLabel}`);
+        lines.push(
+          `ESCENARIO ${i + 1}: ${e.nombre || '[Sin nombre]'}${tipoLabel}`,
+        );
 
         if (e.usuario || e.donde || e.cuando || e.objetivo) {
           lines.push('\nCONTEXTO:');
@@ -141,7 +168,7 @@ REGLAS:
 
         if (e.oportunidades?.length) {
           lines.push('\nOPORTUNIDADES IDENTIFICADAS:');
-          e.oportunidades.forEach(o => lines.push(`  ✓ ${o}`));
+          e.oportunidades.forEach((o) => lines.push(`  ✓ ${o}`));
         }
       });
     }

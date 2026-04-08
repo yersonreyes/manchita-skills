@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { BuzzReportAnalyzeService } from './buzz-report-analyze.service';
 import { BuzzReportAnalyzeReqDto } from './dto/buzz-report-analyze.req.dto';
@@ -15,7 +20,9 @@ export class BuzzReportController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un Buzz Report con análisis AI' })
   @ApiResponse({ status: 201, type: BuzzReportAnalyzeResDto })
-  analyze(@Body() dto: BuzzReportAnalyzeReqDto): Promise<BuzzReportAnalyzeResDto> {
+  analyze(
+    @Body() dto: BuzzReportAnalyzeReqDto,
+  ): Promise<BuzzReportAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

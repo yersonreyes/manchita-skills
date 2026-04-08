@@ -26,13 +26,18 @@ export interface ProjectBriefContext {
   contexto: string | null;
 }
 
-export function buildProjectContextSection(project: ProjectBriefContext): string {
-  const hasBrief = project.tipo || project.etapa || project.sector || project.contexto;
+export function buildProjectContextSection(
+  project: ProjectBriefContext,
+): string {
+  const hasBrief =
+    project.tipo || project.etapa || project.sector || project.contexto;
   if (!hasBrief) return '';
 
   const lines: string[] = [`- Nombre del proyecto: ${project.nombre}`];
-  if (project.tipo) lines.push(`- Tipo: ${TIPO_LABELS[project.tipo] ?? project.tipo}`);
-  if (project.etapa) lines.push(`- Etapa: ${ETAPA_LABELS[project.etapa] ?? project.etapa}`);
+  if (project.tipo)
+    lines.push(`- Tipo: ${TIPO_LABELS[project.tipo] ?? project.tipo}`);
+  if (project.etapa)
+    lines.push(`- Etapa: ${ETAPA_LABELS[project.etapa] ?? project.etapa}`);
   if (project.sector) lines.push(`- Sector/Industria: ${project.sector}`);
   if (project.contexto) lines.push(`- Contexto: ${project.contexto}`);
 

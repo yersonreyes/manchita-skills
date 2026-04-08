@@ -1,10 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import {
   ForgotPasswordRequestDto,
@@ -58,7 +53,9 @@ export class AuthController {
 
   // ─── FORGOT PASSWORD ──────────────────────────────────────────────────────
   @Post('forgot-password')
-  @ApiOperation({ summary: 'Solicita el envío de un enlace de recuperación de contraseña' })
+  @ApiOperation({
+    summary: 'Solicita el envío de un enlace de recuperación de contraseña',
+  })
   @ApiBody({ type: ForgotPasswordRequestDto })
   @ApiResponse({ status: 200, type: MessageResponseDto })
   forgotPassword(@Body() dto: ForgotPasswordRequestDto) {
@@ -67,7 +64,9 @@ export class AuthController {
 
   // ─── RESET PASSWORD ───────────────────────────────────────────────────────
   @Post('reset-password')
-  @ApiOperation({ summary: 'Restablece la contraseña usando el token de recuperación' })
+  @ApiOperation({
+    summary: 'Restablece la contraseña usando el token de recuperación',
+  })
   @ApiBody({ type: ResetPasswordRequestDto })
   @ApiResponse({ status: 200, type: MessageResponseDto })
   @ApiResponse({ status: 401, type: ErrorResponseDto })

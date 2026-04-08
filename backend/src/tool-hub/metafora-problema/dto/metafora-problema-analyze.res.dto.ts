@@ -10,7 +10,8 @@ export class AnalisisMetaforaDto {
 
 export class MetaforaProblemaReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [AnalisisMetaforaDto] }) analisisPorMetafora: AnalisisMetaforaDto[];
+  @ApiProperty({ type: [AnalisisMetaforaDto] })
+  analisisPorMetafora: AnalisisMetaforaDto[];
   @ApiProperty() metaforaRecomendada: string;
   @ApiProperty({ type: [String] }) insightsClave: string[];
   @ApiProperty({ type: [String] }) implicacionesDeDiseno: string[];
@@ -20,5 +21,6 @@ export class MetaforaProblemaReportDto {
 export class MetaforaProblemaAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: MetaforaProblemaReportDto }) report: MetaforaProblemaReportDto;
+  @ApiProperty({ type: MetaforaProblemaReportDto })
+  report: MetaforaProblemaReportDto;
 }

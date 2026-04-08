@@ -10,7 +10,8 @@ export class AnalisisEscenarioDto {
 
 export class DisenioEscenariosReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [AnalisisEscenarioDto] }) analisisEscenarios: AnalisisEscenarioDto[];
+  @ApiProperty({ type: [AnalisisEscenarioDto] })
+  analisisEscenarios: AnalisisEscenarioDto[];
   @ApiProperty({ type: [String] }) patronesEmocionales: string[];
   @ApiProperty({ type: [String] }) friccionesComunes: string[];
   @ApiProperty({ type: [String] }) oportunidadesDiseno: string[];
@@ -20,5 +21,6 @@ export class DisenioEscenariosReportDto {
 export class DisenioEscenariosAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: DisenioEscenariosReportDto }) report: DisenioEscenariosReportDto;
+  @ApiProperty({ type: DisenioEscenariosReportDto })
+  report: DisenioEscenariosReportDto;
 }

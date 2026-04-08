@@ -27,15 +27,25 @@ const ETAPA_LABELS: Record<string, string> = {
 export class ProjectBriefGenerateService {
   constructor(private readonly aiService: AiService) {}
 
-  async execute(dto: ProjectBriefGenerateReqDto): Promise<ProjectBriefGenerateResDto> {
+  async execute(
+    dto: ProjectBriefGenerateReqDto,
+  ): Promise<ProjectBriefGenerateResDto> {
     const systemPrompt = this.buildSystemPrompt(dto.projectContext);
 
     const transcript = dto.history
-      .map((m) => `${m.role === 'user' ? 'Usuario' : 'Consultor IA'}: ${m.content}`)
+      .map(
+        (m) =>
+          `${m.role === 'user' ? 'Usuario' : 'Consultor IA'}: ${m.content}`,
+      )
       .join('\n\n');
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `Aquí está la conversación:\n\n${transcript}\n\nGenerá el contexto del proyecto ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `Aquí está la conversación:\n\n${transcript}\n\nGenerá el contexto del proyecto ahora.`,
+        },
+      ],
       systemPrompt,
       512,
     );
@@ -48,7 +58,9 @@ export class ProjectBriefGenerateService {
     return { contexto };
   }
 
-  private buildSystemPrompt(ctx: ProjectBriefGenerateReqDto['projectContext']): string {
+  private buildSystemPrompt(
+    ctx: ProjectBriefGenerateReqDto['projectContext'],
+  ): string {
     const tipo = ctx.tipo ? (TIPO_LABELS[ctx.tipo] ?? ctx.tipo) : null;
     const etapa = ctx.etapa ? (ETAPA_LABELS[ctx.etapa] ?? ctx.etapa) : null;
 

@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { DiagramaSistemaAnalyzeService } from './diagrama-sistema-analyze.service';
 import { DiagramaSistemaAnalyzeReqDto } from './dto/diagrama-sistema-analyze.req.dto';
@@ -15,7 +20,9 @@ export class DiagramaSistemaController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un informe AI del Diagrama de Sistema' })
   @ApiResponse({ status: 201, type: DiagramaSistemaAnalyzeResDto })
-  analyze(@Body() dto: DiagramaSistemaAnalyzeReqDto): Promise<DiagramaSistemaAnalyzeResDto> {
+  analyze(
+    @Body() dto: DiagramaSistemaAnalyzeReqDto,
+  ): Promise<DiagramaSistemaAnalyzeResDto> {
     return this.analyzeService.execute(dto, dto.currentVersion);
   }
 }

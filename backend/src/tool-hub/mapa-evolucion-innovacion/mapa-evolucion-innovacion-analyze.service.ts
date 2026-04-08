@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { MapaEvolucionInnovacionAnalyzeReqDto, EraEvolucionDto } from './dto/mapa-evolucion-innovacion-analyze.req.dto';
-import { MapaEvolucionInnovacionAnalyzeResDto, MapaEvolucionReportDto } from './dto/mapa-evolucion-innovacion-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  MapaEvolucionInnovacionAnalyzeReqDto,
+  EraEvolucionDto,
+} from './dto/mapa-evolucion-innovacion-analyze.req.dto';
+import {
+  MapaEvolucionInnovacionAnalyzeResDto,
+  MapaEvolucionReportDto,
+} from './dto/mapa-evolucion-innovacion-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   incremental: 'Incremental',
@@ -19,13 +32,20 @@ export class MapaEvolucionInnovacionAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: MapaEvolucionInnovacionAnalyzeReqDto): Promise<MapaEvolucionInnovacionAnalyzeResDto> {
+  async execute(
+    dto: MapaEvolucionInnovacionAnalyzeReqDto,
+  ): Promise<MapaEvolucionInnovacionAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -34,8 +54,13 @@ export class MapaEvolucionInnovacionAnalyzeService {
     try {
       report = JSON.parse(this.extractJson(raw)) as MapaEvolucionReportDto;
     } catch {
-      console.error('[MapaEvolucionInnovacionAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[MapaEvolucionInnovacionAnalyzeService] Raw AI response:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -116,11 +141,13 @@ REGLAS:
 
     for (let i = 0; i < data.eras.length; i++) {
       const era: EraEvolucionDto = data.eras[i];
-      lines.push(`\n--- ERA ${i + 1}: ${era.nombre}${era.periodo ? ` (${era.periodo})` : ''} ---`);
+      lines.push(
+        `\n--- ERA ${i + 1}: ${era.nombre}${era.periodo ? ` (${era.periodo})` : ''} ---`,
+      );
 
       if (era.hitos?.length) {
         lines.push(`Hitos (${era.hitos.length}):`);
-        era.hitos.forEach(h => {
+        era.hitos.forEach((h) => {
           const tipo = TIPO_LABELS[h.tipoInnovacion] ?? h.tipoInnovacion;
           lines.push(`  • [${tipo}] ${h.descripcion}`);
         });
@@ -128,12 +155,12 @@ REGLAS:
 
       if (era.puntosInflexion?.length) {
         lines.push(`Puntos de inflexión:`);
-        era.puntosInflexion.forEach(p => lines.push(`  ⚡ ${p}`));
+        era.puntosInflexion.forEach((p) => lines.push(`  ⚡ ${p}`));
       }
 
       if (era.oportunidades?.length) {
         lines.push(`Oportunidades / Gaps identificados:`);
-        era.oportunidades.forEach(o => lines.push(`  💡 ${o}`));
+        era.oportunidades.forEach((o) => lines.push(`  💡 ${o}`));
       }
     }
 

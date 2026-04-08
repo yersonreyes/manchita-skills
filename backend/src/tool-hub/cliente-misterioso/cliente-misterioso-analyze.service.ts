@@ -1,19 +1,32 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { ClienteMisteriosoAnalyzeReqDto, VisitaMisteriosaDto } from './dto/cliente-misterioso-analyze.req.dto';
-import { ClienteMisteriosoAnalyzeResDto, ClienteMisteriosoReportDto } from './dto/cliente-misterioso-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  ClienteMisteriosoAnalyzeReqDto,
+  VisitaMisteriosaDto,
+} from './dto/cliente-misterioso-analyze.req.dto';
+import {
+  ClienteMisteriosoAnalyzeResDto,
+  ClienteMisteriosoReportDto,
+} from './dto/cliente-misterioso-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const CANAL_LABELS: Record<string, string> = {
-  'web': 'Sitio Web',
+  web: 'Sitio Web',
   'mobile-app': 'App Móvil',
-  'tienda': 'Tienda / Punto de Venta',
-  'telefono': 'Teléfono / Call Center',
-  'otro': 'Otro Canal',
+  tienda: 'Tienda / Punto de Venta',
+  telefono: 'Teléfono / Call Center',
+  otro: 'Otro Canal',
 };
 
-const IMPACTO_ORDER: Record<string, number> = { 'alto': 0, 'medio': 1, 'bajo': 2 };
+const IMPACTO_ORDER: Record<string, number> = { alto: 0, medio: 1, bajo: 2 };
 
 @Injectable()
 export class ClienteMisteriosoAnalyzeService {
@@ -22,13 +35,20 @@ export class ClienteMisteriosoAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: ClienteMisteriosoAnalyzeReqDto): Promise<ClienteMisteriosoAnalyzeResDto> {
+  async execute(
+    dto: ClienteMisteriosoAnalyzeReqDto,
+  ): Promise<ClienteMisteriosoAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -38,7 +58,9 @@ export class ClienteMisteriosoAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as ClienteMisteriosoReportDto;
     } catch {
       console.error('[ClienteMisteriosoAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -119,13 +141,15 @@ REGLAS:
     const lines: string[] = ['=== CLIENTE MISTERIOSO ==='];
 
     if (data.objetivo) lines.push(`Objetivo: ${data.objetivo}`);
-    if (data.criterios) lines.push(`Criterios de evaluación: ${data.criterios}`);
+    if (data.criterios)
+      lines.push(`Criterios de evaluación: ${data.criterios}`);
 
     if (data.visitas?.length) {
       lines.push(`\n--- VISITAS REALIZADAS (${data.visitas.length}) ---`);
       for (let i = 0; i < data.visitas.length; i++) {
         const v = data.visitas[i];
-        const canalLabel = CANAL_LABELS[v.canal ?? ''] ?? v.canal ?? 'Canal desconocido';
+        const canalLabel =
+          CANAL_LABELS[v.canal ?? ''] ?? v.canal ?? 'Canal desconocido';
         lines.push(`\n[VISITA ${i + 1}] Canal: ${canalLabel}`);
         if (v.fecha) lines.push(`Fecha: ${v.fecha}`);
         if (v.escenario) lines.push(`Escenario: ${v.escenario}`);
@@ -136,18 +160,24 @@ REGLAS:
           v.pasos.forEach((p, pi) => {
             const tiempo = p.tiempoDesc ? ` [${p.tiempoDesc}]` : '';
             const notas = p.notas ? ` — ${p.notas}` : '';
-            lines.push(`  ${pi + 1}. ${p.descripcion ?? '(sin descripción)'}${tiempo}${notas}`);
+            lines.push(
+              `  ${pi + 1}. ${p.descripcion ?? '(sin descripción)'}${tiempo}${notas}`,
+            );
           });
         }
 
         if (v.issues?.length) {
-          const sorted = [...v.issues].sort((a, b) =>
-            (IMPACTO_ORDER[a.impacto ?? ''] ?? 2) - (IMPACTO_ORDER[b.impacto ?? ''] ?? 2)
+          const sorted = [...v.issues].sort(
+            (a, b) =>
+              (IMPACTO_ORDER[a.impacto ?? ''] ?? 2) -
+              (IMPACTO_ORDER[b.impacto ?? ''] ?? 2),
           );
           lines.push(`\nIssues encontrados (${v.issues.length}):`);
-          sorted.forEach(issue => {
+          sorted.forEach((issue) => {
             const area = issue.area ? ` [${issue.area}]` : '';
-            lines.push(`  • [${(issue.impacto ?? 'medio').toUpperCase()}]${area} ${issue.descripcion ?? '(sin descripción)'}`);
+            lines.push(
+              `  • [${(issue.impacto ?? 'medio').toUpperCase()}]${area} ${issue.descripcion ?? '(sin descripción)'}`,
+            );
           });
         }
 
@@ -156,7 +186,9 @@ REGLAS:
     }
 
     if (data.observacionesGenerales) {
-      lines.push(`\n--- OBSERVACIONES GENERALES ---\n${data.observacionesGenerales}`);
+      lines.push(
+        `\n--- OBSERVACIONES GENERALES ---\n${data.observacionesGenerales}`,
+      );
     }
 
     return lines.join('\n');

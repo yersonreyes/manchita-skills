@@ -9,7 +9,8 @@ export class AnalisisEtapaActivoDto {
 
 export class MapaActivoReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [AnalisisEtapaActivoDto] }) analisisPorEtapa: AnalisisEtapaActivoDto[];
+  @ApiProperty({ type: [AnalisisEtapaActivoDto] })
+  analisisPorEtapa: AnalisisEtapaActivoDto[];
   @ApiProperty({ type: [String] }) momentosCriticos: string[];
   @ApiProperty({ type: [String] }) touchpointsPrioritarios: string[];
   @ApiProperty({ type: [String] }) mapaDeOportunidades: string[];

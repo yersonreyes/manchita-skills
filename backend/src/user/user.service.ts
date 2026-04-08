@@ -51,7 +51,10 @@ export class UserService {
 
     const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) {
-      throw new ConflictException({ message: 'El email ya está registrado', code: 1 });
+      throw new ConflictException({
+        message: 'El email ya está registrado',
+        code: 1,
+      });
     }
 
     const password = await bcrypt.hash(dto.password, 10);
@@ -95,7 +98,10 @@ export class UserService {
     });
 
     if (!user) {
-      throw new NotFoundException({ message: 'Usuario no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Usuario no encontrado',
+        code: 1,
+      });
     }
 
     return { res: user, code: 0, message: 'Usuario encontrado' };
@@ -105,9 +111,14 @@ export class UserService {
   async update(id: number, dto: UpdateUserRequestDto) {
     const userId = Number(id);
 
-    const existing = await this.prisma.user.findUnique({ where: { id: userId } });
+    const existing = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
     if (!existing) {
-      throw new NotFoundException({ message: 'Usuario no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Usuario no encontrado',
+        code: 1,
+      });
     }
 
     const data: any = {};
@@ -118,21 +129,28 @@ export class UserService {
         where: { email, NOT: { id: userId } },
       });
       if (duplicated) {
-        throw new ConflictException({ message: 'El email ya está en uso', code: 1 });
+        throw new ConflictException({
+          message: 'El email ya está en uso',
+          code: 1,
+        });
       }
       data.email = email;
     }
 
     if (dto.nombre !== undefined) data.nombre = dto.nombre.trim();
-    if (dto.password !== undefined) data.password = await bcrypt.hash(dto.password, 10);
+    if (dto.password !== undefined)
+      data.password = await bcrypt.hash(dto.password, 10);
     if (dto.isSuperAdmin !== undefined) data.isSuperAdmin = dto.isSuperAdmin;
     if (dto.activo !== undefined) data.activo = dto.activo;
     if (dto.telefono !== undefined) data.telefono = dto.telefono.trim() || null;
-    if (dto.zonaHoraria !== undefined) data.zonaHoraria = dto.zonaHoraria.trim() || null;
+    if (dto.zonaHoraria !== undefined)
+      data.zonaHoraria = dto.zonaHoraria.trim() || null;
     if (dto.area !== undefined) data.area = dto.area;
     if (dto.senioridad !== undefined) data.senioridad = dto.senioridad;
-    if (dto.disponibilidad !== undefined) data.disponibilidad = dto.disponibilidad;
-    if (dto.horasSemanales !== undefined) data.horasSemanales = dto.horasSemanales;
+    if (dto.disponibilidad !== undefined)
+      data.disponibilidad = dto.disponibilidad;
+    if (dto.horasSemanales !== undefined)
+      data.horasSemanales = dto.horasSemanales;
     if (dto.lenguajes !== undefined) data.lenguajes = dto.lenguajes;
     if (dto.frameworks !== undefined) data.frameworks = dto.frameworks;
     if (dto.basesDeDatos !== undefined) data.basesDeDatos = dto.basesDeDatos;
@@ -145,7 +163,11 @@ export class UserService {
         where: { id: userId },
         select: USER_SELECT,
       });
-      return { res: current, code: 0, message: 'No hay cambios para actualizar' };
+      return {
+        res: current,
+        code: 0,
+        message: 'No hay cambios para actualizar',
+      };
     }
 
     const updated = await this.prisma.user.update({
@@ -154,16 +176,25 @@ export class UserService {
       select: USER_SELECT,
     });
 
-    return { res: updated, code: 0, message: 'Usuario actualizado correctamente' };
+    return {
+      res: updated,
+      code: 0,
+      message: 'Usuario actualizado correctamente',
+    };
   }
 
   // ─── UPLOAD AVATAR ────────────────────────────────────────────────────────
   async uploadAvatar(id: number, file: Express.Multer.File) {
     const userId = Number(id);
 
-    const existing = await this.prisma.user.findUnique({ where: { id: userId } });
+    const existing = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
     if (!existing) {
-      throw new NotFoundException({ message: 'Usuario no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Usuario no encontrado',
+        code: 1,
+      });
     }
 
     const { res } = await this.assets.uploadFile(file);
@@ -174,23 +205,36 @@ export class UserService {
       select: USER_SELECT,
     });
 
-    return { res: updated, code: 0, message: 'Avatar actualizado correctamente' };
+    return {
+      res: updated,
+      code: 0,
+      message: 'Avatar actualizado correctamente',
+    };
   }
 
   // ─── UPSERT SKILLS ────────────────────────────────────────────────────────
   async upsertSkills(id: number, dto: UpsertUserSkillsDto) {
     const userId = Number(id);
 
-    const existing = await this.prisma.user.findUnique({ where: { id: userId } });
+    const existing = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
     if (!existing) {
-      throw new NotFoundException({ message: 'Usuario no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Usuario no encontrado',
+        code: 1,
+      });
     }
 
     await this.prisma.userSkill.deleteMany({ where: { userId } });
 
     if (dto.skills.length > 0) {
       await this.prisma.userSkill.createMany({
-        data: dto.skills.map((s) => ({ userId, tecnologia: s.tecnologia, nivel: s.nivel })),
+        data: dto.skills.map((s) => ({
+          userId,
+          tecnologia: s.tecnologia,
+          nivel: s.nivel,
+        })),
       });
     }
 
@@ -199,18 +243,29 @@ export class UserService {
       select: USER_SELECT,
     });
 
-    return { res: updated, code: 0, message: 'Habilidades actualizadas correctamente' };
+    return {
+      res: updated,
+      code: 0,
+      message: 'Habilidades actualizadas correctamente',
+    };
   }
 
   // ─── ASSIGN ROLES ─────────────────────────────────────────────────────────
   async assignRoles(userId: number, dto: AssignRolesRequestDto) {
-    const user = await this.prisma.user.findUnique({ where: { id: Number(userId) } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: Number(userId) },
+    });
     if (!user) {
-      throw new NotFoundException({ message: 'Usuario no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Usuario no encontrado',
+        code: 1,
+      });
     }
 
     // Eliminar roles actuales
-    await this.prisma.userRole.deleteMany({ where: { userId: Number(userId) } });
+    await this.prisma.userRole.deleteMany({
+      where: { userId: Number(userId) },
+    });
 
     // Asignar nuevos roles
     for (const roleId of dto.roleIds) {

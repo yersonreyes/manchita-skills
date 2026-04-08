@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { RoadmapPrototipadoAnalyzeReqDto } from './dto/roadmap-prototipado-analyze.req.dto';
-import { RoadmapPrototipadoAnalyzeResDto, RoadmapPrototipadoReportDto } from './dto/roadmap-prototipado-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  RoadmapPrototipadoAnalyzeResDto,
+  RoadmapPrototipadoReportDto,
+} from './dto/roadmap-prototipado-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const FIDELIDAD_LABELS: Record<string, string> = {
   low: 'Low-fi (bocetos, papel)',
@@ -33,13 +43,20 @@ export class RoadmapPrototipadoAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: RoadmapPrototipadoAnalyzeReqDto): Promise<RoadmapPrototipadoAnalyzeResDto> {
+  async execute(
+    dto: RoadmapPrototipadoAnalyzeReqDto,
+  ): Promise<RoadmapPrototipadoAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -49,7 +66,9 @@ export class RoadmapPrototipadoAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as RoadmapPrototipadoReportDto;
     } catch {
       console.error('[RoadmapPrototipadoAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -112,26 +131,45 @@ REGLAS:
 
     if (data.restricciones?.length) {
       lines.push(`\nRESTRICCIONES Y DEPENDENCIAS:`);
-      data.restricciones.forEach(r => { if (r) lines.push(`  ⚠ ${r}`); });
+      data.restricciones.forEach((r) => {
+        if (r) lines.push(`  ⚠ ${r}`);
+      });
     }
 
     if (data.fases?.length) {
-      const totalPrototipos = data.fases.reduce((acc, f) => acc + (f.prototipos?.length ?? 0), 0);
-      const completados = data.fases.reduce((acc, f) => acc + (f.prototipos?.filter(p => p.completado)?.length ?? 0), 0);
-      lines.push(`\nFASES DEL ROADMAP (${data.fases.length} fases, ${totalPrototipos} prototipos total, ${completados} completados):`);
+      const totalPrototipos = data.fases.reduce(
+        (acc, f) => acc + (f.prototipos?.length ?? 0),
+        0,
+      );
+      const completados = data.fases.reduce(
+        (acc, f) =>
+          acc + (f.prototipos?.filter((p) => p.completado)?.length ?? 0),
+        0,
+      );
+      lines.push(
+        `\nFASES DEL ROADMAP (${data.fases.length} fases, ${totalPrototipos} prototipos total, ${completados} completados):`,
+      );
 
       data.fases.forEach((fase, i) => {
-        lines.push(`\n  FASE ${i + 1}: ${fase.nombre || '(sin nombre)'}${fase.semanas ? ` — ${fase.semanas}` : ''}`);
+        lines.push(
+          `\n  FASE ${i + 1}: ${fase.nombre || '(sin nombre)'}${fase.semanas ? ` — ${fase.semanas}` : ''}`,
+        );
         if (fase.objetivo) lines.push(`  Objetivo: "${fase.objetivo}"`);
         if (fase.prototipos?.length) {
           fase.prototipos.forEach((p, j) => {
             const estado = p.completado ? '[✓ Completado]' : '[Pendiente]';
-            const fidelidad = FIDELIDAD_LABELS[p.fidelidad ?? ''] ?? p.fidelidad ?? '?';
-            const proposito = PROPOSITO_LABELS[p.proposito ?? ''] ?? p.proposito ?? '?';
+            const fidelidad =
+              FIDELIDAD_LABELS[p.fidelidad ?? ''] ?? p.fidelidad ?? '?';
+            const proposito =
+              PROPOSITO_LABELS[p.proposito ?? ''] ?? p.proposito ?? '?';
             lines.push(`    ${j + 1}. ${estado} ${p.nombre || '(sin nombre)'}`);
-            lines.push(`       Fidelidad: ${fidelidad} | Propósito: ${proposito}`);
-            if (p.herramienta) lines.push(`       Herramienta: ${p.herramienta}`);
-            if (p.entregable) lines.push(`       Entregable: "${p.entregable}"`);
+            lines.push(
+              `       Fidelidad: ${fidelidad} | Propósito: ${proposito}`,
+            );
+            if (p.herramienta)
+              lines.push(`       Herramienta: ${p.herramienta}`);
+            if (p.entregable)
+              lines.push(`       Entregable: "${p.entregable}"`);
           });
         } else {
           lines.push(`    (sin prototipos definidos)`);
@@ -141,9 +179,11 @@ REGLAS:
 
     if (data.features?.length) {
       lines.push(`\nPRIORIZACIÓN DE FEATURES (${data.features.length}):`);
-      data.features.forEach(f => {
+      data.features.forEach((f) => {
         const prio = PRIORIDAD_LABELS[f.prioridad ?? ''] ?? f.prioridad ?? '?';
-        lines.push(`  • ${prio} — ${f.nombre || '(sin nombre)'}${f.fase ? ` → ${f.fase}` : ''}`);
+        lines.push(
+          `  • ${prio} — ${f.nombre || '(sin nombre)'}${f.fase ? ` → ${f.fase}` : ''}`,
+        );
         if (f.razon) lines.push(`    Razón: "${f.razon}"`);
       });
     }

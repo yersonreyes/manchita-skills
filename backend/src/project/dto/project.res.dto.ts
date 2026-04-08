@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EtapaProyecto, TipoProyecto } from '@prisma/client';
+import { EtapaProyecto, Moneda, TipoProyecto } from '@prisma/client';
 
 export class ProjectDto {
   @ApiProperty()
@@ -25,6 +25,12 @@ export class ProjectDto {
 
   @ApiProperty()
   estado: string;
+
+  @ApiProperty({ required: false })
+  presupuesto?: number | null;
+
+  @ApiProperty({ enum: Moneda, required: false })
+  moneda?: Moneda | null;
 
   @ApiProperty()
   ownerId: number;

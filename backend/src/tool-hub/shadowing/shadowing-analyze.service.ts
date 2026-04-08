@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { ShadowingAnalyzeReqDto, SesionShadowingDto } from './dto/shadowing-analyze.req.dto';
-import { ShadowingAnalyzeResDto, ShadowingReportDto } from './dto/shadowing-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  ShadowingAnalyzeReqDto,
+  SesionShadowingDto,
+} from './dto/shadowing-analyze.req.dto';
+import {
+  ShadowingAnalyzeResDto,
+  ShadowingReportDto,
+} from './dto/shadowing-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   pasivo: 'Pasivo (solo observar)',
@@ -25,7 +38,12 @@ export class ShadowingAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -35,7 +53,9 @@ export class ShadowingAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as ShadowingReportDto;
     } catch {
       console.error('[ShadowingAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -117,19 +137,22 @@ REGLAS:
     const lines: string[] = ['=== SHADOWING ==='];
 
     if (data.objetivo) lines.push(`Objetivo: ${data.objetivo}`);
-    if (data.guiaObservacion) lines.push(`Guía de observación: ${data.guiaObservacion}`);
+    if (data.guiaObservacion)
+      lines.push(`Guía de observación: ${data.guiaObservacion}`);
 
     if (data.sesiones?.length) {
       lines.push(`\n--- SESIONES DE SHADOWING (${data.sesiones.length}) ---`);
       for (let i = 0; i < data.sesiones.length; i++) {
         const s: SesionShadowingDto = data.sesiones[i];
-        lines.push(`\n[SESIÓN ${i + 1}]${s.participante ? ` ${s.participante}` : ''}`);
+        lines.push(
+          `\n[SESIÓN ${i + 1}]${s.participante ? ` ${s.participante}` : ''}`,
+        );
         if (s.tipo) lines.push(`Tipo: ${TIPO_LABELS[s.tipo] ?? s.tipo}`);
         if (s.duracion) lines.push(`Duración: ${s.duracion}`);
         if (s.contexto) lines.push(`Contexto: ${s.contexto}`);
         if (s.observaciones?.length) {
           lines.push(`Observaciones (${s.observaciones.length}):`);
-          s.observaciones.forEach(obs => {
+          s.observaciones.forEach((obs) => {
             const parts: string[] = [];
             if (obs.hora) parts.push(`[${obs.hora}]`);
             if (obs.observacion) parts.push(obs.observacion);

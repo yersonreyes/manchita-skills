@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { InsightsClusterAnalyzeReqDto, InsightClusterDto } from './dto/insights-cluster-analyze.req.dto';
-import { InsightsClusterAnalyzeResDto, InsightsClusterReportDto } from './dto/insights-cluster-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  InsightsClusterAnalyzeReqDto,
+  InsightClusterDto,
+} from './dto/insights-cluster-analyze.req.dto';
+import {
+  InsightsClusterAnalyzeResDto,
+  InsightsClusterReportDto,
+} from './dto/insights-cluster-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const IMPACTO_LABELS: Record<string, string> = {
   alto: 'Alto',
@@ -18,13 +31,20 @@ export class InsightsClusterAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: InsightsClusterAnalyzeReqDto): Promise<InsightsClusterAnalyzeResDto> {
+  async execute(
+    dto: InsightsClusterAnalyzeReqDto,
+  ): Promise<InsightsClusterAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -34,7 +54,9 @@ export class InsightsClusterAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as InsightsClusterReportDto;
     } catch {
       console.error('[InsightsClusterAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -107,14 +129,19 @@ REGLAS:
 
     if (data.contexto) lines.push(`Contexto: ${data.contexto}`);
     lines.push(`Total de clusters: ${data.clusters.length}`);
-    const totalInsights = data.clusters.reduce((sum, c) => sum + c.insights.length, 0);
+    const totalInsights = data.clusters.reduce(
+      (sum, c) => sum + c.insights.length,
+      0,
+    );
     lines.push(`Total de insights: ${totalInsights}`);
 
     for (let i = 0; i < data.clusters.length; i++) {
       const cluster: InsightClusterDto = data.clusters[i];
-      lines.push(`\n--- CLUSTER ${i + 1}: ${cluster.nombre || '(Sin nombre)'} ---`);
+      lines.push(
+        `\n--- CLUSTER ${i + 1}: ${cluster.nombre || '(Sin nombre)'} ---`,
+      );
       lines.push(`Insights (${cluster.insights.length}):`);
-      cluster.insights.forEach(ins => {
+      cluster.insights.forEach((ins) => {
         const impacto = IMPACTO_LABELS[ins.impacto] ?? ins.impacto;
         lines.push(`  [${impacto}] ${ins.texto}`);
       });

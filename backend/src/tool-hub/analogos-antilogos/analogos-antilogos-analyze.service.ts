@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import {
@@ -10,7 +14,10 @@ import {
   AnalogosAntilogosAnalyzeResDto,
   AnalogosAntilogosReportDto,
 } from './dto/analogos-antilogos-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class AnalogosAntilogosAnalyzeService {
@@ -28,7 +35,12 @@ export class AnalogosAntilogosAnalyzeService {
     const dataText = this.formatItems(dto.items.analogos, dto.items.antilogos);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el informe en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el informe en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -37,7 +49,9 @@ export class AnalogosAntilogosAnalyzeService {
     try {
       report = JSON.parse(this.extractJson(raw));
     } catch {
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -100,7 +114,10 @@ REGLAS:
 - Las recomendaciones deben ser accionables y ordenadas por impacto potencial.`;
   }
 
-  private formatItems(analogos: AnalogoItemDto[], antilogos: AntilogoItemDto[]): string {
+  private formatItems(
+    analogos: AnalogoItemDto[],
+    antilogos: AntilogoItemDto[],
+  ): string {
     const formatAnalogos =
       analogos.length > 0
         ? analogos

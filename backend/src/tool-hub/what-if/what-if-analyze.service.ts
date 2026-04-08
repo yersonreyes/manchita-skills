@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { WhatIfAnalyzeReqDto } from './dto/what-if-analyze.req.dto';
-import { WhatIfAnalyzeResDto, WhatIfReportDto } from './dto/what-if-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  WhatIfAnalyzeResDto,
+  WhatIfReportDto,
+} from './dto/what-if-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   inversion: 'Inversión',
@@ -27,7 +37,12 @@ export class WhatIfAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -37,7 +52,9 @@ export class WhatIfAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as WhatIfReportDto;
     } catch {
       console.error('[WhatIfAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -113,11 +130,15 @@ REGLAS:
     if (data.contexto) lines.push(`\nCONTEXTO / RETO:\n"${data.contexto}"`);
     else lines.push('\nCONTEXTO: [No definido]');
 
-    lines.push(`\nTOTAL DE PREGUNTAS GENERADAS: ${data.preguntas?.length ?? 0}`);
+    lines.push(
+      `\nTOTAL DE PREGUNTAS GENERADAS: ${data.preguntas?.length ?? 0}`,
+    );
 
-    const seleccionadas = data.preguntas?.filter(p => p.seleccionada) ?? [];
+    const seleccionadas = data.preguntas?.filter((p) => p.seleccionada) ?? [];
     if (seleccionadas.length) {
-      lines.push(`PREGUNTAS SELECCIONADAS POR EL EQUIPO: ${seleccionadas.length}`);
+      lines.push(
+        `PREGUNTAS SELECCIONADAS POR EL EQUIPO: ${seleccionadas.length}`,
+      );
     }
 
     if (data.preguntas?.length) {
@@ -126,14 +147,16 @@ REGLAS:
       data.preguntas.forEach((p, i) => {
         const tipoLabel = p.tipo ? ` [${TIPO_LABELS[p.tipo] ?? p.tipo}]` : '';
         const selLabel = p.seleccionada ? ' ★ SELECCIONADA' : '';
-        lines.push(`\n  ${i + 1}. ¿Qué pasaría si ${p.pregunta || '[sin texto]'}?${tipoLabel}${selLabel}`);
+        lines.push(
+          `\n  ${i + 1}. ¿Qué pasaría si ${p.pregunta || '[sin texto]'}?${tipoLabel}${selLabel}`,
+        );
         if (p.exploracion) lines.push(`     Exploración: ${p.exploracion}`);
       });
     }
 
     if (data.insightsClave?.length) {
       lines.push('\nINSIGHTS CLAVE DEL EQUIPO:');
-      data.insightsClave.forEach(ins => lines.push(`  • ${ins}`));
+      data.insightsClave.forEach((ins) => lines.push(`  • ${ins}`));
     }
 
     return lines.join('\n');

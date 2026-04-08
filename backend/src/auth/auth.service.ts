@@ -36,7 +36,10 @@ export class AuthService {
     // Verificar si el email ya existe
     const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) {
-      throw new ConflictException({ message: 'El email ya está registrado', code: 1 });
+      throw new ConflictException({
+        message: 'El email ya está registrado',
+        code: 1,
+      });
     }
 
     const password = await bcrypt.hash(dto.password, 10);
@@ -123,7 +126,8 @@ export class AuthService {
       };
     }
 
-    const expiration = this.configService.get('RESET_PASSWORD_TOKEN_EXPIRATION') ?? '1h';
+    const expiration =
+      this.configService.get('RESET_PASSWORD_TOKEN_EXPIRATION') ?? '1h';
     const token = this.jwtService.sign(
       { sub: user.id, email: user.email, purpose: 'reset-password' },
       { expiresIn: expiration },
@@ -171,9 +175,14 @@ export class AuthService {
       });
     }
 
-    const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+    });
     if (!user) {
-      throw new NotFoundException({ message: 'Usuario no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Usuario no encontrado',
+        code: 1,
+      });
     }
 
     const newPasswordHash = await bcrypt.hash(dto.newPassword, 10);
@@ -216,7 +225,8 @@ export class AuthService {
       .update(rawRefreshToken)
       .digest('hex');
 
-    const daysStr = this.configService.get('REFRESH_TOKEN_EXPIRES_IN_DAYS') ?? '7';
+    const daysStr =
+      this.configService.get('REFRESH_TOKEN_EXPIRES_IN_DAYS') ?? '7';
     const days = parseInt(daysStr, 10);
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + days);

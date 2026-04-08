@@ -15,7 +15,8 @@ export class RequirementResDto {
   @ApiProperty() id: number;
   @ApiProperty() projectId: number;
   @ApiProperty({ enum: RequirementType }) type: RequirementType;
-  @ApiPropertyOptional({ enum: RequirementSubtype }) subtype: RequirementSubtype | null;
+  @ApiPropertyOptional({ enum: RequirementSubtype })
+  subtype: RequirementSubtype | null;
   @ApiProperty() title: string;
   @ApiProperty() description: string;
   @ApiPropertyOptional() userStory: string | null;
@@ -29,5 +30,6 @@ export class RequirementResDto {
   @ApiPropertyOptional() updatedById: number | null;
   @ApiProperty() createdAt: Date;
   @ApiProperty() updatedAt: Date;
-  @ApiProperty({ type: RequirementCreatedByDto }) createdBy: RequirementCreatedByDto;
+  @ApiProperty({ type: RequirementCreatedByDto })
+  createdBy: RequirementCreatedByDto;
 }

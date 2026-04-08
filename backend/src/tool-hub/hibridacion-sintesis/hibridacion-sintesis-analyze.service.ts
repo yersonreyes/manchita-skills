@@ -1,14 +1,24 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { HibridacionSintesisAnalyzeReqDto } from './dto/hibridacion-sintesis-analyze.req.dto';
-import { HibridacionSintesisAnalyzeResDto, HibridacionSintesisReportDto } from './dto/hibridacion-sintesis-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  HibridacionSintesisAnalyzeResDto,
+  HibridacionSintesisReportDto,
+} from './dto/hibridacion-sintesis-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const NIVEL_LABELS: Record<string, string> = {
-  'superficial': 'Superficial (combina features visibles)',
-  'estructural': 'Estructural (cambia la arquitectura del producto/servicio)',
-  'paradigmatico': 'Paradigmático (crea un nuevo modelo mental o categoría)',
+  superficial: 'Superficial (combina features visibles)',
+  estructural: 'Estructural (cambia la arquitectura del producto/servicio)',
+  paradigmatico: 'Paradigmático (crea un nuevo modelo mental o categoría)',
 };
 
 @Injectable()
@@ -18,23 +28,37 @@ export class HibridacionSintesisAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: HibridacionSintesisAnalyzeReqDto): Promise<HibridacionSintesisAnalyzeResDto> {
+  async execute(
+    dto: HibridacionSintesisAnalyzeReqDto,
+  ): Promise<HibridacionSintesisAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
 
     let report: HibridacionSintesisReportDto;
     try {
-      report = JSON.parse(this.extractJson(raw)) as HibridacionSintesisReportDto;
+      report = JSON.parse(
+        this.extractJson(raw),
+      ) as HibridacionSintesisReportDto;
     } catch {
-      console.error('[HibridacionSintesisAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[HibridacionSintesisAnalyzeService] Raw AI response:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -112,12 +136,16 @@ REGLAS:
     }
 
     if (data.conceptosBase?.length) {
-      lines.push(`\nCONCEPTOS BASE A SINTETIZAR (${data.conceptosBase.length}):`);
+      lines.push(
+        `\nCONCEPTOS BASE A SINTETIZAR (${data.conceptosBase.length}):`,
+      );
       data.conceptosBase.forEach((c, i) => {
         lines.push(`\n  ${i + 1}. ${c.nombre || '[Sin nombre]'}`);
         if (c.descripcion) lines.push(`     Descripción: ${c.descripcion}`);
-        if (c.esencia) lines.push(`     Esencia (qué lo hace funcionar): ${c.esencia}`);
-        if (c.contribucion) lines.push(`     Qué aporta a la síntesis: ${c.contribucion}`);
+        if (c.esencia)
+          lines.push(`     Esencia (qué lo hace funcionar): ${c.esencia}`);
+        if (c.contribucion)
+          lines.push(`     Qué aporta a la síntesis: ${c.contribucion}`);
       });
     }
 
@@ -128,8 +156,10 @@ REGLAS:
       });
     }
 
-    if (data.ideaSintetizada) lines.push(`\nIDEA SINTETIZADA:\n"${data.ideaSintetizada}"`);
-    if (data.nuevoParadigma) lines.push(`\nNUEVO PARADIGMA PROPUESTO: "${data.nuevoParadigma}"`);
+    if (data.ideaSintetizada)
+      lines.push(`\nIDEA SINTETIZADA:\n"${data.ideaSintetizada}"`);
+    if (data.nuevoParadigma)
+      lines.push(`\nNUEVO PARADIGMA PROPUESTO: "${data.nuevoParadigma}"`);
 
     return lines.join('\n');
   }

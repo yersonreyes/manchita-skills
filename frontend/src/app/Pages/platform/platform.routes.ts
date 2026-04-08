@@ -104,6 +104,15 @@ export const PLATFORM_ROUTES: Routes = [
         ],
       },
       {
+        path: 'projects/:id/budget',
+        loadComponent: () =>
+          import('./project-budget/project-budget.component').then(
+            (m) => m.ProjectBudgetComponent,
+          ),
+        canActivate: [permissionGuard],
+        data: { permissions: ['project-budget:read'] },
+      },
+      {
         path: 'projects/:id/requirements',
         loadComponent: () =>
           import('./requirements/requirements').then((m) => m.RequirementsComponent),

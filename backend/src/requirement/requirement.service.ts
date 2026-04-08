@@ -1,5 +1,14 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { ProjectMemberRole, RequirementPriority, RequirementStatus, RequirementType } from '@prisma/client';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  ProjectMemberRole,
+  RequirementPriority,
+  RequirementStatus,
+  RequirementType,
+} from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   ChangeRequirementStatusReqDto,
@@ -64,7 +73,12 @@ export class RequirementService {
     });
   }
 
-  async update(projectId: number, id: number, dto: UpdateRequirementReqDto, updatedById: number) {
+  async update(
+    projectId: number,
+    id: number,
+    dto: UpdateRequirementReqDto,
+    updatedById: number,
+  ) {
     await this.findOne(projectId, id);
     return this.prisma.requirement.update({
       where: { id },
@@ -73,10 +87,14 @@ export class RequirementService {
         ...(dto.title !== undefined && { title: dto.title }),
         ...(dto.description !== undefined && { description: dto.description }),
         ...(dto.userStory !== undefined && { userStory: dto.userStory }),
-        ...(dto.acceptanceCriteria !== undefined && { acceptanceCriteria: dto.acceptanceCriteria }),
+        ...(dto.acceptanceCriteria !== undefined && {
+          acceptanceCriteria: dto.acceptanceCriteria,
+        }),
         ...(dto.priority !== undefined && { priority: dto.priority }),
         ...(dto.source !== undefined && { source: dto.source }),
-        ...(dto.businessValue !== undefined && { businessValue: dto.businessValue }),
+        ...(dto.businessValue !== undefined && {
+          businessValue: dto.businessValue,
+        }),
         updatedById,
       },
       include: this.includeCreatedBy,
@@ -98,7 +116,9 @@ export class RequirementService {
       membership?.role === ProjectMemberRole.EDITOR;
 
     if (!isOwnerOrEditor) {
-      throw new ForbiddenException('Solo OWNER o EDITOR del proyecto pueden cambiar el estado');
+      throw new ForbiddenException(
+        'Solo OWNER o EDITOR del proyecto pueden cambiar el estado',
+      );
     }
 
     await this.findOne(projectId, id);

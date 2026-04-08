@@ -9,7 +9,13 @@ import {
   Query,
   Request,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from 'src/auth/decorators';
 import {
   AssignTagRequestDto,
@@ -72,7 +78,11 @@ export class TaskController {
   @ApiOperation({ summary: 'Actualiza una tarea' })
   @ApiBody({ type: UpdateTaskRequestDto })
   @ApiResponse({ status: 200, type: TaskResponseDto })
-  update(@Param('id') id: string, @Body() dto: UpdateTaskRequestDto, @Request() req) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateTaskRequestDto,
+    @Request() req,
+  ) {
     return this.service.update(+id, dto, req.user.userId);
   }
 
@@ -81,7 +91,11 @@ export class TaskController {
   @ApiOperation({ summary: 'Mueve una tarea (Kanban drag-drop)' })
   @ApiBody({ type: MoveTaskRequestDto })
   @ApiResponse({ status: 200, type: TaskResponseDto })
-  move(@Param('id') id: string, @Body() dto: MoveTaskRequestDto, @Request() req) {
+  move(
+    @Param('id') id: string,
+    @Body() dto: MoveTaskRequestDto,
+    @Request() req,
+  ) {
     return this.service.move(+id, dto, req.user.userId);
   }
 

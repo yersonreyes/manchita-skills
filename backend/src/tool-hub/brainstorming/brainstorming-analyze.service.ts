@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { BrainstormingAnalyzeReqDto } from './dto/brainstorming-analyze.req.dto';
-import { BrainstormingAnalyzeResDto, BrainstormingReportDto } from './dto/brainstorming-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  BrainstormingAnalyzeResDto,
+  BrainstormingReportDto,
+} from './dto/brainstorming-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class BrainstormingAnalyzeService {
@@ -12,13 +22,20 @@ export class BrainstormingAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: BrainstormingAnalyzeReqDto): Promise<BrainstormingAnalyzeResDto> {
+  async execute(
+    dto: BrainstormingAnalyzeReqDto,
+  ): Promise<BrainstormingAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +45,9 @@ export class BrainstormingAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as BrainstormingReportDto;
     } catch {
       console.error('[BrainstormingAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -107,11 +126,13 @@ REGLAS:
 
     if (data.ideas?.length) {
       // Ordenar por votos desc para mostrar primero las más votadas
-      const sorted = [...data.ideas].sort((a, b) => (b.votos ?? 0) - (a.votos ?? 0));
+      const sorted = [...data.ideas].sort(
+        (a, b) => (b.votos ?? 0) - (a.votos ?? 0),
+      );
 
       // Agrupar por cluster
       const clusters = new Map<string, typeof sorted>();
-      sorted.forEach(idea => {
+      sorted.forEach((idea) => {
         const key = idea.cluster || 'Sin cluster';
         if (!clusters.has(key)) clusters.set(key, []);
         clusters.get(key)!.push(idea);
@@ -120,8 +141,10 @@ REGLAS:
       lines.push('\nIDEAS (ordenadas por votos):');
       clusters.forEach((ideas, cluster) => {
         lines.push(`\n  [${cluster}]`);
-        ideas.forEach(idea => {
-          const votos = idea.votos ? ` — ${idea.votos} voto${idea.votos === 1 ? '' : 's'}` : '';
+        ideas.forEach((idea) => {
+          const votos = idea.votos
+            ? ` — ${idea.votos} voto${idea.votos === 1 ? '' : 's'}`
+            : '';
           lines.push(`    • ${idea.texto || '[Sin texto]'}${votos}`);
         });
       });
@@ -129,7 +152,7 @@ REGLAS:
 
     if (data.topIdeas?.length) {
       lines.push('\nTOP IDEAS SELECCIONADAS POR EL EQUIPO:');
-      data.topIdeas.forEach(t => lines.push(`  ★ ${t}`));
+      data.topIdeas.forEach((t) => lines.push(`  ★ ${t}`));
     }
 
     if (data.notas) lines.push(`\nNOTAS DEL FACILITADOR:\n${data.notas}`);

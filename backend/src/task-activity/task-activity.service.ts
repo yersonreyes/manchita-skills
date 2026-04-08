@@ -45,6 +45,11 @@ export class TaskActivityService {
       }),
     ]);
 
-    return { res, total, code: 0, message: 'Actividades del proyecto encontradas' };
+    return {
+      res,
+      total,
+      code: 0,
+      message: 'Actividades del proyecto encontradas',
+    };
   }
 }

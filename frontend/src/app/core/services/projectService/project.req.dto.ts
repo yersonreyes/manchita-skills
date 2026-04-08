@@ -2,6 +2,11 @@ export type ProjectStatus = 'DRAFT' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
 export type ProjectMemberRole = 'OWNER' | 'EDITOR' | 'VIEWER';
 export type TipoProyecto = 'STARTUP' | 'PRODUCTO_DIGITAL' | 'INVESTIGACION_UX' | 'PROYECTO_INTERNO' | 'SERVICIO' | 'PROCESO' | 'OTRO';
 export type EtapaProyecto = 'IDEA' | 'EXPLORACION' | 'VALIDACION' | 'DESARROLLO' | 'LANZAMIENTO' | 'CRECIMIENTO' | 'MADUREZ';
+export type Moneda =
+  | 'USD' | 'EUR'
+  | 'ARS' | 'BRL' | 'CLP' | 'COP' | 'MXN' | 'PEN' | 'UYU'
+  | 'PYG' | 'BOB' | 'VES' | 'CRC' | 'DOP' | 'GTQ' | 'HNL'
+  | 'NIO' | 'PAB' | 'CUP';
 
 export interface CreateProjectReqDto {
   nombre: string;
@@ -22,6 +27,8 @@ export interface UpdateProjectReqDto {
   sector?: string | null;
   contexto?: string | null;
   estado?: ProjectStatus;
+  presupuesto?: number | null;
+  moneda?: Moneda | null;
   activo?: boolean;
 }
 

@@ -1,4 +1,12 @@
-import { IsIn, IsInt, IsNotEmpty, IsString, Min, ValidateNested, IsArray } from 'class-validator';
+import {
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  Min,
+  ValidateNested,
+  IsArray,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class AiMessageDto {

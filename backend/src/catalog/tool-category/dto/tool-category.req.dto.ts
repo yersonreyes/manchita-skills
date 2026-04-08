@@ -15,7 +15,10 @@ export class CreateToolCategoryRequestDto {
   @IsOptional()
   descripcion?: string | null;
 
-  @ApiProperty({ example: 1, description: 'ID de la fase de diseño a la que pertenece' })
+  @ApiProperty({
+    example: 1,
+    description: 'ID de la fase de diseño a la que pertenece',
+  })
   @IsInt()
   @Min(1)
   phaseId: number;

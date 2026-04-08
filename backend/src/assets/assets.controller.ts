@@ -60,4 +60,40 @@ export class AssetsController {
   ) {
     return this.service.uploadFile(file);
   }
+
+  @Post('upload-document')
+  @RequirePermission('assets:upload')
+  @ApiOperation({ summary: 'Sube un documento (imagen o PDF) a S3' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, type: UploadResponseDto })
+  @ApiResponse({ status: 400, type: ErrorResponseDto })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+    }),
+  )
+  uploadDocument(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }),
+          new FileTypeValidator({
+            fileType: /^(image\/(png|jpe?g|gif|webp)|application\/pdf)$/i,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.service.uploadFile(file);
+  }
 }

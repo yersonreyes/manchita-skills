@@ -24,17 +24,26 @@ export class TransformacionDto {
 }
 
 export class FromToDataDto {
-  @ApiProperty({ example: 'From-To — App de pagos para freelancers', required: false })
+  @ApiProperty({
+    example: 'From-To — App de pagos para freelancers',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   titulo?: string;
 
-  @ApiProperty({ example: 'El freelancer pierde días esperando pagos...', required: false })
+  @ApiProperty({
+    example: 'El freelancer pierde días esperando pagos...',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   contextoActual?: string;
 
-  @ApiProperty({ example: 'El freelancer gestiona todo desde el celular...', required: false })
+  @ApiProperty({
+    example: 'El freelancer gestiona todo desde el celular...',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   visionFuturo?: string;

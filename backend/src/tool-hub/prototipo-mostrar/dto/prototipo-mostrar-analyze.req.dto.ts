@@ -47,7 +47,10 @@ export class PrototipoMostrarDataDto {
   @Type(() => PreguntaAnticipadaDto)
   preguntasAnticipadas?: PreguntaAnticipadaDto[];
 
-  @ApiPropertyOptional() @IsOptional() @IsString() resultadosPresentacion?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  resultadosPresentacion?: string;
 
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()

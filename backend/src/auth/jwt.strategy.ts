@@ -21,9 +21,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     // Flujo 2: Usuario regular — cargar permisos actualizados en cada request
-    const permissions = await this.permissionService.getUserEffectivePermissions(
-      payload.sub,
-    );
+    const permissions =
+      await this.permissionService.getUserEffectivePermissions(payload.sub);
     return { userId: payload.sub, email: payload.email, permissions };
   }
 }

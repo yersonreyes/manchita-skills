@@ -15,37 +15,58 @@ export class MapaEmpatiaDataDto {
   @IsOptional()
   usuario?: string;
 
-  @ApiProperty({ example: 'Fin de mes, gestionando proyectos simultáneos', required: false })
+  @ApiProperty({
+    example: 'Fin de mes, gestionando proyectos simultáneos',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   contexto?: string;
 
-  @ApiProperty({ type: [String], example: ['Ve que sus amigos usan apps de inversión'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Ve que sus amigos usan apps de inversión'],
+  })
   @IsArray()
   @IsString({ each: true })
   ve: string[];
 
-  @ApiProperty({ type: [String], example: ['Escucha que "invertir es muy complicado"'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Escucha que "invertir es muy complicado"'],
+  })
   @IsArray()
   @IsString({ each: true })
   oye: string[];
 
-  @ApiProperty({ type: [String], example: ['Piensa que no tiene suficiente dinero para invertir'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Piensa que no tiene suficiente dinero para invertir'],
+  })
   @IsArray()
   @IsString({ each: true })
   piensa: string[];
 
-  @ApiProperty({ type: [String], example: ['Siente frustración cuando ve sus ahorros estancados'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Siente frustración cuando ve sus ahorros estancados'],
+  })
   @IsArray()
   @IsString({ each: true })
   siente: string[];
 
-  @ApiProperty({ type: [String], example: ['Dice "yo no entiendo de finanzas"'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Dice "yo no entiendo de finanzas"'],
+  })
   @IsArray()
   @IsString({ each: true })
   dice: string[];
 
-  @ApiProperty({ type: [String], example: ['Abre la app del banco 3+ veces al día pero no invierte'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Abre la app del banco 3+ veces al día pero no invierte'],
+  })
   @IsArray()
   @IsString({ each: true })
   hace: string[];

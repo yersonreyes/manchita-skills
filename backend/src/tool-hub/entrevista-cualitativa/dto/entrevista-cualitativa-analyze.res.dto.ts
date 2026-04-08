@@ -9,7 +9,8 @@ export class EntrevistaCualitativaInsightDto {
 export class EntrevistaCualitativaReportDto {
   @ApiProperty() executiveSummary: string;
   @ApiProperty() perfilEntrevistado: string;
-  @ApiProperty({ type: [EntrevistaCualitativaInsightDto] }) insights: EntrevistaCualitativaInsightDto[];
+  @ApiProperty({ type: [EntrevistaCualitativaInsightDto] })
+  insights: EntrevistaCualitativaInsightDto[];
   @ApiProperty({ type: [String] }) necesidadesDetectadas: string[];
   @ApiProperty({ type: [String] }) painPoints: string[];
   @ApiProperty({ type: [String] }) motivaciones: string[];
@@ -20,5 +21,6 @@ export class EntrevistaCualitativaReportDto {
 export class EntrevistaCualitativaAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: EntrevistaCualitativaReportDto }) report: EntrevistaCualitativaReportDto;
+  @ApiProperty({ type: EntrevistaCualitativaReportDto })
+  report: EntrevistaCualitativaReportDto;
 }

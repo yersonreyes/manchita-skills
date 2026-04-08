@@ -310,6 +310,10 @@ export class ProjectManagement implements OnInit {
     void this.router.navigate(['/platform/projects', id, 'requirements']);
   }
 
+  navigateToBudget(id: number): void {
+    void this.router.navigate(['/platform/projects', id, 'budget']);
+  }
+
   // ─── Ficha array helpers ──────────────────────────────────────────────────
   fichaArrayInputs: Record<string, string> = {
     responsabilidades: '', entregables: '', modulosAsignados: '',

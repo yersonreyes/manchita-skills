@@ -13,5 +13,6 @@ export class TestCuantitativoReportDto {
 export class TestCuantitativoAnalyzeResDto {
   @ApiProperty({ example: 1 }) version: number;
   @ApiProperty({ example: '2026-04-03T12:00:00.000Z' }) generatedAt: string;
-  @ApiProperty({ type: TestCuantitativoReportDto }) report: TestCuantitativoReportDto;
+  @ApiProperty({ type: TestCuantitativoReportDto })
+  report: TestCuantitativoReportDto;
 }

@@ -15,8 +15,14 @@ import {
 export class PrototipoDto {
   @ApiProperty() @IsString() id: string;
   @ApiPropertyOptional() @IsOptional() @IsString() nombre?: string;
-  @ApiPropertyOptional() @IsOptional() @IsIn(['low', 'low-mid', 'mid', 'mid-hi', 'high']) fidelidad?: string;
-  @ApiPropertyOptional() @IsOptional() @IsIn(['explorar', 'validar', 'comunicar', 'refinar']) proposito?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsIn(['low', 'low-mid', 'mid', 'mid-hi', 'high'])
+  fidelidad?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsIn(['explorar', 'validar', 'comunicar', 'refinar'])
+  proposito?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() herramienta?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() entregable?: string;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() completado?: boolean;
@@ -39,7 +45,10 @@ export class FaseDto {
 export class FeaturePrioridadDto {
   @ApiProperty() @IsString() id: string;
   @ApiPropertyOptional() @IsOptional() @IsString() nombre?: string;
-  @ApiPropertyOptional() @IsOptional() @IsIn(['alta', 'media', 'baja']) prioridad?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsIn(['alta', 'media', 'baja'])
+  prioridad?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() fase?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() razon?: string;
 }

@@ -128,21 +128,33 @@ export class PermissionService {
       rolePermissions: undefined,
     };
 
-    return { res, code: 0, message: 'Permisos del rol actualizados correctamente' };
+    return {
+      res,
+      code: 0,
+      message: 'Permisos del rol actualizados correctamente',
+    };
   }
 
   // ─── OVERRIDE INDIVIDUAL DE USUARIO ──────────────────────────────────────
   async setUserPermissionOverride(dto: UpdateUserPermissionOverrideRequestDto) {
-    const user = await this.prisma.user.findUnique({ where: { id: dto.userId } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: dto.userId },
+    });
     if (!user) {
-      throw new NotFoundException({ message: 'Usuario no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Usuario no encontrado',
+        code: 1,
+      });
     }
 
     const permission = await this.prisma.permission.findUnique({
       where: { id: dto.permissionId },
     });
     if (!permission) {
-      throw new NotFoundException({ message: 'Permiso no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Permiso no encontrado',
+        code: 1,
+      });
     }
 
     const res = await this.prisma.userPermission.upsert({

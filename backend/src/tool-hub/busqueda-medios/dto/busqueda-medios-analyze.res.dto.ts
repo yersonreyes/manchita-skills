@@ -13,5 +13,6 @@ export class BusquedaMediosReportDto {
 export class BusquedaMediosAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: BusquedaMediosReportDto }) report: BusquedaMediosReportDto;
+  @ApiProperty({ type: BusquedaMediosReportDto })
+  report: BusquedaMediosReportDto;
 }

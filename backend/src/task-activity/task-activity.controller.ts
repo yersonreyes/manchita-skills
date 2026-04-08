@@ -1,5 +1,10 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from 'src/auth/decorators';
 import { TaskActivityListResponseDto } from './dto/task-activity.res.dto';
 import { TaskActivityService } from './task-activity.service';
@@ -19,7 +24,11 @@ export class TaskActivityController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    return this.service.findByTask(+taskId, page ? +page : 1, limit ? +limit : 20);
+    return this.service.findByTask(
+      +taskId,
+      page ? +page : 1,
+      limit ? +limit : 20,
+    );
   }
 
   @Get('project/:projectId')
@@ -31,6 +40,10 @@ export class TaskActivityController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    return this.service.findByProject(+projectId, page ? +page : 1, limit ? +limit : 20);
+    return this.service.findByProject(
+      +projectId,
+      page ? +page : 1,
+      limit ? +limit : 20,
+    );
   }
 }

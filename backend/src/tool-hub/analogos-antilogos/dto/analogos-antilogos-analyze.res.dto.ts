@@ -7,7 +7,9 @@ export class AnalogoInsightDto {
   @ApiProperty({ example: 'Optimización de flujos mediante slots temporales' })
   principio: string;
 
-  @ApiProperty({ example: 'Implementar ventanas de entrega fijas para reducir incertidumbre' })
+  @ApiProperty({
+    example: 'Implementar ventanas de entrega fijas para reducir incertidumbre',
+  })
   potencial: string;
 }
 
@@ -15,15 +17,22 @@ export class AntilogoLessonDto {
   @ApiProperty({ example: 'Retail' })
   industria: string;
 
-  @ApiProperty({ example: 'Dependencia exclusiva del precio destruyó márgenes y lealtad' })
+  @ApiProperty({
+    example: 'Dependencia exclusiva del precio destruyó márgenes y lealtad',
+  })
   leccion: string;
 
-  @ApiProperty({ example: 'Construir propuesta de valor multidimensional más allá del precio' })
+  @ApiProperty({
+    example:
+      'Construir propuesta de valor multidimensional más allá del precio',
+  })
   safeguard: string;
 }
 
 export class AnalogosAntilogosReportDto {
-  @ApiProperty({ example: 'El análisis revela oportunidades de innovación disruptiva...' })
+  @ApiProperty({
+    example: 'El análisis revela oportunidades de innovación disruptiva...',
+  })
   executiveSummary: string;
 
   @ApiProperty({ type: [AnalogoInsightDto] })
@@ -32,10 +41,19 @@ export class AnalogosAntilogosReportDto {
   @ApiProperty({ type: [AntilogoLessonDto] })
   antilogoLessons: AntilogoLessonDto[];
 
-  @ApiProperty({ example: ['Priorizar experiencia sobre precio', 'Inspirarse en sistemas de gestión de flujo'] })
+  @ApiProperty({
+    example: [
+      'Priorizar experiencia sobre precio',
+      'Inspirarse en sistemas de gestión de flujo',
+    ],
+  })
   synthesisPrinciples: string[];
 
-  @ApiProperty({ example: ['Implementar sistema de slots de entrega en las próximas 4 semanas'] })
+  @ApiProperty({
+    example: [
+      'Implementar sistema de slots de entrega en las próximas 4 semanas',
+    ],
+  })
   recommendations: string[];
 }
 

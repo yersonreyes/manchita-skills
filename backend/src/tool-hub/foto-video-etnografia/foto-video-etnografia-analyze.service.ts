@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { FotoVideoEtnografiaAnalyzeReqDto } from './dto/foto-video-etnografia-analyze.req.dto';
-import { FotoVideoEtnografiaAnalyzeResDto, FotoVideoEtnografiaReportDto } from './dto/foto-video-etnografia-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  FotoVideoEtnografiaAnalyzeResDto,
+  FotoVideoEtnografiaReportDto,
+} from './dto/foto-video-etnografia-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class FotoVideoEtnografiaAnalyzeService {
@@ -12,23 +22,37 @@ export class FotoVideoEtnografiaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: FotoVideoEtnografiaAnalyzeReqDto): Promise<FotoVideoEtnografiaAnalyzeResDto> {
+  async execute(
+    dto: FotoVideoEtnografiaAnalyzeReqDto,
+  ): Promise<FotoVideoEtnografiaAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
 
     let report: FotoVideoEtnografiaReportDto;
     try {
-      report = JSON.parse(this.extractJson(raw)) as FotoVideoEtnografiaReportDto;
+      report = JSON.parse(
+        this.extractJson(raw),
+      ) as FotoVideoEtnografiaReportDto;
     } catch {
-      console.error('[FotoVideoEtnografiaAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[FotoVideoEtnografiaAnalyzeService] Raw AI response:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -111,7 +135,9 @@ REGLAS:
       for (let i = 0; i < data.registros.length; i++) {
         const r = data.registros[i];
         if (!r.observacion && !r.titulo) continue;
-        lines.push(`\n[${r.tipo?.toUpperCase() ?? 'FOTO'} ${i + 1}] ${r.titulo || '(sin título)'}`);
+        lines.push(
+          `\n[${r.tipo?.toUpperCase() ?? 'FOTO'} ${i + 1}] ${r.titulo || '(sin título)'}`,
+        );
         if (r.lugar) lines.push(`Lugar: ${r.lugar}`);
         if (r.sujeto) lines.push(`Sujeto: ${r.sujeto}`);
         if (r.observacion) lines.push(`Observación: ${r.observacion}`);
@@ -120,12 +146,14 @@ REGLAS:
     }
 
     if (data.patronesVisuales) {
-      lines.push(`\n--- PATRONES VISUALES (registrado en campo) ---\n${data.patronesVisuales}`);
+      lines.push(
+        `\n--- PATRONES VISUALES (registrado en campo) ---\n${data.patronesVisuales}`,
+      );
     }
 
     if (data.citasVisuales?.length) {
       lines.push('\n--- MOMENTOS CLAVE CAPTURADOS ---');
-      data.citasVisuales.forEach(c => lines.push(`• ${c}`));
+      data.citasVisuales.forEach((c) => lines.push(`• ${c}`));
     }
 
     if (data.observaciones) {

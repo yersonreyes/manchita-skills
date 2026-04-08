@@ -450,4 +450,8 @@ export class ProjectDetailComponent implements OnInit {
   goToTasks(): void {
     void this.router.navigate(['/platform/projects', this.projectId, 'tasks']);
   }
+
+  goToBudget(): void {
+    void this.router.navigate(['/platform/projects', this.projectId, 'budget']);
+  }
 }

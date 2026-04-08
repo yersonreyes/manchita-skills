@@ -20,5 +20,6 @@ export class FotoVideoEtnografiaReportDto {
 export class FotoVideoEtnografiaAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: FotoVideoEtnografiaReportDto }) report: FotoVideoEtnografiaReportDto;
+  @ApiProperty({ type: FotoVideoEtnografiaReportDto })
+  report: FotoVideoEtnografiaReportDto;
 }

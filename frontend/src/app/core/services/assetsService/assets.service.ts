@@ -22,4 +22,16 @@ export class AssetsService {
     );
     return response.res.url;
   }
+
+  async uploadDocument(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await firstValueFrom(
+      this.http.post<UploadResponse>(
+        `${environment.apiBaseUrl}/assets/upload-document`,
+        formData,
+      ),
+    );
+    return response.res.url;
+  }
 }

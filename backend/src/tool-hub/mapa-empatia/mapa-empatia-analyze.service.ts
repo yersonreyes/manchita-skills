@@ -1,8 +1,18 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { MapaEmpatiaAnalyzeReqDto, MapaEmpatiaDataDto } from './dto/mapa-empatia-analyze.req.dto';
-import { MapaEmpatiaAnalyzeResDto, MapaEmpatiaReportDto } from './dto/mapa-empatia-analyze.res.dto';
+import {
+  MapaEmpatiaAnalyzeReqDto,
+  MapaEmpatiaDataDto,
+} from './dto/mapa-empatia-analyze.req.dto';
+import {
+  MapaEmpatiaAnalyzeResDto,
+  MapaEmpatiaReportDto,
+} from './dto/mapa-empatia-analyze.res.dto';
 
 @Injectable()
 export class MapaEmpatiaAnalyzeService {
@@ -11,13 +21,22 @@ export class MapaEmpatiaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: MapaEmpatiaAnalyzeReqDto): Promise<MapaEmpatiaAnalyzeResDto> {
-    const { tool, projectNombre } = await this.loadContext(dto.toolApplicationId);
+  async execute(
+    dto: MapaEmpatiaAnalyzeReqDto,
+  ): Promise<MapaEmpatiaAnalyzeResDto> {
+    const { tool, projectNombre } = await this.loadContext(
+      dto.toolApplicationId,
+    );
     const systemPrompt = this.buildSystemPrompt(tool, projectNombre);
     const dataText = this.formatData(dto.data);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el informe en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el informe en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -27,7 +46,9 @@ export class MapaEmpatiaAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as MapaEmpatiaReportDto;
     } catch {
       console.error('[MapaEmpatiaAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -100,7 +121,7 @@ REGLAS:
     for (const q of quadrants) {
       if (q.items.length > 0) {
         lines.push(`\n--- ${q.label} ---`);
-        q.items.forEach(item => lines.push(`• ${item}`));
+        q.items.forEach((item) => lines.push(`• ${item}`));
       }
     }
 

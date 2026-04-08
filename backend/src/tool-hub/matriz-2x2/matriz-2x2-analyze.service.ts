@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { Matriz2x2AnalyzeReqDto, Matriz2x2ItemDto } from './dto/matriz-2x2-analyze.req.dto';
-import { Matriz2x2AnalyzeResDto, Matriz2x2ReportDto } from './dto/matriz-2x2-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  Matriz2x2AnalyzeReqDto,
+  Matriz2x2ItemDto,
+} from './dto/matriz-2x2-analyze.req.dto';
+import {
+  Matriz2x2AnalyzeResDto,
+  Matriz2x2ReportDto,
+} from './dto/matriz-2x2-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class Matriz2x2AnalyzeService {
@@ -18,7 +31,12 @@ export class Matriz2x2AnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +46,9 @@ export class Matriz2x2AnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as Matriz2x2ReportDto;
     } catch {
       console.error('[Matriz2x2AnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -121,11 +141,15 @@ REGLAS:
     ];
 
     for (const c of cuadrantes) {
-      const items = data.items.filter((i: Matriz2x2ItemDto) => i.ejeX === c.ejeX && i.ejeY === c.ejeY);
+      const items = data.items.filter(
+        (i: Matriz2x2ItemDto) => i.ejeX === c.ejeX && i.ejeY === c.ejeY,
+      );
       if (!items.length) continue;
       lines.push(`\n--- CUADRANTE: ${c.label} ---`);
-      items.forEach(i => {
-        lines.push(`  • ${i.nombre}${i.descripcion ? ` — ${i.descripcion}` : ''}`);
+      items.forEach((i) => {
+        lines.push(
+          `  • ${i.nombre}${i.descripcion ? ` — ${i.descripcion}` : ''}`,
+        );
       });
     }
 

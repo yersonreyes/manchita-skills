@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { MetaforaProblemaAnalyzeReqDto } from './dto/metafora-problema-analyze.req.dto';
-import { MetaforaProblemaAnalyzeResDto, MetaforaProblemaReportDto } from './dto/metafora-problema-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  MetaforaProblemaAnalyzeResDto,
+  MetaforaProblemaReportDto,
+} from './dto/metafora-problema-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class MetaforaProblemaAnalyzeService {
@@ -12,13 +22,20 @@ export class MetaforaProblemaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: MetaforaProblemaAnalyzeReqDto): Promise<MetaforaProblemaAnalyzeResDto> {
+  async execute(
+    dto: MetaforaProblemaAnalyzeReqDto,
+  ): Promise<MetaforaProblemaAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +45,9 @@ export class MetaforaProblemaAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as MetaforaProblemaReportDto;
     } catch {
       console.error('[MetaforaProblemaAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -120,13 +139,15 @@ REGLAS:
         if (m.descripcion) lines.push(`Descripción: ${m.descripcion}`);
         if (m.insights?.length) {
           lines.push('Insights documentados:');
-          m.insights.forEach(ins => lines.push(`  • ${ins}`));
+          m.insights.forEach((ins) => lines.push(`  • ${ins}`));
         }
       });
     }
 
     if (data.metaforaSeleccionada) {
-      lines.push(`\nMETÁFORA SELECCIONADA POR EL EQUIPO:\n"${data.metaforaSeleccionada}"`);
+      lines.push(
+        `\nMETÁFORA SELECCIONADA POR EL EQUIPO:\n"${data.metaforaSeleccionada}"`,
+      );
     }
 
     return lines.join('\n');

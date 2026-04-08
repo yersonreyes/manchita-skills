@@ -9,7 +9,8 @@ export class TensionPerspectivaDto {
 export class Perspectiva360ReportDto {
   @ApiProperty() executiveSummary: string;
   @ApiProperty({ type: [String] }) insightsClave: string[];
-  @ApiProperty({ type: [TensionPerspectivaDto] }) tensionesDetectadas: TensionPerspectivaDto[];
+  @ApiProperty({ type: [TensionPerspectivaDto] })
+  tensionesDetectadas: TensionPerspectivaDto[];
   @ApiProperty() perspectivaMasRiesgosa: string;
   @ApiProperty() perspectivaMasOportunidad: string;
   @ApiProperty() brechaCritica: string;
@@ -20,5 +21,6 @@ export class Perspectiva360ReportDto {
 export class Perspectiva360AnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: Perspectiva360ReportDto }) report: Perspectiva360ReportDto;
+  @ApiProperty({ type: Perspectiva360ReportDto })
+  report: Perspectiva360ReportDto;
 }

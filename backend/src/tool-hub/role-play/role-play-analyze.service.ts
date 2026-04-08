@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { RolePlayAnalyzeReqDto } from './dto/role-play.req.dto';
-import { RolePlayAnalyzeResDto, RolePlayAnalysisDto } from './dto/role-play.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  RolePlayAnalyzeResDto,
+  RolePlayAnalysisDto,
+} from './dto/role-play.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class RolePlayAnalyzeService {
@@ -17,11 +27,19 @@ export class RolePlayAnalyzeService {
     const systemPrompt = this.buildSystemPrompt(tool, project);
 
     const transcript = dto.history
-      .map((m) => `${m.role === 'user' ? 'Director/Observador' : 'Facilitador IA (Roles)'}: ${m.content}`)
+      .map(
+        (m) =>
+          `${m.role === 'user' ? 'Director/Observador' : 'Facilitador IA (Roles)'}: ${m.content}`,
+      )
       .join('\n\n');
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `Aquí está la simulación completa para analizar:\n\n${transcript}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `Aquí está la simulación completa para analizar:\n\n${transcript}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -30,8 +48,13 @@ export class RolePlayAnalyzeService {
     try {
       analysis = JSON.parse(this.extractJson(raw));
     } catch (err) {
-      console.error('[RolePlayAnalyzeService] Raw AI response that failed to parse:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[RolePlayAnalyzeService] Raw AI response that failed to parse:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return { analysis };

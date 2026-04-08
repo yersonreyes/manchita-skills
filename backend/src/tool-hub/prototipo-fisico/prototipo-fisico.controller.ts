@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { PrototipoFisicoAnalyzeService } from './prototipo-fisico-analyze.service';
 import { PrototipoFisicoAnalyzeReqDto } from './dto/prototipo-fisico-analyze.req.dto';
@@ -15,7 +20,9 @@ export class PrototipoFisicoController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un análisis AI del Prototipo Físico' })
   @ApiResponse({ status: 201, type: PrototipoFisicoAnalyzeResDto })
-  analyze(@Body() dto: PrototipoFisicoAnalyzeReqDto): Promise<PrototipoFisicoAnalyzeResDto> {
+  analyze(
+    @Body() dto: PrototipoFisicoAnalyzeReqDto,
+  ): Promise<PrototipoFisicoAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

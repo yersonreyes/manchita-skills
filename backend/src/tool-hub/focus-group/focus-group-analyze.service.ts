@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { FocusGroupAnalyzeReqDto } from './dto/focus-group-analyze.req.dto';
-import { FocusGroupAnalyzeResDto, FocusGroupReportDto } from './dto/focus-group-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  FocusGroupAnalyzeResDto,
+  FocusGroupReportDto,
+} from './dto/focus-group-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class FocusGroupAnalyzeService {
@@ -12,13 +22,20 @@ export class FocusGroupAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: FocusGroupAnalyzeReqDto): Promise<FocusGroupAnalyzeResDto> {
+  async execute(
+    dto: FocusGroupAnalyzeReqDto,
+  ): Promise<FocusGroupAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +45,9 @@ export class FocusGroupAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as FocusGroupReportDto;
     } catch {
       console.error('[FocusGroupAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -106,8 +125,10 @@ REGLAS:
     const lines: string[] = ['=== FOCUS GROUP ==='];
 
     if (data.objetivo) lines.push(`Objetivo: ${data.objetivo}`);
-    if (data.perfilParticipantes) lines.push(`Perfil de participantes: ${data.perfilParticipantes}`);
-    if (data.cantidadParticipantes) lines.push(`Cantidad de participantes: ${data.cantidadParticipantes}`);
+    if (data.perfilParticipantes)
+      lines.push(`Perfil de participantes: ${data.perfilParticipantes}`);
+    if (data.cantidadParticipantes)
+      lines.push(`Cantidad de participantes: ${data.cantidadParticipantes}`);
     if (data.ubicacion) lines.push(`Ubicación: ${data.ubicacion}`);
     if (data.fecha) lines.push(`Fecha: ${data.fecha}`);
 
@@ -116,18 +137,24 @@ REGLAS:
       for (let i = 0; i < data.preguntas.length; i++) {
         const p = data.preguntas[i];
         if (!p.pregunta && !p.respuestasGrupales) continue;
-        lines.push(`\n[${p.fase ?? 'Principal'}] P${i + 1}: ${p.pregunta || '(pregunta no registrada)'}`);
-        lines.push(`Respuestas grupales: ${p.respuestasGrupales || '(sin registro)'}`);
+        lines.push(
+          `\n[${p.fase ?? 'Principal'}] P${i + 1}: ${p.pregunta || '(pregunta no registrada)'}`,
+        );
+        lines.push(
+          `Respuestas grupales: ${p.respuestasGrupales || '(sin registro)'}`,
+        );
       }
     }
 
     if (data.dinamicasGrupales) {
-      lines.push(`\n--- DINÁMICAS GRUPALES OBSERVADAS ---\n${data.dinamicasGrupales}`);
+      lines.push(
+        `\n--- DINÁMICAS GRUPALES OBSERVADAS ---\n${data.dinamicasGrupales}`,
+      );
     }
 
     if (data.citasClave?.length) {
       lines.push('\n--- CITAS CLAVE REGISTRADAS ---');
-      data.citasClave.forEach(c => lines.push(`"${c}"`));
+      data.citasClave.forEach((c) => lines.push(`"${c}"`));
     }
 
     if (data.observaciones) {

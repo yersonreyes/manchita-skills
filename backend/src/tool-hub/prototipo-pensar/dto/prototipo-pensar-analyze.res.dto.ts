@@ -18,5 +18,6 @@ export class PrototipoPensarReportDto {
 export class PrototipoPensarAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: PrototipoPensarReportDto }) report: PrototipoPensarReportDto;
+  @ApiProperty({ type: PrototipoPensarReportDto })
+  report: PrototipoPensarReportDto;
 }

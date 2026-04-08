@@ -7,7 +7,10 @@ export class HipotesisDtoReq {
   @IsString()
   id: string;
 
-  @ApiProperty({ example: 'Si implementamos checkout express, entonces reduciremos abandono un 20%, porque los usuarios abandonan en el paso de datos de envío.' })
+  @ApiProperty({
+    example:
+      'Si implementamos checkout express, entonces reduciremos abandono un 20%, porque los usuarios abandonan en el paso de datos de envío.',
+  })
   @IsString()
   formulacion: string;
 
@@ -19,13 +22,19 @@ export class HipotesisDtoReq {
   @IsString()
   incertidumbre: string;
 
-  @ApiProperty({ example: 'A/B test con 500 usuarios durante 2 semanas midiendo tasa de abandono en el paso 3.' })
+  @ApiProperty({
+    example:
+      'A/B test con 500 usuarios durante 2 semanas midiendo tasa de abandono en el paso 3.',
+  })
   @IsString()
   experimento: string;
 }
 
 export class MatrizHipotesisDataDto {
-  @ApiProperty({ example: 'Hipótesis generadas en la fase de Definición para validar las principales asunciones del rediseño de checkout.' })
+  @ApiProperty({
+    example:
+      'Hipótesis generadas en la fase de Definición para validar las principales asunciones del rediseño de checkout.',
+  })
   @IsString()
   contexto: string;
 

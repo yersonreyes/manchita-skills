@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { PrototipoPensarAnalyzeReqDto } from './dto/prototipo-pensar-analyze.req.dto';
-import { PrototipoPensarAnalyzeResDto, PrototipoPensarReportDto } from './dto/prototipo-pensar-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  PrototipoPensarAnalyzeResDto,
+  PrototipoPensarReportDto,
+} from './dto/prototipo-pensar-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
   sketch: 'Sketch (dibujo rápido en papel)',
@@ -19,13 +29,20 @@ export class PrototipoPensarAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: PrototipoPensarAnalyzeReqDto): Promise<PrototipoPensarAnalyzeResDto> {
+  async execute(
+    dto: PrototipoPensarAnalyzeReqDto,
+  ): Promise<PrototipoPensarAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -35,7 +52,9 @@ export class PrototipoPensarAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as PrototipoPensarReportDto;
     } catch {
       console.error('[PrototipoPensarAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -101,30 +120,41 @@ REGLAS:
     const { data } = dto;
     const lines: string[] = ['=== PROTOTIPO PARA PENSAR ==='];
 
-    if (data.preguntaExplorar) lines.push(`\nPREGUNTA / HIPÓTESIS A EXPLORAR:\n"${data.preguntaExplorar}"`);
+    if (data.preguntaExplorar)
+      lines.push(
+        `\nPREGUNTA / HIPÓTESIS A EXPLORAR:\n"${data.preguntaExplorar}"`,
+      );
     if (data.contexto) lines.push(`\nCONTEXTO:\n"${data.contexto}"`);
 
     if (data.iteraciones?.length) {
       lines.push(`\nITERACIONES (${data.iteraciones.length}):`);
       data.iteraciones.forEach((iter, i) => {
         const estado = iter.descartada ? ' [DESCARTADA]' : '';
-        const tipo = iter.tipo ? ` — ${TIPO_LABELS[iter.tipo] ?? iter.tipo}` : '';
+        const tipo = iter.tipo
+          ? ` — ${TIPO_LABELS[iter.tipo] ?? iter.tipo}`
+          : '';
         lines.push(`\n  Iteración ${i + 1}${tipo}${estado}`);
         if (iter.herramienta) lines.push(`  Herramienta: ${iter.herramienta}`);
         if (iter.duracion) lines.push(`  Duración: ${iter.duracion}`);
-        if (iter.descripcion) lines.push(`  Descripción: "${iter.descripcion}"`);
+        if (iter.descripcion)
+          lines.push(`  Descripción: "${iter.descripcion}"`);
         if (iter.aprendizajes?.length) {
           lines.push(`  Aprendizajes:`);
-          iter.aprendizajes.forEach(a => { if (a) lines.push(`    • "${a}"`); });
+          iter.aprendizajes.forEach((a) => {
+            if (a) lines.push(`    • "${a}"`);
+          });
         }
       });
     }
 
-    if (data.decisionFinal) lines.push(`\nDECISIÓN FINAL:\n"${data.decisionFinal}"`);
+    if (data.decisionFinal)
+      lines.push(`\nDECISIÓN FINAL:\n"${data.decisionFinal}"`);
 
     if (data.proximosPasos?.length) {
       lines.push(`\nPRÓXIMOS PASOS:`);
-      data.proximosPasos.forEach(p => { if (p) lines.push(`  • ${p}`); });
+      data.proximosPasos.forEach((p) => {
+        if (p) lines.push(`  • ${p}`);
+      });
     }
 
     return lines.join('\n');

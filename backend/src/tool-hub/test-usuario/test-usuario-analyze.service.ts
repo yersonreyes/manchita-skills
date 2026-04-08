@@ -1,22 +1,32 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { TestUsuarioAnalyzeReqDto } from './dto/test-usuario-analyze.req.dto';
-import { TestUsuarioAnalyzeResDto, TestUsuarioReportDto } from './dto/test-usuario-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  TestUsuarioAnalyzeResDto,
+  TestUsuarioReportDto,
+} from './dto/test-usuario-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const EXITO_LABELS: Record<string, string> = {
-  si:      '✅ Completó',
+  si: '✅ Completó',
   parcial: '⚠️ Parcial',
-  no:      '❌ No completó',
+  no: '❌ No completó',
 };
 
 const TIPO_LABELS: Record<string, string> = {
-  'moderado':     'Moderado (con facilitador)',
-  'no-moderado':  'No moderado (autónomo)',
-  'remoto':       'Remoto',
-  'presencial':   'Presencial / Laboratorio',
-  'guerrilla':    'Guerrilla (espacio público)',
+  moderado: 'Moderado (con facilitador)',
+  'no-moderado': 'No moderado (autónomo)',
+  remoto: 'Remoto',
+  presencial: 'Presencial / Laboratorio',
+  guerrilla: 'Guerrilla (espacio público)',
 };
 
 @Injectable()
@@ -26,13 +36,20 @@ export class TestUsuarioAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: TestUsuarioAnalyzeReqDto): Promise<TestUsuarioAnalyzeResDto> {
+  async execute(
+    dto: TestUsuarioAnalyzeReqDto,
+  ): Promise<TestUsuarioAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -42,7 +59,9 @@ export class TestUsuarioAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as TestUsuarioReportDto;
     } catch {
       console.error('[TestUsuarioAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -114,7 +133,9 @@ REGLAS:
     if (data.sesiones?.length) {
       lines.push(`\n--- SESIONES (${data.sesiones.length} participantes) ---`);
       data.sesiones.forEach((s, i) => {
-        lines.push(`\n[Sesión ${i + 1}] ${s.participante || 'Participante ' + (i + 1)}`);
+        lines.push(
+          `\n[Sesión ${i + 1}] ${s.participante || 'Participante ' + (i + 1)}`,
+        );
         if (s.perfil) lines.push(`  Perfil: ${s.perfil}`);
         if (s.fecha) lines.push(`  Fecha: ${s.fecha}`);
         if (s.tipo) lines.push(`  Tipo: ${TIPO_LABELS[s.tipo] ?? s.tipo}`);
@@ -122,9 +143,14 @@ REGLAS:
         if (s.tareas?.length) {
           lines.push('  Tareas:');
           s.tareas.forEach((t, ti) => {
-            const exito = t.exito ? (EXITO_LABELS[t.exito] ?? t.exito) : '⬜ Sin registro';
-            const tiempo = t.tiempoSegundos != null ? ` | ${t.tiempoSegundos}s` : '';
-            lines.push(`    ${ti + 1}. "${t.nombre || '(sin nombre)'}" → ${exito}${tiempo}`);
+            const exito = t.exito
+              ? (EXITO_LABELS[t.exito] ?? t.exito)
+              : '⬜ Sin registro';
+            const tiempo =
+              t.tiempoSegundos != null ? ` | ${t.tiempoSegundos}s` : '';
+            lines.push(
+              `    ${ti + 1}. "${t.nombre || '(sin nombre)'}" → ${exito}${tiempo}`,
+            );
             if (t.observaciones) lines.push(`       Obs: ${t.observaciones}`);
           });
         }
@@ -132,7 +158,7 @@ REGLAS:
         if (s.hallazgos) lines.push(`  Hallazgos: ${s.hallazgos}`);
         if (s.citas?.length) {
           lines.push('  Citas:');
-          s.citas.forEach(c => lines.push(`    - "${c}"`));
+          s.citas.forEach((c) => lines.push(`    - "${c}"`));
         }
       });
     }

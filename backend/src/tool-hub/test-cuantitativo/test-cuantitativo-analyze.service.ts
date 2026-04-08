@@ -1,16 +1,26 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { TestCuantitativoAnalyzeReqDto } from './dto/test-cuantitativo-analyze.req.dto';
-import { TestCuantitativoAnalyzeResDto, TestCuantitativoReportDto } from './dto/test-cuantitativo-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  TestCuantitativoAnalyzeResDto,
+  TestCuantitativoReportDto,
+} from './dto/test-cuantitativo-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const METODO_LABELS: Record<string, string> = {
-  encuesta:    'Encuesta post-task',
-  analytics:   'Analytics / Métricas del sistema',
+  encuesta: 'Encuesta post-task',
+  analytics: 'Analytics / Métricas del sistema',
   'ab-testing': 'A/B Testing',
-  masiva:      'Encuesta masiva',
-  mixto:       'Método mixto',
+  masiva: 'Encuesta masiva',
+  mixto: 'Método mixto',
 };
 
 @Injectable()
@@ -20,13 +30,20 @@ export class TestCuantitativoAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: TestCuantitativoAnalyzeReqDto): Promise<TestCuantitativoAnalyzeResDto> {
+  async execute(
+    dto: TestCuantitativoAnalyzeReqDto,
+  ): Promise<TestCuantitativoAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -36,7 +53,9 @@ export class TestCuantitativoAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as TestCuantitativoReportDto;
     } catch {
       console.error('[TestCuantitativoAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -106,7 +125,8 @@ REGLAS:
     const { data } = dto;
     const lines: string[] = ['=== TEST CUANTITATIVO ==='];
 
-    if (data.metodo) lines.push(`Método: ${METODO_LABELS[data.metodo] ?? data.metodo}`);
+    if (data.metodo)
+      lines.push(`Método: ${METODO_LABELS[data.metodo] ?? data.metodo}`);
     if (data.participantes) lines.push(`Participantes: ${data.participantes}`);
     if (data.contexto) lines.push(`\nContexto: ${data.contexto}`);
 
@@ -116,10 +136,14 @@ REGLAS:
         lines.push(`\nTarea ${i + 1}: ${t.nombre || '(sin nombre)'}`);
         if (t.descripcion) lines.push(`  Descripción: ${t.descripcion}`);
         const metricas: string[] = [];
-        if (t.exito !== null && t.exito !== undefined) metricas.push(`Éxito: ${t.exito}%`);
-        if (t.tiempoSegundos !== null && t.tiempoSegundos !== undefined) metricas.push(`Tiempo: ${t.tiempoSegundos}s`);
-        if (t.errores !== null && t.errores !== undefined) metricas.push(`Errores: ${t.errores}`);
-        if (t.satisfaccion !== null && t.satisfaccion !== undefined) metricas.push(`Satisfacción: ${t.satisfaccion}/5`);
+        if (t.exito !== null && t.exito !== undefined)
+          metricas.push(`Éxito: ${t.exito}%`);
+        if (t.tiempoSegundos !== null && t.tiempoSegundos !== undefined)
+          metricas.push(`Tiempo: ${t.tiempoSegundos}s`);
+        if (t.errores !== null && t.errores !== undefined)
+          metricas.push(`Errores: ${t.errores}`);
+        if (t.satisfaccion !== null && t.satisfaccion !== undefined)
+          metricas.push(`Satisfacción: ${t.satisfaccion}/5`);
         if (metricas.length) lines.push(`  Métricas: ${metricas.join(' | ')}`);
         else lines.push('  Métricas: (sin datos)');
         if (t.notas) lines.push(`  Notas: ${t.notas}`);
@@ -127,8 +151,16 @@ REGLAS:
     }
 
     lines.push('\n--- SCORES GLOBALES ---');
-    lines.push(data.sus !== null && data.sus !== undefined ? `SUS: ${data.sus}/100` : 'SUS: (no registrado)');
-    lines.push(data.nps !== null && data.nps !== undefined ? `NPS: ${data.nps}` : 'NPS: (no registrado)');
+    lines.push(
+      data.sus !== null && data.sus !== undefined
+        ? `SUS: ${data.sus}/100`
+        : 'SUS: (no registrado)',
+    );
+    lines.push(
+      data.nps !== null && data.nps !== undefined
+        ? `NPS: ${data.nps}`
+        : 'NPS: (no registrado)',
+    );
 
     if (data.notas) lines.push(`\nNotas generales: ${data.notas}`);
 

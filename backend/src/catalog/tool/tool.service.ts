@@ -71,7 +71,10 @@ export class ToolService {
     });
 
     if (!res) {
-      throw new NotFoundException({ message: 'Herramienta no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Herramienta no encontrada',
+        code: 1,
+      });
     }
 
     return { res, code: 0, message: 'Herramienta encontrada' };
@@ -81,7 +84,10 @@ export class ToolService {
   async update(id: number, dto: UpdateToolRequestDto) {
     const existing = await this.prisma.tool.findUnique({ where: { id } });
     if (!existing) {
-      throw new NotFoundException({ message: 'Herramienta no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Herramienta no encontrada',
+        code: 1,
+      });
     }
 
     const data: any = {};
@@ -92,16 +98,22 @@ export class ToolService {
         where: { codigo, NOT: { id } },
       });
       if (duplicated) {
-        throw new ConflictException({ message: 'El código ya está en uso', code: 1 });
+        throw new ConflictException({
+          message: 'El código ya está en uso',
+          code: 1,
+        });
       }
       data.codigo = codigo;
     }
 
     if (dto.nombre !== undefined) data.nombre = dto.nombre.trim();
-    if (dto.descripcion !== undefined) data.descripcion = dto.descripcion.trim();
-    if (dto.comoSeUsa !== undefined) data.comoSeUsa = dto.comoSeUsa?.trim() ?? null;
+    if (dto.descripcion !== undefined)
+      data.descripcion = dto.descripcion.trim();
+    if (dto.comoSeUsa !== undefined)
+      data.comoSeUsa = dto.comoSeUsa?.trim() ?? null;
     if (dto.ejemplo !== undefined) data.ejemplo = dto.ejemplo?.trim() ?? null;
-    if (dto.cuandoUsarlo !== undefined) data.cuandoUsarlo = dto.cuandoUsarlo?.trim() ?? null;
+    if (dto.cuandoUsarlo !== undefined)
+      data.cuandoUsarlo = dto.cuandoUsarlo?.trim() ?? null;
     if (dto.activo !== undefined) data.activo = dto.activo;
 
     if (Object.keys(data).length === 0) {
@@ -109,7 +121,11 @@ export class ToolService {
         where: { id },
         include: TOOL_INCLUDE,
       });
-      return { res: current, code: 0, message: 'No hay cambios para actualizar' };
+      return {
+        res: current,
+        code: 0,
+        message: 'No hay cambios para actualizar',
+      };
     }
 
     const res = await this.prisma.tool.update({
@@ -125,7 +141,10 @@ export class ToolService {
   async assignCategories(id: number, dto: AssignToolCategoriesRequestDto) {
     const tool = await this.prisma.tool.findUnique({ where: { id } });
     if (!tool) {
-      throw new NotFoundException({ message: 'Herramienta no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Herramienta no encontrada',
+        code: 1,
+      });
     }
 
     // Eliminar categorías actuales

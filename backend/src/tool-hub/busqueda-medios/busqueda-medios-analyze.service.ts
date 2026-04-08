@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { BusquedaMediosAnalyzeReqDto } from './dto/busqueda-medios-analyze.req.dto';
@@ -6,7 +10,10 @@ import {
   BusquedaMediosAnalyzeResDto,
   BusquedaMediosReportDto,
 } from './dto/busqueda-medios-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class BusquedaMediosAnalyzeService {
@@ -15,13 +22,20 @@ export class BusquedaMediosAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: BusquedaMediosAnalyzeReqDto): Promise<BusquedaMediosAnalyzeResDto> {
+  async execute(
+    dto: BusquedaMediosAnalyzeReqDto,
+  ): Promise<BusquedaMediosAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -31,7 +45,9 @@ export class BusquedaMediosAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as BusquedaMediosReportDto;
     } catch {
       console.error('[BusquedaMediosAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -98,7 +114,9 @@ REGLAS:
     if (data.tema) lines.push(`Tema investigado: ${data.tema}`);
 
     if (data.queries?.length) {
-      lines.push(`\nQueries utilizadas:\n${data.queries.map(q => `- ${q}`).join('\n')}`);
+      lines.push(
+        `\nQueries utilizadas:\n${data.queries.map((q) => `- ${q}`).join('\n')}`,
+      );
     }
 
     if (data.hallazgos?.length) {
@@ -111,7 +129,9 @@ REGLAS:
     }
 
     if (data.tendencias?.length) {
-      lines.push(`\n--- TENDENCIAS IDENTIFICADAS ---\n${data.tendencias.map(t => `- ${t}`).join('\n')}`);
+      lines.push(
+        `\n--- TENDENCIAS IDENTIFICADAS ---\n${data.tendencias.map((t) => `- ${t}`).join('\n')}`,
+      );
     }
 
     if (data.sentiment) {
@@ -119,11 +139,15 @@ REGLAS:
     }
 
     if (data.narrativas?.length) {
-      lines.push(`\n--- NARRATIVAS OBSERVADAS ---\n${data.narrativas.map(n => `- ${n}`).join('\n')}`);
+      lines.push(
+        `\n--- NARRATIVAS OBSERVADAS ---\n${data.narrativas.map((n) => `- ${n}`).join('\n')}`,
+      );
     }
 
     if (data.gaps?.length) {
-      lines.push(`\n--- GAPS IDENTIFICADOS ---\n${data.gaps.map(g => `- ${g}`).join('\n')}`);
+      lines.push(
+        `\n--- GAPS IDENTIFICADOS ---\n${data.gaps.map((g) => `- ${g}`).join('\n')}`,
+      );
     }
 
     return lines.join('\n');

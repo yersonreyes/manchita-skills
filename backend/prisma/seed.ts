@@ -21,6 +21,8 @@ const PERMISSIONS = [
   { codigo: 'requirements:update', descripcion: 'Actualizar requisitos del proyecto' },
   { codigo: 'requirements:status', descripcion: 'Cambiar estado de requisitos del proyecto' },
   { codigo: 'requirements:delete', descripcion: 'Eliminar requisitos del proyecto' },
+  { codigo: 'project-budget:read', descripcion: 'Ver presupuesto y recursos del proyecto' },
+  { codigo: 'project-budget:update', descripcion: 'Modificar presupuesto y gestionar recursos' },
 ];
 
 const ROLES = [
@@ -44,6 +46,8 @@ const ROLES = [
       'requirements:update',
       'requirements:status',
       'requirements:delete',
+      'project-budget:read',
+      'project-budget:update',
     ],
   },
   {
@@ -61,13 +65,15 @@ const ROLES = [
       'requirements:create',
       'requirements:update',
       'requirements:status',
+      'project-budget:read',
+      'project-budget:update',
     ],
   },
   {
     codigo: 'VIEWER',
     nombre: 'Visualizador',
     descripcion: 'Solo puede leer contenido',
-    permissions: ['users:read', 'permissions:read', 'wiki:read', 'requirements:read'],
+    permissions: ['users:read', 'permissions:read', 'wiki:read', 'requirements:read', 'project-budget:read'],
   },
 ];
 

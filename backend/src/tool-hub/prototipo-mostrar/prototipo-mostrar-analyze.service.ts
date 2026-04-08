@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { PrototipoMostrarAnalyzeReqDto } from './dto/prototipo-mostrar-analyze.req.dto';
-import { PrototipoMostrarAnalyzeResDto, PrototipoMostrarReportDto } from './dto/prototipo-mostrar-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  PrototipoMostrarAnalyzeResDto,
+  PrototipoMostrarReportDto,
+} from './dto/prototipo-mostrar-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const NIVEL_LABELS: Record<string, string> = {
   estatico: 'Demo estático (screenshots, mockups)',
@@ -19,13 +29,20 @@ export class PrototipoMostrarAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: PrototipoMostrarAnalyzeReqDto): Promise<PrototipoMostrarAnalyzeResDto> {
+  async execute(
+    dto: PrototipoMostrarAnalyzeReqDto,
+  ): Promise<PrototipoMostrarAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -35,7 +52,9 @@ export class PrototipoMostrarAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as PrototipoMostrarReportDto;
     } catch {
       console.error('[PrototipoMostrarAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -104,22 +123,33 @@ REGLAS:
     const lines: string[] = ['=== PROTOTIPO PARA MOSTRAR ==='];
 
     if (data.audiencia) lines.push(`\nAUDIENCIA: ${data.audiencia}`);
-    if (data.nivelDemo) lines.push(`NIVEL DE DEMO: ${NIVEL_LABELS[data.nivelDemo] ?? data.nivelDemo}`);
+    if (data.nivelDemo)
+      lines.push(
+        `NIVEL DE DEMO: ${NIVEL_LABELS[data.nivelDemo] ?? data.nivelDemo}`,
+      );
 
-    if (data.mensajeClave) lines.push(`\nMENSAJE CLAVE:\n"${data.mensajeClave}"`);
-    if (data.problemaQueResuelve) lines.push(`\nPROBLEMA QUE RESUELVE:\n"${data.problemaQueResuelve}"`);
+    if (data.mensajeClave)
+      lines.push(`\nMENSAJE CLAVE:\n"${data.mensajeClave}"`);
+    if (data.problemaQueResuelve)
+      lines.push(`\nPROBLEMA QUE RESUELVE:\n"${data.problemaQueResuelve}"`);
 
     if (data.beneficiosDestacados?.length) {
       lines.push(`\nBENEFICIOS A DESTACAR:`);
-      data.beneficiosDestacados.forEach(b => { if (b) lines.push(`  • ${b}`); });
+      data.beneficiosDestacados.forEach((b) => {
+        if (b) lines.push(`  • ${b}`);
+      });
     }
 
     if (data.herramientasUsadas?.length) {
-      lines.push(`\nHERRAMIENTAS USADAS: ${data.herramientasUsadas.join(', ')}`);
+      lines.push(
+        `\nHERRAMIENTAS USADAS: ${data.herramientasUsadas.join(', ')}`,
+      );
     }
 
     if (data.preguntasAnticipadas?.length) {
-      lines.push(`\nPREGUNTAS ANTICIPADAS (${data.preguntasAnticipadas.length}):`);
+      lines.push(
+        `\nPREGUNTAS ANTICIPADAS (${data.preguntasAnticipadas.length}):`,
+      );
       data.preguntasAnticipadas.forEach((qa, i) => {
         if (qa.pregunta) {
           lines.push(`\n  ${i + 1}. Q: "${qa.pregunta}"`);
@@ -130,12 +160,16 @@ REGLAS:
     }
 
     if (data.resultadosPresentacion) {
-      lines.push(`\nRESULTADOS DE LA PRESENTACIÓN:\n"${data.resultadosPresentacion}"`);
+      lines.push(
+        `\nRESULTADOS DE LA PRESENTACIÓN:\n"${data.resultadosPresentacion}"`,
+      );
     }
 
     if (data.feedbackRecibido?.length) {
       lines.push(`\nFEEDBACK RECIBIDO:`);
-      data.feedbackRecibido.forEach(f => { if (f) lines.push(`  • "${f}"`); });
+      data.feedbackRecibido.forEach((f) => {
+        if (f) lines.push(`  • "${f}"`);
+      });
     }
 
     return lines.join('\n');

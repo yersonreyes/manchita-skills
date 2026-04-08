@@ -39,7 +39,9 @@ export class ToolApplicationController {
   // ─── CREATE ───────────────────────────────────────────────────────────────
   @Post('create')
   @RequirePermission('tool-applications:create')
-  @ApiOperation({ summary: 'Crea una aplicación de herramienta en una fase de proyecto' })
+  @ApiOperation({
+    summary: 'Crea una aplicación de herramienta en una fase de proyecto',
+  })
   @ApiBody({ type: CreateToolApplicationRequestDto })
   @ApiResponse({ status: 201, type: ToolApplicationResponseDto })
   @ApiResponse({ status: 404, type: ErrorResponseDto })
@@ -50,7 +52,9 @@ export class ToolApplicationController {
   // ─── READ BY PROJECT PHASE ────────────────────────────────────────────────
   @Get('project-phase/:projectPhaseId')
   @RequirePermission('tool-applications:read')
-  @ApiOperation({ summary: 'Obtiene las aplicaciones de herramientas de una fase de proyecto' })
+  @ApiOperation({
+    summary: 'Obtiene las aplicaciones de herramientas de una fase de proyecto',
+  })
   @ApiResponse({ status: 200, type: GetAllToolApplicationsResponseDto })
   @ApiResponse({ status: 404, type: ErrorResponseDto })
   findByProjectPhase(@Param('projectPhaseId') projectPhaseId: string) {
@@ -74,7 +78,10 @@ export class ToolApplicationController {
   @ApiBody({ type: UpdateToolApplicationRequestDto })
   @ApiResponse({ status: 200, type: ToolApplicationResponseDto })
   @ApiResponse({ status: 404, type: ErrorResponseDto })
-  update(@Param('id') id: string, @Body() dto: UpdateToolApplicationRequestDto) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateToolApplicationRequestDto,
+  ) {
     return this.service.update(+id, dto);
   }
 

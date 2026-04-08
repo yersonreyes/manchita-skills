@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { PrototipoPensarAnalyzeService } from './prototipo-pensar-analyze.service';
 import { PrototipoPensarAnalyzeReqDto } from './dto/prototipo-pensar-analyze.req.dto';
@@ -15,7 +20,9 @@ export class PrototipoPensarController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un análisis AI del Prototipo para Pensar' })
   @ApiResponse({ status: 201, type: PrototipoPensarAnalyzeResDto })
-  analyze(@Body() dto: PrototipoPensarAnalyzeReqDto): Promise<PrototipoPensarAnalyzeResDto> {
+  analyze(
+    @Body() dto: PrototipoPensarAnalyzeReqDto,
+  ): Promise<PrototipoPensarAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

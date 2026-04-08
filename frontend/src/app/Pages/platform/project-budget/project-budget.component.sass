@@ -1,0 +1,1399 @@
+:host
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+
+// ─── Loading ────────────────────────────────────────────────────────────────
+
+.loading-state
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  padding: 2rem 0
+
+.loading-pulse
+  height: 140px
+  border-radius: 12px
+  background: linear-gradient(90deg, var(--p-surface-100) 25%, var(--p-surface-50) 50%, var(--p-surface-100) 75%)
+  background-size: 200% 100%
+  animation: shimmer 1.5s ease-in-out infinite
+
+  &--short
+    height: 80px
+    max-width: 60%
+
+  &--med
+    height: 100px
+    max-width: 80%
+
+@keyframes shimmer
+  0%
+    background-position: -200% 0
+  100%
+    background-position: 200% 0
+
+// ─── Budget Hero ────────────────────────────────────────────────────────────
+
+.budget-hero
+  border-radius: 16px
+  border: 1px solid var(--p-surface-200)
+  background: var(--p-surface-0)
+  overflow: hidden
+  position: relative
+
+  // Health-coded top accent strip
+  &::before
+    content: ''
+    display: block
+    height: 3px
+    background: var(--p-surface-300)
+    transition: background 0.3s ease
+
+  &[data-health="healthy"]::before
+    background: linear-gradient(90deg, #10b981, #34d399)
+
+  &[data-health="warning"]::before
+    background: linear-gradient(90deg, #f59e0b, #fbbf24)
+
+  &[data-health="danger"]::before
+    background: linear-gradient(90deg, #ef4444, #f87171)
+
+  &__inner
+    padding: 1.5rem 1.75rem
+
+  &__main
+    display: flex
+    align-items: flex-start
+    justify-content: space-between
+    margin-bottom: 1.25rem
+
+  &__left
+    display: flex
+    align-items: flex-start
+    gap: 0.875rem
+
+  &__health-dot
+    width: 10px
+    height: 10px
+    border-radius: 50%
+    margin-top: 0.5rem
+    flex-shrink: 0
+    background: var(--p-surface-300)
+    box-shadow: 0 0 0 3px var(--p-surface-100)
+    transition: all 0.3s ease
+
+    [data-health="healthy"] &
+      background: #10b981
+      box-shadow: 0 0 0 3px #ecfdf5
+
+    [data-health="warning"] &
+      background: #f59e0b
+      box-shadow: 0 0 0 3px #fffbeb
+      animation: pulse-warn 2s infinite
+
+    [data-health="danger"] &
+      background: #ef4444
+      box-shadow: 0 0 0 3px #fef2f2
+      animation: pulse-danger 1.5s infinite
+
+  &__amounts
+    display: flex
+    flex-direction: column
+
+  &__tag
+    font-size: 0.65rem
+    font-weight: 700
+    letter-spacing: 0.1em
+    text-transform: uppercase
+    color: var(--p-text-muted-color)
+    background: var(--p-surface-100)
+    padding: 2px 8px
+    border-radius: 4px
+    width: fit-content
+    margin-bottom: 0.375rem
+
+  &__total
+    font-family: 'Syne', sans-serif
+    font-size: 2.25rem
+    font-weight: 800
+    color: var(--p-text-color)
+    line-height: 1.1
+    letter-spacing: -0.02em
+
+  &__label
+    font-size: 0.75rem
+    color: var(--p-text-muted-color)
+    margin-top: 0.25rem
+    letter-spacing: 0.02em
+
+@keyframes pulse-warn
+  0%, 100%
+    box-shadow: 0 0 0 3px #fffbeb
+  50%
+    box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.15)
+
+@keyframes pulse-danger
+  0%, 100%
+    box-shadow: 0 0 0 3px #fef2f2
+  50%
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.15)
+
+// ─── Progress gauge ─────────────────────────────────────────────────────────
+
+.budget-gauge
+  margin-bottom: 1.5rem
+
+  &__track
+    height: 6px
+    border-radius: 3px
+    background: var(--p-surface-100)
+    overflow: hidden
+
+  &__fill
+    height: 100%
+    border-radius: 3px
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1)
+    background: linear-gradient(90deg, #10b981, #34d399)
+    min-width: 2px
+
+    [data-health="warning"] &
+      background: linear-gradient(90deg, #f59e0b, #fbbf24)
+
+    [data-health="danger"] &
+      background: linear-gradient(90deg, #ef4444, #f87171)
+
+  &__pct
+    display: block
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+    margin-top: 0.375rem
+    text-align: right
+
+// ─── Metric cards ───────────────────────────────────────────────────────────
+
+.budget-metrics
+  display: grid
+  grid-template-columns: repeat(3, 1fr)
+  gap: 0.75rem
+
+.budget-metric-card
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  padding: 0.875rem 1rem
+  border-radius: 10px
+  border: 1px solid var(--p-surface-200)
+  background: var(--p-surface-50)
+  transition: border-color 0.2s
+
+  &:hover
+    border-color: var(--p-surface-300)
+
+  &__icon
+    width: 2.25rem
+    height: 2.25rem
+    border-radius: 8px
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-shrink: 0
+    font-size: 0.875rem
+
+    &--assigned
+      background: #eff6ff
+      color: #3b82f6
+
+    &--healthy
+      background: #ecfdf5
+      color: #10b981
+
+    &--warning
+      background: #fffbeb
+      color: #f59e0b
+
+    &--danger
+      background: #fef2f2
+      color: #ef4444
+
+    &--neutral
+      background: var(--p-surface-100)
+      color: var(--p-text-muted-color)
+
+    &--count
+      background: #f5f3ff
+      color: #8b5cf6
+
+  &__data
+    display: flex
+    flex-direction: column
+    min-width: 0
+
+  &__value
+    font-family: 'Syne', sans-serif
+    font-size: 1.125rem
+    font-weight: 700
+    color: var(--p-text-color)
+    line-height: 1.2
+
+  &__label
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+    letter-spacing: 0.02em
+
+.saldo--positivo
+  color: #10b981 !important
+
+.saldo--negativo
+  color: #ef4444 !important
+
+// ─── IVA row ────────────────────────────────────────────────────────────────
+
+.budget-iva-row
+  display: flex
+  gap: 0.75rem
+  margin-top: 1rem
+  padding-top: 1rem
+  border-top: 1px dashed var(--p-surface-200)
+
+.budget-iva-item
+  flex: 1
+  display: flex
+  flex-direction: column
+  gap: 2px
+  padding: 0.625rem 0.875rem
+  border-radius: 8px
+  background: var(--p-surface-50)
+  border: 1px solid var(--p-surface-200)
+
+  &--iva
+    background: #fffbeb
+    border-color: #fde68a
+
+  &__label
+    font-size: 0.65rem
+    font-weight: 600
+    text-transform: uppercase
+    letter-spacing: 0.06em
+    color: var(--p-text-muted-color)
+
+  &__value
+    font-family: 'Syne', sans-serif
+    font-size: 0.9375rem
+    font-weight: 700
+    color: var(--p-text-color)
+
+// ─── Estado badges ──────────────────────────────────────────────────────────
+
+.budget-estado-row
+  display: flex
+  gap: 0.5rem
+  margin-top: 0.75rem
+
+.estado-badge
+  display: inline-flex
+  align-items: center
+  gap: 0.3rem
+  padding: 0.25rem 0.625rem
+  border-radius: 6px
+  font-size: 0.7rem
+  font-weight: 600
+  font-family: 'Outfit', sans-serif
+
+  .pi
+    font-size: 0.65rem
+
+  &--pendiente
+    background: #fffbeb
+    color: #92400e
+    border: 1px solid #fde68a
+
+  &--pagado
+    background: #ecfdf5
+    color: #065f46
+    border: 1px solid #a7f3d0
+
+  &--vencido
+    background: #fef2f2
+    color: #991b1b
+    border: 1px solid #fecaca
+
+  &--sm
+    padding: 1px 6px
+    font-size: 0.65rem
+
+  &--xs
+    padding: 1px 5px
+    font-size: 0.6rem
+
+// ─── Budget edit ────────────────────────────────────────────────────────────
+
+.budget-edit
+  display: flex
+  flex-direction: column
+  gap: 1.25rem
+
+  &__header
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    font-family: 'Syne', sans-serif
+    font-weight: 700
+    font-size: 1rem
+    color: var(--p-text-color)
+
+    .pi
+      color: var(--p-primary-500)
+
+  &__fields
+    display: flex
+    gap: 1rem
+
+  &__field
+    flex: 1
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+
+    &--main
+      flex: 2
+
+    label
+      font-size: 0.75rem
+      font-weight: 600
+      color: var(--p-text-muted-color)
+      text-transform: uppercase
+      letter-spacing: 0.04em
+
+  &__actions
+    display: flex
+    gap: 0.5rem
+    justify-content: flex-end
+
+// ─── Recursos section ───────────────────────────────────────────────────────
+
+.recursos-section
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+  &__header
+    display: flex
+    align-items: flex-start
+    justify-content: space-between
+    gap: 1rem
+
+  &__title-area
+    display: flex
+    flex-direction: column
+    gap: 0.125rem
+
+  &__title
+    font-family: 'Syne', sans-serif
+    font-size: 1.125rem
+    font-weight: 700
+    color: var(--p-text-color)
+    margin: 0
+    line-height: 1.3
+
+  &__subtitle
+    font-size: 0.8rem
+    color: var(--p-text-muted-color)
+
+  &__actions
+    display: flex
+    gap: 0.5rem
+    align-items: center
+
+// ─── Empty state ────────────────────────────────────────────────────────────
+
+.recursos-empty
+  display: flex
+  flex-direction: column
+  align-items: center
+  text-align: center
+  padding: 3.5rem 2rem
+  border: 1.5px dashed var(--p-surface-300)
+  border-radius: 14px
+  background: var(--p-surface-50)
+
+  &__visual
+    margin-bottom: 1.25rem
+
+  &__circle
+    width: 56px
+    height: 56px
+    border-radius: 50%
+    background: var(--p-surface-100)
+    display: flex
+    align-items: center
+    justify-content: center
+    font-size: 1.25rem
+    color: var(--p-text-muted-color)
+
+  &__title
+    font-family: 'Syne', sans-serif
+    font-size: 1rem
+    font-weight: 700
+    color: var(--p-text-color)
+    margin: 0 0 0.375rem
+
+  &__desc
+    font-size: 0.8125rem
+    color: var(--p-text-muted-color)
+    margin: 0 0 1.25rem
+    max-width: 360px
+    line-height: 1.5
+
+// ─── Type color system ──────────────────────────────────────────────────────
+
+.tipo--persona
+  --tipo-bg: #eff6ff
+  --tipo-border: #bfdbfe
+  --tipo-color: #2563eb
+  --tipo-accent: #3b82f6
+
+.tipo--servidor
+  --tipo-bg: #f5f3ff
+  --tipo-border: #ddd6fe
+  --tipo-color: #7c3aed
+  --tipo-accent: #8b5cf6
+
+.tipo--licencia
+  --tipo-bg: #fffbeb
+  --tipo-border: #fde68a
+  --tipo-color: #d97706
+  --tipo-accent: #f59e0b
+
+.tipo--herramienta
+  --tipo-bg: #f0fdfa
+  --tipo-border: #99f6e4
+  --tipo-color: #0d9488
+  --tipo-accent: #14b8a6
+
+.tipo--servicio
+  --tipo-bg: #fff1f2
+  --tipo-border: #fecdd3
+  --tipo-color: #e11d48
+  --tipo-accent: #f43f5e
+
+.tipo--otro
+  --tipo-bg: var(--p-surface-50)
+  --tipo-border: var(--p-surface-300)
+  --tipo-color: var(--p-text-muted-color)
+  --tipo-accent: var(--p-surface-400)
+
+// ─── Resource group ─────────────────────────────────────────────────────────
+
+.recurso-group
+  border-radius: 12px
+  border: 1px solid var(--tipo-border, var(--p-surface-200))
+  background: var(--p-surface-0)
+  overflow: hidden
+
+  &__header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 0.75rem 1.125rem
+    background: var(--tipo-bg, var(--p-surface-50))
+    border-bottom: 1px solid var(--tipo-border, var(--p-surface-200))
+
+  &__type-badge
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    font-size: 0.75rem
+    font-weight: 700
+    text-transform: uppercase
+    letter-spacing: 0.06em
+    color: var(--tipo-color)
+
+    i
+      font-size: 0.75rem
+
+  &__subtotal
+    font-family: 'Syne', sans-serif
+    font-size: 0.875rem
+    font-weight: 700
+    color: var(--tipo-color)
+
+  &__items
+    display: flex
+    flex-direction: column
+
+// ─── Resource card ──────────────────────────────────────────────────────────
+
+.recurso-card
+  display: flex
+  flex-direction: column
+  border-bottom: 1px solid var(--p-surface-100)
+  transition: background-color 0.12s ease
+
+  &:last-child
+    border-bottom: none
+
+  &:hover
+    background: var(--p-surface-50)
+
+    .recurso-card__actions
+      opacity: 1
+
+  &__bar
+    width: 3px
+    flex-shrink: 0
+    background: var(--tipo-accent, var(--p-surface-300))
+
+  &__body
+    flex: 1
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 0.75rem 1rem 0.75rem 0.875rem
+    gap: 1rem
+    min-width: 0
+
+  &__info
+    display: flex
+    flex-direction: column
+    gap: 2px
+    min-width: 0
+
+  &__name-row
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+  &__name
+    font-size: 0.875rem
+    font-weight: 600
+    color: var(--p-text-color)
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+  &__detail
+    font-size: 0.75rem
+    color: var(--p-text-muted-color)
+
+  &__qty
+    font-weight: 600
+    color: var(--p-text-secondary-color)
+
+  &__iva-tag
+    display: inline-block
+    margin-left: 0.375rem
+    padding: 0 4px
+    border-radius: 3px
+    background: #fffbeb
+    color: #92400e
+    font-size: 0.65rem
+    font-weight: 600
+
+  &__fecha
+    display: flex
+    align-items: center
+    gap: 0.25rem
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+
+    .pi
+      font-size: 0.6rem
+
+  &__notas
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+    font-style: italic
+    margin-top: 1px
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+    max-width: 300px
+
+  &__right
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    flex-shrink: 0
+
+  &__totals
+    display: flex
+    flex-direction: column
+    align-items: flex-end
+
+  &__total
+    font-family: 'Syne', sans-serif
+    font-size: 0.9375rem
+    font-weight: 700
+    color: var(--p-text-color)
+    white-space: nowrap
+
+  &__iva-detail
+    font-size: 0.6rem
+    color: var(--p-text-muted-color)
+    white-space: nowrap
+
+  &__meta
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+  &__adjuntos-count
+    display: flex
+    align-items: center
+    gap: 0.2rem
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+    cursor: default
+
+    .pi
+      font-size: 0.65rem
+
+  &__actions
+    display: flex
+    gap: 2px
+    opacity: 0
+    transition: opacity 0.15s ease
+
+  &__btn
+    width: 28px
+    height: 28px
+    border-radius: 6px
+    border: none
+    background: transparent
+    color: var(--p-text-muted-color)
+    display: flex
+    align-items: center
+    justify-content: center
+    cursor: pointer
+    transition: background 0.12s, color 0.12s
+
+    .pi
+      font-size: 0.7rem
+
+    &:hover
+      background: var(--p-surface-200)
+      color: var(--p-text-color)
+
+    &--danger:hover
+      background: #fef2f2
+      color: #ef4444
+
+  // Adjuntos section inside card
+  &__adjuntos
+    display: flex
+    flex-wrap: wrap
+    gap: 0.375rem
+    padding: 0.5rem 1rem 0.75rem 1.875rem
+    border-top: 1px dashed var(--p-surface-100)
+
+// ─── Adjunto item ───────────────────────────────────────────────────────────
+
+.adjunto-item
+  display: inline-flex
+  align-items: center
+  gap: 0.375rem
+  padding: 0.25rem 0.5rem
+  border-radius: 6px
+  border: 1px solid var(--p-surface-200)
+  background: var(--p-surface-50)
+  font-size: 0.7rem
+  transition: border-color 0.12s
+
+  &:hover
+    border-color: var(--p-surface-400)
+
+    .adjunto-item__delete
+      opacity: 1
+
+  .pi
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+
+  .pi-file-pdf
+    color: #ef4444
+
+  &__name
+    color: var(--p-text-color)
+    text-decoration: none
+    max-width: 160px
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+    &:hover
+      text-decoration: underline
+
+  &__size
+    color: var(--p-text-muted-color)
+    font-size: 0.625rem
+
+  &__delete
+    width: 18px
+    height: 18px
+    border-radius: 4px
+    border: none
+    background: transparent
+    color: var(--p-text-muted-color)
+    cursor: pointer
+    display: flex
+    align-items: center
+    justify-content: center
+    opacity: 0
+    transition: opacity 0.12s, color 0.12s, background 0.12s
+
+    .pi
+      font-size: 0.55rem
+
+    &:hover
+      background: #fef2f2
+      color: #ef4444
+
+// ─── Total footer ───────────────────────────────────────────────────────────
+
+.recursos-total
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 1rem 1.25rem
+  border-radius: 10px
+  border: 1px solid var(--p-surface-200)
+  background: var(--p-surface-50)
+
+  &__label
+    font-size: 0.75rem
+    font-weight: 600
+    text-transform: uppercase
+    letter-spacing: 0.06em
+    color: var(--p-text-muted-color)
+
+  &__value
+    font-family: 'Syne', sans-serif
+    font-size: 1.25rem
+    font-weight: 800
+    color: var(--p-text-color)
+    display: flex
+    align-items: baseline
+    gap: 0.375rem
+
+  &__code
+    font-size: 0.65rem
+    font-weight: 600
+    letter-spacing: 0.08em
+    color: var(--p-text-muted-color)
+
+// ─── Desglose mensual ───────────────────────────────────────────────────────
+
+.desglose-section
+  border-radius: 16px
+  border: 1px solid var(--p-surface-200)
+  background: var(--p-surface-0)
+  padding: 1.5rem 1.75rem
+
+  &__title
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    font-family: 'Syne', sans-serif
+    font-size: 1.05rem
+    font-weight: 700
+    color: var(--p-text-color)
+    margin: 0 0 1.25rem
+
+    .pi
+      color: var(--p-primary-500)
+      font-size: 0.9rem
+
+.desglose-pills
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
+  margin-bottom: 1.25rem
+
+.desglose-pill
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 2px
+  padding: 0.5rem 1rem
+  border-radius: 10px
+  border: 1.5px solid var(--p-surface-200)
+  background: var(--p-surface-0)
+  cursor: pointer
+  transition: all 0.15s ease
+  min-width: 80px
+
+  &:hover
+    border-color: var(--p-surface-400)
+    background: var(--p-surface-50)
+
+  &--active
+    border-color: var(--p-primary-500) !important
+    background: var(--p-primary-50) !important
+
+    .desglose-pill__label
+      color: var(--p-primary-700)
+
+    .desglose-pill__total
+      color: var(--p-primary-600)
+
+  &__label
+    font-size: 0.7rem
+    font-weight: 600
+    color: var(--p-text-muted-color)
+    text-transform: uppercase
+    letter-spacing: 0.04em
+
+  &__total
+    font-family: 'Syne', sans-serif
+    font-size: 0.8125rem
+    font-weight: 700
+    color: var(--p-text-color)
+
+.desglose-detail
+  border-radius: 10px
+  border: 1px solid var(--p-surface-200)
+  overflow: hidden
+
+  &__header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    padding: 0.875rem 1.125rem
+    background: var(--p-surface-50)
+    border-bottom: 1px solid var(--p-surface-200)
+
+  &__mes
+    font-family: 'Syne', sans-serif
+    font-size: 0.9375rem
+    font-weight: 700
+    color: var(--p-text-color)
+
+  &__totals
+    display: flex
+    gap: 1rem
+
+  &__total-item
+    font-size: 0.75rem
+    font-weight: 600
+    color: var(--p-text-color)
+    display: flex
+    align-items: baseline
+    gap: 0.25rem
+
+    &--iva
+      color: #d97706
+
+    &--bruto
+      font-family: 'Syne', sans-serif
+      font-weight: 700
+
+  &__total-label
+    font-size: 0.6rem
+    font-weight: 500
+    text-transform: uppercase
+    letter-spacing: 0.04em
+    color: var(--p-text-muted-color)
+
+  &__recursos
+    display: flex
+    flex-direction: column
+
+.desglose-recurso
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 0.625rem 1.125rem
+  border-bottom: 1px solid var(--p-surface-100)
+
+  &:last-child
+    border-bottom: none
+
+  &__left
+    display: flex
+    align-items: center
+    gap: 0.625rem
+    min-width: 0
+
+  &__icon
+    font-size: 0.75rem
+    color: var(--tipo-color, var(--p-text-muted-color))
+
+  &__name
+    font-size: 0.8125rem
+    font-weight: 600
+    color: var(--p-text-color)
+
+  &__detail
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+    display: block
+
+  &__right
+    display: flex
+    align-items: center
+    gap: 0.625rem
+    flex-shrink: 0
+
+  &__total
+    font-family: 'Syne', sans-serif
+    font-size: 0.875rem
+    font-weight: 700
+    color: var(--p-text-color)
+
+// ─── Dialog ─────────────────────────────────────────────────────────────────
+
+.dlg-header
+  display: flex
+  align-items: center
+  gap: 0.75rem
+
+  &__badge
+    width: 2.5rem
+    height: 2.5rem
+    border-radius: 10px
+    display: flex
+    align-items: center
+    justify-content: center
+    font-size: 1rem
+    flex-shrink: 0
+    background: var(--tipo-bg, var(--p-surface-100))
+    color: var(--tipo-color, var(--p-text-muted-color))
+    border: 1px solid var(--tipo-border, var(--p-surface-200))
+    transition: all 0.2s ease
+
+  &__title
+    margin: 0
+    font-family: 'Syne', sans-serif
+    font-size: 1.05rem
+    font-weight: 700
+    color: var(--p-text-color)
+    line-height: 1.3
+
+  &__sub
+    margin: 0
+    font-size: 0.75rem
+    color: var(--p-text-muted-color)
+
+.dlg-body
+  display: flex
+  flex-direction: column
+  gap: 1.125rem
+  padding-top: 0.25rem
+
+.dlg-field
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+
+  &--grow
+    flex: 1
+
+  &--narrow
+    width: 110px
+    flex-shrink: 0
+
+  &--toggle
+    width: 90px
+    flex-shrink: 0
+    align-items: center
+
+.dlg-row
+  display: flex
+  gap: 0.75rem
+  align-items: flex-end
+
+.dlg-label
+  font-size: 0.75rem
+  font-weight: 600
+  color: var(--p-text-muted-color)
+  text-transform: uppercase
+  letter-spacing: 0.04em
+
+  &__opt
+    font-weight: 400
+    text-transform: none
+    letter-spacing: 0
+    opacity: 0.6
+    font-size: 0.7rem
+
+// ─── Type pills ─────────────────────────────────────────────────────────────
+
+.tipo-pills
+  display: flex
+  flex-wrap: wrap
+  gap: 6px
+
+.tipo-pill
+  display: flex
+  align-items: center
+  gap: 5px
+  padding: 6px 12px
+  border-radius: 8px
+  border: 1.5px solid var(--p-surface-200)
+  background: transparent
+  font-family: 'Outfit', sans-serif
+  font-size: 0.75rem
+  font-weight: 500
+  color: var(--p-text-secondary-color)
+  cursor: pointer
+  transition: all 0.15s ease
+
+  i
+    font-size: 0.7rem
+
+  &:hover
+    border-color: var(--p-surface-400)
+    background: var(--p-surface-50)
+
+  &--active
+    border-color: var(--tipo-border) !important
+    background: var(--tipo-bg) !important
+    color: var(--tipo-color) !important
+    font-weight: 700
+
+    i
+      color: var(--tipo-color) !important
+
+// ─── Cost preview ───────────────────────────────────────────────────────────
+
+.dlg-cost-preview
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 0.75rem 1rem
+  border-radius: 10px
+  background: var(--tipo-bg, var(--p-surface-50))
+  border: 1px solid var(--tipo-border, var(--p-surface-200))
+  animation: costFadeIn 0.2s ease-out
+
+  &__breakdown
+    display: flex
+    align-items: baseline
+    gap: 4px
+    font-size: 0.8125rem
+    color: var(--tipo-color, var(--p-text-muted-color))
+    font-weight: 500
+
+  &__op
+    font-weight: 400
+    opacity: 0.6
+    font-size: 0.75rem
+
+  &__totals
+    display: flex
+    flex-direction: column
+    align-items: flex-end
+
+  &__total
+    font-family: 'Syne', sans-serif
+    font-size: 1.125rem
+    font-weight: 800
+    color: var(--tipo-color, var(--p-text-color))
+
+  &__iva-detail
+    font-size: 0.625rem
+    color: var(--tipo-color, var(--p-text-muted-color))
+    opacity: 0.7
+
+@keyframes costFadeIn
+  from
+    opacity: 0
+    transform: translateY(-4px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+// ─── Responsive ─────────────────────────────────────────────────────────────
+
+@media (max-width: 768px)
+  .budget-metrics
+    grid-template-columns: 1fr
+    gap: 0.5rem
+
+  .budget-hero__total
+    font-size: 1.75rem
+
+  .budget-edit__fields
+    flex-direction: column
+
+  .budget-iva-row
+    flex-direction: column
+    gap: 0.5rem
+
+  .dlg-row
+    flex-direction: column
+
+  .dlg-field--narrow,
+  .dlg-field--toggle
+    width: 100%
+
+  .tipo-pills
+    gap: 4px
+
+  .tipo-pill
+    padding: 5px 8px
+    font-size: 0.7rem
+
+  .recurso-card__body
+    flex-direction: column
+    align-items: flex-start
+    gap: 0.5rem
+
+  .recurso-card__right
+    width: 100%
+    justify-content: space-between
+
+  .recurso-card__actions
+    opacity: 1
+
+  .recursos-section__header
+    flex-direction: column
+    gap: 0.75rem
+
+  .recursos-section__actions
+    width: 100%
+    justify-content: flex-end
+
+  .desglose-pills
+    gap: 0.375rem
+
+  .desglose-pill
+    min-width: 65px
+    padding: 0.375rem 0.75rem
+
+  .desglose-detail__header
+    flex-direction: column
+    gap: 0.5rem
+
+  .desglose-detail__totals
+    gap: 0.5rem
+
+  .combined-dashboard
+    grid-template-columns: repeat(2, 1fr)
+
+  .ingreso-filters
+    flex-direction: column
+
+  .ingreso-filter-select,
+  .ingreso-filter-input
+    width: 100%
+
+// ─── Combined dashboard ────────────────────────────────────────────────────
+
+.combined-dashboard
+  display: grid
+  grid-template-columns: repeat(4, 1fr)
+  gap: 0.75rem
+  margin-bottom: 0.5rem
+
+  &__card
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    padding: 0.875rem 1rem
+    border-radius: 10px
+    border: 1px solid var(--p-surface-200)
+    background: var(--p-surface-0)
+    transition: border-color 0.2s
+
+    &:hover
+      border-color: var(--p-surface-300)
+
+  &__icon
+    width: 2.25rem
+    height: 2.25rem
+    border-radius: 8px
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-shrink: 0
+    font-size: 0.875rem
+
+    &--income
+      background: #ecfdf5
+      color: #10b981
+
+    &--expense
+      background: #eff6ff
+      color: #3b82f6
+
+    &--positive
+      background: #ecfdf5
+      color: #10b981
+
+    &--negative
+      background: #fef2f2
+      color: #ef4444
+
+    &--pending
+      background: #fffbeb
+      color: #f59e0b
+
+  &__data
+    display: flex
+    flex-direction: column
+    min-width: 0
+
+  &__value
+    font-family: 'Syne', sans-serif
+    font-size: 1.125rem
+    font-weight: 700
+    color: var(--p-text-color)
+    line-height: 1.2
+
+  &__label
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+    letter-spacing: 0.02em
+
+// ─── Tab alert dot ─────────────────────────────────────────────────────────
+
+.tab-alert-dot
+  display: inline-block
+  width: 6px
+  height: 6px
+  border-radius: 50%
+  background: #ef4444
+  margin-left: 0.375rem
+  vertical-align: middle
+  animation: pulse-danger 1.5s infinite
+
+// ─── Income hero ───────────────────────────────────────────────────────────
+
+.income-hero
+  border-radius: 16px
+  border: 1px solid var(--p-surface-200)
+  background: var(--p-surface-0)
+  overflow: hidden
+  position: relative
+  margin-bottom: 1rem
+
+  &::before
+    content: ''
+    display: block
+    height: 3px
+    background: var(--p-surface-300)
+    transition: background 0.3s ease
+
+  &[data-health="healthy"]::before
+    background: linear-gradient(90deg, #10b981, #34d399)
+
+  &[data-health="warning"]::before
+    background: linear-gradient(90deg, #f59e0b, #fbbf24)
+
+  &[data-health="danger"]::before
+    background: linear-gradient(90deg, #ef4444, #f87171)
+
+  &__inner
+    padding: 1.5rem 1.75rem
+
+// ─── Ingreso filters ───────────────────────────────────────────────────────
+
+.ingreso-filters
+  display: flex
+  gap: 0.75rem
+  margin-bottom: 1rem
+
+.ingreso-filter-select
+  width: 160px
+
+.ingreso-filter-input
+  flex: 1
+  max-width: 300px
+
+// ─── Ingreso table ─────────────────────────────────────────────────────────
+
+.ingreso-table
+  border-radius: 12px
+  border: 1px solid var(--p-surface-200)
+  background: var(--p-surface-0)
+  overflow: hidden
+
+.ingreso-row
+  display: flex
+  flex-direction: column
+  border-bottom: 1px solid var(--p-surface-100)
+  transition: background-color 0.12s ease
+
+  &:last-child
+    border-bottom: none
+
+  &:hover
+    background: var(--p-surface-50)
+
+  &--vencido
+    background: #fef2f2
+
+    &:hover
+      background: #fee2e2
+
+  &--proximo
+    background: #fffbeb
+
+    &:hover
+      background: #fef3c7
+
+  &__body
+    flex: 1
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 0.75rem 1rem
+    gap: 1rem
+    min-width: 0
+
+  &__info
+    display: flex
+    flex-direction: column
+    gap: 2px
+    min-width: 0
+
+  &__name-row
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+  &__concepto
+    font-size: 0.875rem
+    font-weight: 600
+    color: var(--p-text-color)
+
+  &__empresa
+    display: flex
+    align-items: center
+    gap: 0.3rem
+    font-size: 0.75rem
+    color: var(--p-text-muted-color)
+
+    .pi
+      font-size: 0.65rem
+
+  &__factura
+    display: flex
+    align-items: center
+    gap: 0.3rem
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+
+    .pi
+      font-size: 0.6rem
+
+  &__fecha
+    display: flex
+    align-items: center
+    gap: 0.25rem
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+
+    .pi
+      font-size: 0.6rem
+
+  &__notas
+    font-size: 0.7rem
+    color: var(--p-text-muted-color)
+    font-style: italic
+    margin-top: 1px
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+    max-width: 300px

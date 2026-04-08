@@ -14,7 +14,9 @@ export class KeyFactItemDto {
   @IsString()
   id: string;
 
-  @ApiProperty({ example: 'El 68% de los usuarios abandona el checkout antes de completar' })
+  @ApiProperty({
+    example: 'El 68% de los usuarios abandona el checkout antes de completar',
+  })
   @IsString()
   descripcion: string;
 
@@ -23,14 +25,20 @@ export class KeyFactItemDto {
   @IsOptional()
   fuente?: string;
 
-  @ApiProperty({ example: 'Priorizar optimización del flujo de checkout', required: false })
+  @ApiProperty({
+    example: 'Priorizar optimización del flujo de checkout',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   implicacion?: string;
 }
 
 export class KeyFactsDataDto {
-  @ApiProperty({ example: 'Investigación con 12 usuarios de e-commerce', required: false })
+  @ApiProperty({
+    example: 'Investigación con 12 usuarios de e-commerce',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   contexto?: string;

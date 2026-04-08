@@ -11,7 +11,12 @@ import {
   Post,
   Request,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../auth/decorators';
 import { CreateWikiPageDto } from './dto/create-wiki-page.dto';
 import { UpdateWikiPageDto } from './dto/update-wiki-page.dto';
@@ -52,7 +57,10 @@ export class WikiController {
   @RequirePermission('wiki:write')
   @ApiOperation({ summary: 'Editar una página de wiki' })
   @ApiResponse({ status: 200, type: WikiPageResDto })
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateWikiPageDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateWikiPageDto,
+  ) {
     return this.wikiService.update(id, dto);
   }
 

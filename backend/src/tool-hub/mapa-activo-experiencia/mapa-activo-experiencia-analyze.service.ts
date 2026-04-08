@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { MapaActivoExperienciaAnalyzeReqDto } from './dto/mapa-activo-experiencia-analyze.req.dto';
-import { MapaActivoExperienciaAnalyzeResDto, MapaActivoReportDto } from './dto/mapa-activo-experiencia-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  MapaActivoExperienciaAnalyzeResDto,
+  MapaActivoReportDto,
+} from './dto/mapa-activo-experiencia-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class MapaActivoExperienciaAnalyzeService {
@@ -12,13 +22,20 @@ export class MapaActivoExperienciaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: MapaActivoExperienciaAnalyzeReqDto): Promise<MapaActivoExperienciaAnalyzeResDto> {
+  async execute(
+    dto: MapaActivoExperienciaAnalyzeReqDto,
+  ): Promise<MapaActivoExperienciaAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -27,8 +44,13 @@ export class MapaActivoExperienciaAnalyzeService {
     try {
       report = JSON.parse(this.extractJson(raw)) as MapaActivoReportDto;
     } catch {
-      console.error('[MapaActivoExperienciaAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[MapaActivoExperienciaAnalyzeService] Raw AI response:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -109,11 +131,17 @@ REGLAS:
     if (data.etapas?.length) {
       lines.push(`\nTotal de etapas: ${data.etapas.length}`);
       data.etapas.forEach((etapa, i) => {
-        lines.push(`\n--- ETAPA ${i + 1}: ${etapa.nombre || '(sin nombre)'} ---`);
-        if (etapa.acciones?.length) lines.push(`Acciones: ${etapa.acciones.join(', ')}`);
-        if (etapa.touchpoints?.length) lines.push(`Touchpoints: ${etapa.touchpoints.join(', ')}`);
-        if (etapa.momentoClave) lines.push(`Momento clave: ${etapa.momentoClave}`);
-        if (etapa.oportunidades?.length) lines.push(`Oportunidades: ${etapa.oportunidades.join(', ')}`);
+        lines.push(
+          `\n--- ETAPA ${i + 1}: ${etapa.nombre || '(sin nombre)'} ---`,
+        );
+        if (etapa.acciones?.length)
+          lines.push(`Acciones: ${etapa.acciones.join(', ')}`);
+        if (etapa.touchpoints?.length)
+          lines.push(`Touchpoints: ${etapa.touchpoints.join(', ')}`);
+        if (etapa.momentoClave)
+          lines.push(`Momento clave: ${etapa.momentoClave}`);
+        if (etapa.oportunidades?.length)
+          lines.push(`Oportunidades: ${etapa.oportunidades.join(', ')}`);
       });
     }
 

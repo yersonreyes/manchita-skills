@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { BriefAnalyzeReqDto } from './dto/brief-analyze.req.dto';
-import { BriefAnalyzeResDto, BriefReportDto } from './dto/brief-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  BriefAnalyzeResDto,
+  BriefReportDto,
+} from './dto/brief-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class BriefAnalyzeService {
@@ -18,7 +28,12 @@ export class BriefAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +43,9 @@ export class BriefAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as BriefReportDto;
     } catch {
       console.error('[BriefAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -99,33 +116,38 @@ REGLAS:
     if (data.contexto) lines.push(`\n1. CONTEXTO:\n${data.contexto}`);
     else lines.push('\n1. CONTEXTO: [No definido]');
 
-    if (data.objetivoPrincipal) lines.push(`\n2. OBJETIVO PRINCIPAL:\n${data.objetivoPrincipal}`);
+    if (data.objetivoPrincipal)
+      lines.push(`\n2. OBJETIVO PRINCIPAL:\n${data.objetivoPrincipal}`);
     else lines.push('\n2. OBJETIVO PRINCIPAL: [No definido]');
 
     if (data.objetivosSecundarios?.length) {
       lines.push('Objetivos secundarios:');
-      data.objetivosSecundarios.forEach(o => lines.push(`  • ${o}`));
+      data.objetivosSecundarios.forEach((o) => lines.push(`  • ${o}`));
     }
 
-    if (data.usuarioTarget) lines.push(`\n3. USUARIO TARGET:\n${data.usuarioTarget}`);
+    if (data.usuarioTarget)
+      lines.push(`\n3. USUARIO TARGET:\n${data.usuarioTarget}`);
     else lines.push('\n3. USUARIO TARGET: [No definido]');
 
     lines.push('\n4. SCOPE:');
     if (data.inScope?.length) {
       lines.push('In scope:');
-      data.inScope.forEach(i => lines.push(`  ✓ ${i}`));
+      data.inScope.forEach((i) => lines.push(`  ✓ ${i}`));
     } else lines.push('In scope: [No definido]');
     if (data.outScope?.length) {
       lines.push('Out of scope:');
-      data.outScope.forEach(o => lines.push(`  ✗ ${o}`));
+      data.outScope.forEach((o) => lines.push(`  ✗ ${o}`));
     } else lines.push('Out of scope: [No definido]');
 
     lines.push('\n5. RESTRICCIONES:');
     if (data.timeline) lines.push(`Timeline: ${data.timeline}`);
     if (data.budget) lines.push(`Budget: ${data.budget}`);
-    if (data.restriccionesTech) lines.push(`Técnicas: ${data.restriccionesTech}`);
-    if (data.otrasRestricciones) lines.push(`Otras: ${data.otrasRestricciones}`);
-    if (!data.timeline && !data.budget && !data.restriccionesTech) lines.push('[No definidas]');
+    if (data.restriccionesTech)
+      lines.push(`Técnicas: ${data.restriccionesTech}`);
+    if (data.otrasRestricciones)
+      lines.push(`Otras: ${data.otrasRestricciones}`);
+    if (!data.timeline && !data.budget && !data.restriccionesTech)
+      lines.push('[No definidas]');
 
     lines.push('\n6. STAKEHOLDERS:');
     if (data.decisionMaker) lines.push(`Decision maker: ${data.decisionMaker}`);
@@ -135,20 +157,21 @@ REGLAS:
 
     if (data.entregables?.length) {
       lines.push('\n7. ENTREGABLES:');
-      data.entregables.forEach(e => lines.push(`  • ${e}`));
+      data.entregables.forEach((e) => lines.push(`  • ${e}`));
     } else lines.push('\n7. ENTREGABLES: [No definidos]');
 
     if (data.metricasExito?.length) {
       lines.push('\n8. MÉTRICAS DE ÉXITO:');
-      data.metricasExito.forEach(m => lines.push(`  • ${m}`));
+      data.metricasExito.forEach((m) => lines.push(`  • ${m}`));
     } else lines.push('\n8. MÉTRICAS DE ÉXITO: [No definidas]');
 
     if (data.riesgos?.length) {
       lines.push('\n9. RIESGOS:');
-      data.riesgos.forEach(r => lines.push(`  • ${r}`));
+      data.riesgos.forEach((r) => lines.push(`  • ${r}`));
     } else lines.push('\n9. RIESGOS: [No definidos]');
 
-    if (data.timelineMilestones) lines.push(`\n10. TIMELINE / MILESTONES:\n${data.timelineMilestones}`);
+    if (data.timelineMilestones)
+      lines.push(`\n10. TIMELINE / MILESTONES:\n${data.timelineMilestones}`);
     else lines.push('\n10. TIMELINE / MILESTONES: [No definido]');
 
     return lines.join('\n');

@@ -29,7 +29,10 @@ export class ToolCategoryService {
       where: { id: dto.phaseId },
     });
     if (!phase) {
-      throw new NotFoundException({ message: 'Fase de diseño no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Fase de diseño no encontrada',
+        code: 1,
+      });
     }
 
     const res = await this.prisma.toolCategory.create({
@@ -65,9 +68,14 @@ export class ToolCategoryService {
 
   // ─── FIND BY PHASE ────────────────────────────────────────────────────────
   async findByPhase(phaseId: number) {
-    const phase = await this.prisma.designPhase.findUnique({ where: { id: phaseId } });
+    const phase = await this.prisma.designPhase.findUnique({
+      where: { id: phaseId },
+    });
     if (!phase) {
-      throw new NotFoundException({ message: 'Fase de diseño no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Fase de diseño no encontrada',
+        code: 1,
+      });
     }
 
     const res = await this.prisma.toolCategory.findMany({
@@ -94,7 +102,10 @@ export class ToolCategoryService {
     });
 
     if (!res) {
-      throw new NotFoundException({ message: 'Categoría no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Categoría no encontrada',
+        code: 1,
+      });
     }
 
     return { res, code: 0, message: 'Categoría encontrada' };
@@ -102,9 +113,14 @@ export class ToolCategoryService {
 
   // ─── UPDATE ───────────────────────────────────────────────────────────────
   async update(id: number, dto: UpdateToolCategoryRequestDto) {
-    const existing = await this.prisma.toolCategory.findUnique({ where: { id } });
+    const existing = await this.prisma.toolCategory.findUnique({
+      where: { id },
+    });
     if (!existing) {
-      throw new NotFoundException({ message: 'Categoría no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Categoría no encontrada',
+        code: 1,
+      });
     }
 
     const data: any = {};
@@ -115,13 +131,17 @@ export class ToolCategoryService {
         where: { codigo, NOT: { id } },
       });
       if (duplicated) {
-        throw new ConflictException({ message: 'El código ya está en uso', code: 1 });
+        throw new ConflictException({
+          message: 'El código ya está en uso',
+          code: 1,
+        });
       }
       data.codigo = codigo;
     }
 
     if (dto.nombre !== undefined) data.nombre = dto.nombre.trim();
-    if (dto.descripcion !== undefined) data.descripcion = dto.descripcion?.trim() ?? null;
+    if (dto.descripcion !== undefined)
+      data.descripcion = dto.descripcion?.trim() ?? null;
     if (dto.activo !== undefined) data.activo = dto.activo;
 
     if (dto.phaseId !== undefined) {
@@ -129,13 +149,20 @@ export class ToolCategoryService {
         where: { id: dto.phaseId },
       });
       if (!phase) {
-        throw new NotFoundException({ message: 'Fase de diseño no encontrada', code: 1 });
+        throw new NotFoundException({
+          message: 'Fase de diseño no encontrada',
+          code: 1,
+        });
       }
       data.phaseId = dto.phaseId;
     }
 
     if (Object.keys(data).length === 0) {
-      return { res: existing, code: 0, message: 'No hay cambios para actualizar' };
+      return {
+        res: existing,
+        code: 0,
+        message: 'No hay cambios para actualizar',
+      };
     }
 
     const res = await this.prisma.toolCategory.update({

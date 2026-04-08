@@ -5,12 +5,19 @@ import {
   IsDate,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { EtapaProyecto, ProjectMemberRole, ProjectStatus, TipoProyecto } from '@prisma/client';
+import {
+  EtapaProyecto,
+  Moneda,
+  ProjectMemberRole,
+  ProjectStatus,
+  TipoProyecto,
+} from '@prisma/client';
 
 export class CreateProjectRequestDto {
   @ApiProperty({ example: 'Rediseño App Móvil' })
@@ -42,7 +49,11 @@ export class CreateProjectRequestDto {
   @IsOptional()
   contexto?: string | null;
 
-  @ApiProperty({ enum: ProjectStatus, required: false, default: ProjectStatus.DRAFT })
+  @ApiProperty({
+    enum: ProjectStatus,
+    required: false,
+    default: ProjectStatus.DRAFT,
+  })
   @IsEnum(ProjectStatus)
   @IsOptional()
   estado?: ProjectStatus;
@@ -88,6 +99,16 @@ export class UpdateProjectRequestDto {
   @IsEnum(ProjectStatus)
   @IsOptional()
   estado?: ProjectStatus;
+
+  @ApiProperty({ required: false })
+  @IsNumber()
+  @IsOptional()
+  presupuesto?: number | null;
+
+  @ApiProperty({ enum: Moneda, required: false })
+  @IsEnum(Moneda)
+  @IsOptional()
+  moneda?: Moneda | null;
 
   @ApiProperty({ required: false })
   @IsBoolean()

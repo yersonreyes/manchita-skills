@@ -13,5 +13,6 @@ export class PrototipoMostrarReportDto {
 export class PrototipoMostrarAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: PrototipoMostrarReportDto }) report: PrototipoMostrarReportDto;
+  @ApiProperty({ type: PrototipoMostrarReportDto })
+  report: PrototipoMostrarReportDto;
 }

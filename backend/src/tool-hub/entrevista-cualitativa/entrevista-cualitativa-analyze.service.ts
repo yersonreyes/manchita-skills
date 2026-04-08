@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { EntrevistaCualitativaAnalyzeReqDto } from './dto/entrevista-cualitativa-analyze.req.dto';
@@ -6,7 +10,10 @@ import {
   EntrevistaCualitativaAnalyzeResDto,
   EntrevistaCualitativaReportDto,
 } from './dto/entrevista-cualitativa-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class EntrevistaCualitativaAnalyzeService {
@@ -15,23 +22,37 @@ export class EntrevistaCualitativaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: EntrevistaCualitativaAnalyzeReqDto): Promise<EntrevistaCualitativaAnalyzeResDto> {
+  async execute(
+    dto: EntrevistaCualitativaAnalyzeReqDto,
+  ): Promise<EntrevistaCualitativaAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
 
     let report: EntrevistaCualitativaReportDto;
     try {
-      report = JSON.parse(this.extractJson(raw)) as EntrevistaCualitativaReportDto;
+      report = JSON.parse(
+        this.extractJson(raw),
+      ) as EntrevistaCualitativaReportDto;
     } catch {
-      console.error('[EntrevistaCualitativaAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[EntrevistaCualitativaAnalyzeService] Raw AI response:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -105,7 +126,8 @@ REGLAS:
     if (data.entrevistado) lines.push(`Entrevistado: ${data.entrevistado}`);
     if (data.perfil) lines.push(`Perfil: ${data.perfil}`);
     if (data.fecha) lines.push(`Fecha: ${data.fecha}`);
-    if (data.objetivos) lines.push(`\nObjetivos de la entrevista:\n${data.objetivos}`);
+    if (data.objetivos)
+      lines.push(`\nObjetivos de la entrevista:\n${data.objetivos}`);
 
     if (data.respuestas?.length) {
       lines.push('\n--- PREGUNTAS Y RESPUESTAS ---');
@@ -119,7 +141,7 @@ REGLAS:
 
     if (data.citasClave?.length) {
       lines.push('\n--- CITAS CLAVE REGISTRADAS ---');
-      data.citasClave.forEach(c => lines.push(`"${c}"`));
+      data.citasClave.forEach((c) => lines.push(`"${c}"`));
     }
 
     if (data.observaciones) {

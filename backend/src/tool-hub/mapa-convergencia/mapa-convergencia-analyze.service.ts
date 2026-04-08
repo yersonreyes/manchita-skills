@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { MapaConvergenciaAnalyzeReqDto } from './dto/mapa-convergencia-analyze.req.dto';
-import { MapaConvergenciaAnalyzeResDto, MapaConvergenciaReportDto } from './dto/mapa-convergencia-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  MapaConvergenciaAnalyzeResDto,
+  MapaConvergenciaReportDto,
+} from './dto/mapa-convergencia-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class MapaConvergenciaAnalyzeService {
@@ -12,13 +22,20 @@ export class MapaConvergenciaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: MapaConvergenciaAnalyzeReqDto): Promise<MapaConvergenciaAnalyzeResDto> {
+  async execute(
+    dto: MapaConvergenciaAnalyzeReqDto,
+  ): Promise<MapaConvergenciaAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +45,9 @@ export class MapaConvergenciaAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as MapaConvergenciaReportDto;
     } catch {
       console.error('[MapaConvergenciaAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -101,34 +120,42 @@ REGLAS:
 
     if (data.criterios?.length) {
       lines.push('\nCRITERIOS DE CONVERGENCIA USADOS:');
-      data.criterios.forEach(c => lines.push(`  • ${c}`));
+      data.criterios.forEach((c) => lines.push(`  • ${c}`));
     }
 
-    const seleccionadas = data.ideas.filter(i => i.estado === 'seleccionada');
-    const activas = data.ideas.filter(i => i.estado === 'activa');
-    const descartadas = data.ideas.filter(i => i.estado === 'descartada');
+    const seleccionadas = data.ideas.filter((i) => i.estado === 'seleccionada');
+    const activas = data.ideas.filter((i) => i.estado === 'activa');
+    const descartadas = data.ideas.filter((i) => i.estado === 'descartada');
 
-    lines.push(`\nRESUMEN: ${data.ideas.length} ideas totales — ${seleccionadas.length} seleccionadas, ${descartadas.length} descartadas, ${activas.length} en evaluación`);
+    lines.push(
+      `\nRESUMEN: ${data.ideas.length} ideas totales — ${seleccionadas.length} seleccionadas, ${descartadas.length} descartadas, ${activas.length} en evaluación`,
+    );
 
     if (seleccionadas.length) {
       lines.push('\nIDEAS SELECCIONADAS:');
-      seleccionadas.forEach(i => {
-        lines.push(`  ✓ ${i.texto || '[Sin texto]'}${i.cluster ? ` [${i.cluster}]` : ''}`);
+      seleccionadas.forEach((i) => {
+        lines.push(
+          `  ✓ ${i.texto || '[Sin texto]'}${i.cluster ? ` [${i.cluster}]` : ''}`,
+        );
       });
     }
 
     if (descartadas.length) {
       lines.push('\nIDEAS DESCARTADAS:');
-      descartadas.forEach(i => {
+      descartadas.forEach((i) => {
         const razon = i.razonDescarte ? ` — Razón: ${i.razonDescarte}` : '';
-        lines.push(`  ✗ ${i.texto || '[Sin texto]'}${i.cluster ? ` [${i.cluster}]` : ''}${razon}`);
+        lines.push(
+          `  ✗ ${i.texto || '[Sin texto]'}${i.cluster ? ` [${i.cluster}]` : ''}${razon}`,
+        );
       });
     }
 
     if (activas.length) {
       lines.push('\nIDEAS EN EVALUACIÓN (no clasificadas):');
-      activas.forEach(i => {
-        lines.push(`  ○ ${i.texto || '[Sin texto]'}${i.cluster ? ` [${i.cluster}]` : ''}`);
+      activas.forEach((i) => {
+        lines.push(
+          `  ○ ${i.texto || '[Sin texto]'}${i.cluster ? ` [${i.cluster}]` : ''}`,
+        );
       });
     }
 

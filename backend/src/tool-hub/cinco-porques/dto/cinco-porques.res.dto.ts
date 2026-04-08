@@ -12,7 +12,9 @@ export class CincoPorquesAnalysisDto {
   @ApiProperty({ example: 'El análisis reveló que la causa raíz es...' })
   summary: string;
 
-  @ApiProperty({ example: 'La causa raíz es la falta de confianza en el proceso de pago' })
+  @ApiProperty({
+    example: 'La causa raíz es la falta de confianza en el proceso de pago',
+  })
   rootCause: string;
 
   @ApiProperty({ example: ['Insight 1', 'Insight 2'] })

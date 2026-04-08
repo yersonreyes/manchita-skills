@@ -10,22 +10,34 @@ import {
 } from 'class-validator';
 
 export class PoemsDataDto {
-  @ApiProperty({ example: 'Sucursal bancaria, hora pico del mediodía', required: false })
+  @ApiProperty({
+    example: 'Sucursal bancaria, hora pico del mediodía',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   contexto?: string;
 
-  @ApiProperty({ example: 'La fricción principal ocurre en el momento de espera', required: false })
+  @ApiProperty({
+    example: 'La fricción principal ocurre en el momento de espera',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   sintesis?: string;
 
-  @ApiProperty({ type: [String], example: ['Cajero que atiende de pie durante 8 horas'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Cajero que atiende de pie durante 8 horas'],
+  })
   @IsArray()
   @IsString({ each: true })
   people: string[];
 
-  @ApiProperty({ type: [String], example: ['Formulario en papel que se llena con lapicera'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Formulario en papel que se llena con lapicera'],
+  })
   @IsArray()
   @IsString({ each: true })
   objects: string[];
@@ -35,12 +47,18 @@ export class PoemsDataDto {
   @IsString({ each: true })
   environment: string[];
 
-  @ApiProperty({ type: [String], example: ['Cartel "no se aceptan devoluciones" en letras pequeñas'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Cartel "no se aceptan devoluciones" en letras pequeñas'],
+  })
   @IsArray()
   @IsString({ each: true })
   messages: string[];
 
-  @ApiProperty({ type: [String], example: ['Fila de espera sin señalización de tiempos'] })
+  @ApiProperty({
+    type: [String],
+    example: ['Fila de espera sin señalización de tiempos'],
+  })
   @IsArray()
   @IsString({ each: true })
   services: string[];

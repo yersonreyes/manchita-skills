@@ -8,7 +8,8 @@ export class HallazgoRemotoDto {
 
 export class InvestigacionRemotaReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [HallazgoRemotoDto] }) hallazgosClave: HallazgoRemotoDto[];
+  @ApiProperty({ type: [HallazgoRemotoDto] })
+  hallazgosClave: HallazgoRemotoDto[];
   @ApiProperty({ type: [String] }) patronesEncontrados: string[];
   @ApiProperty({ type: [String] }) insightsAccionables: string[];
   @ApiProperty({ type: [String] }) limitacionesDetectadas: string[];
@@ -19,5 +20,6 @@ export class InvestigacionRemotaReportDto {
 export class InvestigacionRemotaAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: InvestigacionRemotaReportDto }) report: InvestigacionRemotaReportDto;
+  @ApiProperty({ type: InvestigacionRemotaReportDto })
+  report: InvestigacionRemotaReportDto;
 }

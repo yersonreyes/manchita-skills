@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { FocusGroupAnalyzeService } from './focus-group-analyze.service';
 import { FocusGroupAnalyzeReqDto } from './dto/focus-group-analyze.req.dto';
@@ -15,7 +20,9 @@ export class FocusGroupController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un análisis AI de Focus Group' })
   @ApiResponse({ status: 201, type: FocusGroupAnalyzeResDto })
-  analyze(@Body() dto: FocusGroupAnalyzeReqDto): Promise<FocusGroupAnalyzeResDto> {
+  analyze(
+    @Body() dto: FocusGroupAnalyzeReqDto,
+  ): Promise<FocusGroupAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

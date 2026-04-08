@@ -15,7 +15,10 @@ export class TaskTagService {
       where: { id: dto.projectId },
     });
     if (!project) {
-      throw new NotFoundException({ message: 'Proyecto no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Proyecto no encontrado',
+        code: 1,
+      });
     }
 
     const res = await this.prisma.taskTag.create({
@@ -43,7 +46,10 @@ export class TaskTagService {
   async update(id: number, dto: UpdateTaskTagRequestDto) {
     const existing = await this.prisma.taskTag.findUnique({ where: { id } });
     if (!existing) {
-      throw new NotFoundException({ message: 'Etiqueta no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Etiqueta no encontrada',
+        code: 1,
+      });
     }
 
     const data: any = {};
@@ -51,7 +57,11 @@ export class TaskTagService {
     if (dto.color !== undefined) data.color = dto.color.trim();
 
     if (Object.keys(data).length === 0) {
-      return { res: existing, code: 0, message: 'No hay cambios para actualizar' };
+      return {
+        res: existing,
+        code: 0,
+        message: 'No hay cambios para actualizar',
+      };
     }
 
     const res = await this.prisma.taskTag.update({ where: { id }, data });
@@ -63,7 +73,10 @@ export class TaskTagService {
   async delete(id: number) {
     const existing = await this.prisma.taskTag.findUnique({ where: { id } });
     if (!existing) {
-      throw new NotFoundException({ message: 'Etiqueta no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Etiqueta no encontrada',
+        code: 1,
+      });
     }
 
     await this.prisma.taskTag.delete({ where: { id } });

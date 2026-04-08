@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { InsightsClusterAnalyzeService } from './insights-cluster-analyze.service';
 import { InsightsClusterAnalyzeReqDto } from './dto/insights-cluster-analyze.req.dto';
@@ -15,7 +20,9 @@ export class InsightsClusterController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un análisis AI del Insights Cluster' })
   @ApiResponse({ status: 201, type: InsightsClusterAnalyzeResDto })
-  analyze(@Body() dto: InsightsClusterAnalyzeReqDto): Promise<InsightsClusterAnalyzeResDto> {
+  analyze(
+    @Body() dto: InsightsClusterAnalyzeReqDto,
+  ): Promise<InsightsClusterAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

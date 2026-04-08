@@ -4,7 +4,10 @@ import { AiService } from '../../ai/ai.service';
 import { CincoPorquesChatReqDto } from './dto/cinco-porques.req.dto';
 import { CincoPorquesChatResDto } from './dto/cinco-porques.res.dto';
 import { AiMessage } from '../../ai/providers/ai-provider.interface';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class CincoPorquesChatService {
@@ -22,7 +25,11 @@ export class CincoPorquesChatService {
       { role: 'user', content: dto.userMessage },
     ];
 
-    const assistantMessage = await this.aiService.chat(messages, systemPrompt, 512);
+    const assistantMessage = await this.aiService.chat(
+      messages,
+      systemPrompt,
+      512,
+    );
     const turnCount = Math.floor(dto.history.length / 2) + 1;
 
     return { assistantMessage, turnCount };

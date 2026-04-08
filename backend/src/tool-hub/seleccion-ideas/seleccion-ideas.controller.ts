@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { SeleccionIdeasAnalyzeService } from './seleccion-ideas-analyze.service';
 import { SeleccionIdeasAnalyzeReqDto } from './dto/seleccion-ideas-analyze.req.dto';
@@ -13,9 +18,13 @@ export class SeleccionIdeasController {
 
   @Post('analyze')
   @RequirePermission('tool-applications:update')
-  @ApiOperation({ summary: 'Genera un análisis AI del proceso de Selección de Ideas' })
+  @ApiOperation({
+    summary: 'Genera un análisis AI del proceso de Selección de Ideas',
+  })
   @ApiResponse({ status: 201, type: SeleccionIdeasAnalyzeResDto })
-  analyze(@Body() dto: SeleccionIdeasAnalyzeReqDto): Promise<SeleccionIdeasAnalyzeResDto> {
+  analyze(
+    @Body() dto: SeleccionIdeasAnalyzeReqDto,
+  ): Promise<SeleccionIdeasAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

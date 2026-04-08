@@ -4,16 +4,29 @@ export class MapaEmpatiaReportDto {
   @ApiProperty({ description: 'Síntesis del perfil empático del usuario' })
   executiveSummary: string;
 
-  @ApiProperty({ type: [String], description: 'Tensiones entre lo que dice y lo que hace, o piensa vs siente' })
+  @ApiProperty({
+    type: [String],
+    description:
+      'Tensiones entre lo que dice y lo que hace, o piensa vs siente',
+  })
   tensionesClaves: string[];
 
-  @ApiProperty({ type: [String], description: 'Insights accionables para el diseño' })
+  @ApiProperty({
+    type: [String],
+    description: 'Insights accionables para el diseño',
+  })
   insightsDeDiseno: string[];
 
-  @ApiProperty({ type: [String], description: 'Oportunidades de diseño detectadas' })
+  @ApiProperty({
+    type: [String],
+    description: 'Oportunidades de diseño detectadas',
+  })
   oportunidades: string[];
 
-  @ApiProperty({ type: [String], description: 'Recomendaciones concretas para el equipo de diseño' })
+  @ApiProperty({
+    type: [String],
+    description: 'Recomendaciones concretas para el equipo de diseño',
+  })
   recommendations: string[];
 }
 

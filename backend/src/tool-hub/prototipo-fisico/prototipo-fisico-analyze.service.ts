@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { PrototipoFisicoAnalyzeReqDto } from './dto/prototipo-fisico-analyze.req.dto';
-import { PrototipoFisicoAnalyzeResDto, PrototipoFisicoReportDto } from './dto/prototipo-fisico-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  PrototipoFisicoAnalyzeResDto,
+  PrototipoFisicoReportDto,
+} from './dto/prototipo-fisico-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const MATERIAL_LABELS: Record<string, string> = {
   carton: 'Cartón (costo muy bajo)',
@@ -34,13 +44,20 @@ export class PrototipoFisicoAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: PrototipoFisicoAnalyzeReqDto): Promise<PrototipoFisicoAnalyzeResDto> {
+  async execute(
+    dto: PrototipoFisicoAnalyzeReqDto,
+  ): Promise<PrototipoFisicoAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -50,7 +67,9 @@ export class PrototipoFisicoAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as PrototipoFisicoReportDto;
     } catch {
       console.error('[PrototipoFisicoAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -118,38 +137,55 @@ REGLAS:
     const { data } = dto;
     const lines: string[] = ['=== PROTOTIPO FÍSICO ==='];
 
-    if (data.objetivo) lines.push(`\nOBJETIVO / QUÉ SE QUERÍA VALIDAR:\n"${data.objetivo}"`);
-    if (data.productoDescripcion) lines.push(`\nPRODUCTO A PROTOTIPAR:\n"${data.productoDescripcion}"`);
+    if (data.objetivo)
+      lines.push(`\nOBJETIVO / QUÉ SE QUERÍA VALIDAR:\n"${data.objetivo}"`);
+    if (data.productoDescripcion)
+      lines.push(`\nPRODUCTO A PROTOTIPAR:\n"${data.productoDescripcion}"`);
 
     if (data.iteraciones?.length) {
       lines.push(`\nITERACIONES (${data.iteraciones.length} total):`);
       data.iteraciones.forEach((iter, i) => {
         lines.push(`\n--- Iteración ${i + 1} ---`);
         if (iter.material) {
-          const matLabel = iter.material === 'otro' && iter.materialOtro
-            ? iter.materialOtro
-            : (MATERIAL_LABELS[iter.material] ?? iter.material);
+          const matLabel =
+            iter.material === 'otro' && iter.materialOtro
+              ? iter.materialOtro
+              : (MATERIAL_LABELS[iter.material] ?? iter.material);
           lines.push(`Material: ${matLabel}`);
         }
-        if (iter.nivel) lines.push(`Nivel de fidelidad: ${NIVEL_LABELS[iter.nivel] ?? iter.nivel}`);
-        if (iter.tiempoFabricacion) lines.push(`Tiempo de fabricación: ${iter.tiempoFabricacion}`);
+        if (iter.nivel)
+          lines.push(
+            `Nivel de fidelidad: ${NIVEL_LABELS[iter.nivel] ?? iter.nivel}`,
+          );
+        if (iter.tiempoFabricacion)
+          lines.push(`Tiempo de fabricación: ${iter.tiempoFabricacion}`);
         if (iter.descripcion) lines.push(`Descripción: "${iter.descripcion}"`);
-        if (iter.testRealizado) lines.push(`Test realizado: "${iter.testRealizado}"`);
-        if (iter.resultado) lines.push(`Resultado: ${RESULTADO_LABELS[iter.resultado] ?? iter.resultado}`);
+        if (iter.testRealizado)
+          lines.push(`Test realizado: "${iter.testRealizado}"`);
+        if (iter.resultado)
+          lines.push(
+            `Resultado: ${RESULTADO_LABELS[iter.resultado] ?? iter.resultado}`,
+          );
         if (iter.hallazgos?.length) {
           lines.push(`Hallazgos:`);
-          iter.hallazgos.forEach(h => { if (h) lines.push(`  • ${h}`); });
+          iter.hallazgos.forEach((h) => {
+            if (h) lines.push(`  • ${h}`);
+          });
         }
       });
     }
 
     if (data.hallazgosGlobales?.length) {
       lines.push(`\nHALLAZGOS GLOBALES DEL PROCESO:`);
-      data.hallazgosGlobales.forEach(h => { if (h) lines.push(`  • ${h}`); });
+      data.hallazgosGlobales.forEach((h) => {
+        if (h) lines.push(`  • ${h}`);
+      });
     }
 
-    if (data.costoTotal) lines.push(`\nCOSTO TOTAL EN MATERIALES: ${data.costoTotal}`);
-    if (data.decisionFinal) lines.push(`\nDECISIÓN FINAL:\n"${data.decisionFinal}"`);
+    if (data.costoTotal)
+      lines.push(`\nCOSTO TOTAL EN MATERIALES: ${data.costoTotal}`);
+    if (data.decisionFinal)
+      lines.push(`\nDECISIÓN FINAL:\n"${data.decisionFinal}"`);
 
     return lines.join('\n');
   }

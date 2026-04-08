@@ -15,8 +15,14 @@ import {
 export class FeatureMvpDto {
   @ApiProperty() @IsString() id: string;
   @ApiPropertyOptional() @IsOptional() @IsString() nombre?: string;
-  @ApiPropertyOptional() @IsOptional() @IsIn(['alto', 'bajo']) valorUsuario?: string;
-  @ApiPropertyOptional() @IsOptional() @IsIn(['alto', 'bajo']) esfuerzo?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsIn(['alto', 'bajo'])
+  valorUsuario?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsIn(['alto', 'bajo'])
+  esfuerzo?: string;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() incluida?: boolean;
 }
 
@@ -33,7 +39,14 @@ export class MvpDataDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsIn(['wizard-of-oz', 'concierge', 'landing-email', 'crowdfunding', 'feature-mvp', ''])
+  @IsIn([
+    'wizard-of-oz',
+    'concierge',
+    'landing-email',
+    'crowdfunding',
+    'feature-mvp',
+    '',
+  ])
   tipo?: string;
 
   @ApiPropertyOptional() @IsOptional() @IsString() coreFeature?: string;

@@ -20,19 +20,30 @@ export class MinimaxProvider implements IAiProvider {
     private readonly groupId?: string,
     private readonly model = 'MiniMax-Text-01',
   ) {
-    console.log(`[MinimaxProvider] Initialized with key: ${apiKey?.substring(0, 10)}...`);
+    console.log(
+      `[MinimaxProvider] Initialized with key: ${apiKey?.substring(0, 10)}...`,
+    );
     console.log(`[MinimaxProvider] GroupId: ${groupId || 'not provided'}`);
   }
 
-  async chat(messages: AiMessage[], systemPrompt: string, maxTokens = 512): Promise<string> {
+  async chat(
+    messages: AiMessage[],
+    systemPrompt: string,
+    maxTokens = 512,
+  ): Promise<string> {
     // sk-cp-* claves son OpenAI-compatible y SIEMPRE usan el endpoint OpenAI, ignoring GroupId
     // Claves sin sk-cp-* usan el endpoint propietario si hay GroupId
-    console.log('[MinimaxProvider:chat] systemPrompt:', systemPrompt.substring(0, 100) + '...');
+    console.log(
+      '[MinimaxProvider:chat] systemPrompt:',
+      systemPrompt.substring(0, 100) + '...',
+    );
     console.log('[MinimaxProvider:chat] messages count:', messages.length);
     console.log('[MinimaxProvider:chat] maxTokens:', maxTokens);
 
     if (this.apiKey.startsWith('sk-cp-')) {
-      console.log('[MinimaxProvider] Detected sk-cp-* key, using OpenAI-compatible endpoint');
+      console.log(
+        '[MinimaxProvider] Detected sk-cp-* key, using OpenAI-compatible endpoint',
+      );
       return this.chatOpenAiEndpoint(messages, systemPrompt, maxTokens);
     }
     return this.groupId
@@ -48,7 +59,9 @@ export class MinimaxProvider implements IAiProvider {
     systemPrompt: string,
     maxTokens: number,
   ): Promise<string> {
-    console.log('[MinimaxProvider:OpenAI] Using endpoint: /v1/chat/completions');
+    console.log(
+      '[MinimaxProvider:OpenAI] Using endpoint: /v1/chat/completions',
+    );
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -73,7 +86,9 @@ export class MinimaxProvider implements IAiProvider {
 
     const data = (await response.json()) as MinimaxChatResponse;
     console.log('[MinimaxProvider:OpenAI] Response:', JSON.stringify(data));
-    const content = this.stripThinkBlocks(data.choices?.[0]?.message?.content ?? '');
+    const content = this.stripThinkBlocks(
+      data.choices?.[0]?.message?.content ?? '',
+    );
     console.log('[MinimaxProvider:OpenAI] Extracted content:', content);
     return content;
   }
@@ -113,7 +128,10 @@ export class MinimaxProvider implements IAiProvider {
     }
 
     const data = (await response.json()) as MinimaxChatResponse;
-    console.log('[MinimaxProvider:Proprietary] Response:', JSON.stringify(data));
+    console.log(
+      '[MinimaxProvider:Proprietary] Response:',
+      JSON.stringify(data),
+    );
     const content = data.reply ?? '';
     console.log('[MinimaxProvider:Proprietary] Extracted content:', content);
     return content;
@@ -129,7 +147,10 @@ export class MinimaxProvider implements IAiProvider {
     const fallbackGroupId = 'user';
     const url = `${this.baseUrl}/text/chatcompletion_pro?GroupId=${fallbackGroupId}`;
 
-    console.log('[MinimaxProvider:Fallback] Using fallback GroupId:', fallbackGroupId);
+    console.log(
+      '[MinimaxProvider:Fallback] Using fallback GroupId:',
+      fallbackGroupId,
+    );
 
     const response = await fetch(url, {
       method: 'POST',

@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { SafariAnalyzeReqDto, SesionSafariDto } from './dto/safari-analyze.req.dto';
-import { SafariAnalyzeResDto, SafariReportDto } from './dto/safari-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  SafariAnalyzeReqDto,
+  SesionSafariDto,
+} from './dto/safari-analyze.req.dto';
+import {
+  SafariAnalyzeResDto,
+  SafariReportDto,
+} from './dto/safari-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class SafariAnalyzeService {
@@ -18,7 +31,12 @@ export class SafariAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +46,9 @@ export class SafariAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as SafariReportDto;
     } catch {
       console.error('[SafariAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -108,18 +128,21 @@ REGLAS:
     const lines: string[] = ['=== SAFARI / DESIGN SAFARI ==='];
 
     if (data.objetivo) lines.push(`Objetivo de observación: ${data.objetivo}`);
-    if (data.guiaObservacion) lines.push(`Guía de observación: ${data.guiaObservacion}`);
+    if (data.guiaObservacion)
+      lines.push(`Guía de observación: ${data.guiaObservacion}`);
 
     if (data.sesiones?.length) {
       lines.push(`\n--- SESIONES DE OBSERVACIÓN (${data.sesiones.length}) ---`);
       for (let i = 0; i < data.sesiones.length; i++) {
         const s: SesionSafariDto = data.sesiones[i];
-        lines.push(`\n[SAFARI ${i + 1}]${s.ubicacion ? ` ${s.ubicacion}` : ''}`);
+        lines.push(
+          `\n[SAFARI ${i + 1}]${s.ubicacion ? ` ${s.ubicacion}` : ''}`,
+        );
         if (s.duracion) lines.push(`Duración: ${s.duracion}`);
         if (s.equipo) lines.push(`Equipo: ${s.equipo}`);
         if (s.observaciones?.length) {
           lines.push(`Observaciones (${s.observaciones.length}):`);
-          s.observaciones.forEach(obs => {
+          s.observaciones.forEach((obs) => {
             const parts: string[] = [];
             if (obs.momento) parts.push(`[${obs.momento}]`);
             if (obs.observacion) parts.push(obs.observacion);

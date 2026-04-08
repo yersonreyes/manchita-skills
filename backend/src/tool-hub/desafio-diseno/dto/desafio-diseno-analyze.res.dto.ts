@@ -9,7 +9,8 @@ export class AnalisisDesafioDto {
 
 export class DesafioDisenoReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [AnalisisDesafioDto] }) analisisPorDesafio: AnalisisDesafioDto[];
+  @ApiProperty({ type: [AnalisisDesafioDto] })
+  analisisPorDesafio: AnalisisDesafioDto[];
   @ApiProperty() desafioMasCritico: string;
   @ApiProperty({ type: [String] }) constraintsClaves: string[];
   @ApiProperty({ type: [String] }) criteriosExitoSugeridos: string[];

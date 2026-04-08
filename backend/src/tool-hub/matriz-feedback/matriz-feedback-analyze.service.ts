@@ -1,23 +1,33 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { MatrizFeedbackAnalyzeReqDto } from './dto/matriz-feedback-analyze.req.dto';
-import { MatrizFeedbackAnalyzeResDto, MatrizFeedbackReportDto } from './dto/matriz-feedback-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  MatrizFeedbackAnalyzeResDto,
+  MatrizFeedbackReportDto,
+} from './dto/matriz-feedback-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const FUENTE_LABELS: Record<string, string> = {
-  testing:     'Testing de usabilidad',
-  entrevista:  'Entrevista de usuario',
-  analytics:   'Analytics / métricas',
+  testing: 'Testing de usabilidad',
+  entrevista: 'Entrevista de usuario',
+  analytics: 'Analytics / métricas',
   stakeholder: 'Revisión de stakeholders',
-  soporte:     'Feedback de soporte',
-  otro:        'Otra fuente',
+  soporte: 'Feedback de soporte',
+  otro: 'Otra fuente',
 };
 
 const PRIORIDAD_LABELS: Record<string, string> = {
   urgente: '🔴 Urgente',
-  normal:  '🟡 Normal',
-  baja:    '⚪ Baja',
+  normal: '🟡 Normal',
+  baja: '⚪ Baja',
 };
 
 @Injectable()
@@ -27,13 +37,20 @@ export class MatrizFeedbackAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: MatrizFeedbackAnalyzeReqDto): Promise<MatrizFeedbackAnalyzeResDto> {
+  async execute(
+    dto: MatrizFeedbackAnalyzeReqDto,
+  ): Promise<MatrizFeedbackAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -43,7 +60,9 @@ export class MatrizFeedbackAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as MatrizFeedbackReportDto;
     } catch {
       console.error('[MatrizFeedbackAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -103,10 +122,26 @@ REGLAS:
     if (data.contexto) lines.push(`\nCONTEXTO:\n"${data.contexto}"`);
 
     const cuadrantes = [
-      { key: 'reforzar', label: '✅ REFORZAR (Sobre la solución · Positivo)', items: data.reforzar },
-      { key: 'arreglar', label: '⚠️ ARREGLAR (Sobre la solución · Negativo)', items: data.arreglar },
-      { key: 'insights', label: '💡 NUEVOS INSIGHTS (Sobre el problema · Positivo)', items: data.insights },
-      { key: 'evaluar',  label: '❌ EVALUAR / IGNORAR (Sobre el problema · Negativo)', items: data.evaluar },
+      {
+        key: 'reforzar',
+        label: '✅ REFORZAR (Sobre la solución · Positivo)',
+        items: data.reforzar,
+      },
+      {
+        key: 'arreglar',
+        label: '⚠️ ARREGLAR (Sobre la solución · Negativo)',
+        items: data.arreglar,
+      },
+      {
+        key: 'insights',
+        label: '💡 NUEVOS INSIGHTS (Sobre el problema · Positivo)',
+        items: data.insights,
+      },
+      {
+        key: 'evaluar',
+        label: '❌ EVALUAR / IGNORAR (Sobre el problema · Negativo)',
+        items: data.evaluar,
+      },
     ];
 
     for (const { label, items } of cuadrantes) {

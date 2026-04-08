@@ -26,18 +26,28 @@ export class ProjectPhaseService {
       where: { id: dto.projectId },
     });
     if (!project) {
-      throw new NotFoundException({ message: 'Proyecto no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Proyecto no encontrado',
+        code: 1,
+      });
     }
 
     const designPhase = await this.prisma.designPhase.findUnique({
       where: { id: dto.phaseId },
     });
     if (!designPhase) {
-      throw new NotFoundException({ message: 'Fase de diseño no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Fase de diseño no encontrada',
+        code: 1,
+      });
     }
 
     const existing = await this.prisma.projectPhase.findFirst({
-      where: { projectId: dto.projectId, phaseId: dto.phaseId, orden: dto.orden },
+      where: {
+        projectId: dto.projectId,
+        phaseId: dto.phaseId,
+        orden: dto.orden,
+      },
     });
     if (existing) {
       throw new ConflictException({
@@ -62,9 +72,14 @@ export class ProjectPhaseService {
 
   // ─── FIND BY PROJECT ──────────────────────────────────────────────────────
   async findByProject(projectId: number) {
-    const project = await this.prisma.project.findUnique({ where: { id: projectId } });
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+    });
     if (!project) {
-      throw new NotFoundException({ message: 'Proyecto no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Proyecto no encontrado',
+        code: 1,
+      });
     }
 
     const res = await this.prisma.projectPhase.findMany({
@@ -91,7 +106,10 @@ export class ProjectPhaseService {
     });
 
     if (!res) {
-      throw new NotFoundException({ message: 'Fase de proyecto no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Fase de proyecto no encontrada',
+        code: 1,
+      });
     }
 
     return { res, code: 0, message: 'Fase de proyecto encontrada' };
@@ -99,9 +117,14 @@ export class ProjectPhaseService {
 
   // ─── UPDATE ───────────────────────────────────────────────────────────────
   async update(id: number, dto: UpdateProjectPhaseRequestDto) {
-    const existing = await this.prisma.projectPhase.findUnique({ where: { id } });
+    const existing = await this.prisma.projectPhase.findUnique({
+      where: { id },
+    });
     if (!existing) {
-      throw new NotFoundException({ message: 'Fase de proyecto no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Fase de proyecto no encontrada',
+        code: 1,
+      });
     }
 
     const data: any = {};
@@ -115,7 +138,11 @@ export class ProjectPhaseService {
         where: { id },
         include: PHASE_INCLUDE,
       });
-      return { res: current, code: 0, message: 'No hay cambios para actualizar' };
+      return {
+        res: current,
+        code: 0,
+        message: 'No hay cambios para actualizar',
+      };
     }
 
     const res = await this.prisma.projectPhase.update({
@@ -124,6 +151,10 @@ export class ProjectPhaseService {
       include: PHASE_INCLUDE,
     });
 
-    return { res, code: 0, message: 'Fase de proyecto actualizada correctamente' };
+    return {
+      res,
+      code: 0,
+      message: 'Fase de proyecto actualizada correctamente',
+    };
   }
 }

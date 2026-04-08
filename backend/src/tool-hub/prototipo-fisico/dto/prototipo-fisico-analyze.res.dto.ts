@@ -13,5 +13,6 @@ export class PrototipoFisicoReportDto {
 export class PrototipoFisicoAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: PrototipoFisicoReportDto }) report: PrototipoFisicoReportDto;
+  @ApiProperty({ type: PrototipoFisicoReportDto })
+  report: PrototipoFisicoReportDto;
 }

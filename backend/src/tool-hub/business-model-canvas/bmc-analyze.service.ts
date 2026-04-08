@@ -1,9 +1,16 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { BmcAnalyzeReqDto, BmcBlocksDto } from './dto/bmc.req.dto';
 import { BmcAnalyzeResDto, BmcReportDto } from './dto/bmc.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class BmcAnalyzeService {
@@ -12,13 +19,21 @@ export class BmcAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: BmcAnalyzeReqDto, currentVersion: number): Promise<BmcAnalyzeResDto> {
+  async execute(
+    dto: BmcAnalyzeReqDto,
+    currentVersion: number,
+  ): Promise<BmcAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const blocksText = this.formatBlocks(dto.blocks);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `Aquí está el Business Model Canvas completo para analizar:\n\n${blocksText}\n\nGenerá el informe en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `Aquí está el Business Model Canvas completo para analizar:\n\n${blocksText}\n\nGenerá el informe en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -27,7 +42,9 @@ export class BmcAnalyzeService {
     try {
       report = JSON.parse(this.extractJson(raw));
     } catch {
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {

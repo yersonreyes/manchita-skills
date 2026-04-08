@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { MatrizTendenciasAnalyzeReqDto, TendenciaDto } from './dto/matriz-tendencias-analyze.req.dto';
-import { MatrizTendenciasAnalyzeResDto, MatrizTendenciasReportDto } from './dto/matriz-tendencias-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  MatrizTendenciasAnalyzeReqDto,
+  TendenciaDto,
+} from './dto/matriz-tendencias-analyze.req.dto';
+import {
+  MatrizTendenciasAnalyzeResDto,
+  MatrizTendenciasReportDto,
+} from './dto/matriz-tendencias-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const CATEGORIA_LABELS: Record<string, string> = {
   tecnologica: 'Tecnológica',
@@ -25,13 +38,20 @@ export class MatrizTendenciasAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: MatrizTendenciasAnalyzeReqDto): Promise<MatrizTendenciasAnalyzeResDto> {
+  async execute(
+    dto: MatrizTendenciasAnalyzeReqDto,
+  ): Promise<MatrizTendenciasAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -41,7 +61,9 @@ export class MatrizTendenciasAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as MatrizTendenciasReportDto;
     } catch {
       console.error('[MatrizTendenciasAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -132,22 +154,42 @@ REGLAS:
     if (data.contexto) lines.push(`Contexto: ${data.contexto}`);
     lines.push(`Total de tendencias: ${data.tendencias.length}`);
 
-    const cuadrantes: Array<{ label: string; impacto: string; plazo: string }> = [
-      { label: 'AHORA (Alto impacto + Corto plazo)', impacto: 'alto', plazo: 'corto' },
-      { label: 'FUTURO (Alto impacto + Largo plazo)', impacto: 'alto', plazo: 'largo' },
-      { label: 'IGNORAR (Bajo impacto + Corto plazo)', impacto: 'bajo', plazo: 'corto' },
-      { label: 'MONITOREAR (Bajo impacto + Largo plazo)', impacto: 'bajo', plazo: 'largo' },
-    ];
+    const cuadrantes: Array<{ label: string; impacto: string; plazo: string }> =
+      [
+        {
+          label: 'AHORA (Alto impacto + Corto plazo)',
+          impacto: 'alto',
+          plazo: 'corto',
+        },
+        {
+          label: 'FUTURO (Alto impacto + Largo plazo)',
+          impacto: 'alto',
+          plazo: 'largo',
+        },
+        {
+          label: 'IGNORAR (Bajo impacto + Corto plazo)',
+          impacto: 'bajo',
+          plazo: 'corto',
+        },
+        {
+          label: 'MONITOREAR (Bajo impacto + Largo plazo)',
+          impacto: 'bajo',
+          plazo: 'largo',
+        },
+      ];
 
     for (const cuadrante of cuadrantes) {
       const tendencias = data.tendencias.filter(
-        (t: TendenciaDto) => t.impacto === cuadrante.impacto && t.plazo === cuadrante.plazo,
+        (t: TendenciaDto) =>
+          t.impacto === cuadrante.impacto && t.plazo === cuadrante.plazo,
       );
       if (tendencias.length > 0) {
         lines.push(`\n--- ${cuadrante.label} ---`);
         for (const t of tendencias) {
           const catLabel = CATEGORIA_LABELS[t.categoria] ?? t.categoria;
-          lines.push(`  • [${catLabel}] ${t.nombre}${t.descripcion ? ` — ${t.descripcion}` : ''}`);
+          lines.push(
+            `  • [${catLabel}] ${t.nombre}${t.descripcion ? ` — ${t.descripcion}` : ''}`,
+          );
         }
       }
     }

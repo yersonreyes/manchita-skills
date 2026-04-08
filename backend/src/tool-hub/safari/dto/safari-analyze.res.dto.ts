@@ -9,7 +9,8 @@ export class ObservacionDestacadaDto {
 
 export class SafariReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [ObservacionDestacadaDto] }) observacionesDestacadas: ObservacionDestacadaDto[];
+  @ApiProperty({ type: [ObservacionDestacadaDto] })
+  observacionesDestacadas: ObservacionDestacadaDto[];
   @ApiProperty({ type: [String] }) patronesComportamiento: string[];
   @ApiProperty({ type: [String] }) workaroundsEncontrados: string[];
   @ApiProperty({ type: [String] }) painPointsCriticos: string[];

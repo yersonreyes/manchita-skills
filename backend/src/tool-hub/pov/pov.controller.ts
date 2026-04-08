@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { PovAnalyzeService } from './pov-analyze.service';
 import { PovAnalyzeReqDto } from './dto/pov-analyze.req.dto';
@@ -13,7 +18,9 @@ export class PovController {
 
   @Post('analyze')
   @RequirePermission('tool-applications:update')
-  @ApiOperation({ summary: 'Genera un análisis AI del POV con derivación de HMW' })
+  @ApiOperation({
+    summary: 'Genera un análisis AI del POV con derivación de HMW',
+  })
   @ApiResponse({ status: 201, type: PovAnalyzeResDto })
   analyze(@Body() dto: PovAnalyzeReqDto): Promise<PovAnalyzeResDto> {
     return this.analyzeService.execute(dto);

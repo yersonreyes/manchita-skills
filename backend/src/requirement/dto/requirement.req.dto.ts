@@ -1,5 +1,16 @@
-import { ApiProperty, ApiPropertyOptional, PartialType, OmitType } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsOptional, IsString, IsNotEmpty } from 'class-validator';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  PartialType,
+  OmitType,
+} from '@nestjs/swagger';
+import {
+  IsArray,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsNotEmpty,
+} from 'class-validator';
 import {
   RequirementPriority,
   RequirementStatus,
@@ -38,7 +49,10 @@ export class CreateRequirementReqDto {
   @IsString({ each: true })
   acceptanceCriteria?: string[];
 
-  @ApiPropertyOptional({ enum: RequirementPriority, default: RequirementPriority.MUST_HAVE })
+  @ApiPropertyOptional({
+    enum: RequirementPriority,
+    default: RequirementPriority.MUST_HAVE,
+  })
   @IsOptional()
   @IsEnum(RequirementPriority)
   priority?: RequirementPriority;

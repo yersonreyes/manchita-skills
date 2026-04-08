@@ -34,7 +34,10 @@ export class TaskStatusService {
       where: { id: dto.projectId },
     });
     if (!project) {
-      throw new NotFoundException({ message: 'Proyecto no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Proyecto no encontrado',
+        code: 1,
+      });
     }
 
     const res = await this.prisma.taskStatus.create({
@@ -78,7 +81,11 @@ export class TaskStatusService {
     if (dto.activo !== undefined) data.activo = dto.activo;
 
     if (Object.keys(data).length === 0) {
-      return { res: existing, code: 0, message: 'No hay cambios para actualizar' };
+      return {
+        res: existing,
+        code: 0,
+        message: 'No hay cambios para actualizar',
+      };
     }
 
     const res = await this.prisma.taskStatus.update({
@@ -86,7 +93,11 @@ export class TaskStatusService {
       data,
     });
 
-    return { res, code: 0, message: 'Estado de tarea actualizado correctamente' };
+    return {
+      res,
+      code: 0,
+      message: 'Estado de tarea actualizado correctamente',
+    };
   }
 
   // ─── DELETE ───────────────────────────────────────────────────────────────
@@ -111,6 +122,10 @@ export class TaskStatusService {
 
     await this.prisma.taskStatus.delete({ where: { id } });
 
-    return { res: null, code: 0, message: 'Estado de tarea eliminado correctamente' };
+    return {
+      res: null,
+      code: 0,
+      message: 'Estado de tarea eliminado correctamente',
+    };
   }
 }

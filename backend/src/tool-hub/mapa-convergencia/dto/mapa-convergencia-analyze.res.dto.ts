@@ -9,7 +9,8 @@ export class AnalisisIdeaSeleccionadaDto {
 
 export class MapaConvergenciaReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: [AnalisisIdeaSeleccionadaDto] }) analisisIdeasSeleccionadas: AnalisisIdeaSeleccionadaDto[];
+  @ApiProperty({ type: [AnalisisIdeaSeleccionadaDto] })
+  analisisIdeasSeleccionadas: AnalisisIdeaSeleccionadaDto[];
   @ApiProperty({ type: [String] }) patronesConvergencia: string[];
   @ApiProperty({ type: [String] }) ideasARevisitar: string[];
   @ApiProperty({ type: [String] }) alertasDeEquipo: string[];
@@ -19,5 +20,6 @@ export class MapaConvergenciaReportDto {
 export class MapaConvergenciaAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: MapaConvergenciaReportDto }) report: MapaConvergenciaReportDto;
+  @ApiProperty({ type: MapaConvergenciaReportDto })
+  report: MapaConvergenciaReportDto;
 }

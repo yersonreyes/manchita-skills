@@ -40,12 +40,20 @@ export class ToolApplicationService {
       where: { id: dto.projectPhaseId },
     });
     if (!projectPhase) {
-      throw new NotFoundException({ message: 'Fase de proyecto no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Fase de proyecto no encontrada',
+        code: 1,
+      });
     }
 
-    const tool = await this.prisma.tool.findUnique({ where: { id: dto.toolId } });
+    const tool = await this.prisma.tool.findUnique({
+      where: { id: dto.toolId },
+    });
     if (!tool) {
-      throw new NotFoundException({ message: 'Herramienta no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Herramienta no encontrada',
+        code: 1,
+      });
     }
 
     const res = await this.prisma.toolApplication.create({
@@ -60,7 +68,11 @@ export class ToolApplicationService {
       include: APPLICATION_INCLUDE,
     });
 
-    return { res, code: 0, message: 'Aplicación de herramienta creada correctamente' };
+    return {
+      res,
+      code: 0,
+      message: 'Aplicación de herramienta creada correctamente',
+    };
   }
 
   // ─── FIND BY PROJECT PHASE ────────────────────────────────────────────────
@@ -69,7 +81,10 @@ export class ToolApplicationService {
       where: { id: projectPhaseId },
     });
     if (!projectPhase) {
-      throw new NotFoundException({ message: 'Fase de proyecto no encontrada', code: 1 });
+      throw new NotFoundException({
+        message: 'Fase de proyecto no encontrada',
+        code: 1,
+      });
     }
 
     const res = await this.prisma.toolApplication.findMany({
@@ -80,7 +95,8 @@ export class ToolApplicationService {
 
     if (res.length === 0) {
       throw new NotFoundException({
-        message: 'No se encontraron aplicaciones de herramientas para esta fase',
+        message:
+          'No se encontraron aplicaciones de herramientas para esta fase',
         code: 1,
       });
     }
@@ -107,7 +123,9 @@ export class ToolApplicationService {
 
   // ─── UPDATE ───────────────────────────────────────────────────────────────
   async update(id: number, dto: UpdateToolApplicationRequestDto) {
-    const existing = await this.prisma.toolApplication.findUnique({ where: { id } });
+    const existing = await this.prisma.toolApplication.findUnique({
+      where: { id },
+    });
     if (!existing) {
       throw new NotFoundException({
         message: 'Aplicación de herramienta no encontrada',
@@ -118,7 +136,8 @@ export class ToolApplicationService {
     const data: any = {};
 
     if (dto.titulo !== undefined) data.titulo = dto.titulo.trim();
-    if (dto.structuredData !== undefined) data.structuredData = dto.structuredData;
+    if (dto.structuredData !== undefined)
+      data.structuredData = dto.structuredData;
     if (dto.estado !== undefined) data.estado = dto.estado;
 
     if (Object.keys(data).length === 0) {
@@ -126,7 +145,11 @@ export class ToolApplicationService {
         where: { id },
         include: APPLICATION_INCLUDE,
       });
-      return { res: current, code: 0, message: 'No hay cambios para actualizar' };
+      return {
+        res: current,
+        code: 0,
+        message: 'No hay cambios para actualizar',
+      };
     }
 
     const res = await this.prisma.toolApplication.update({
@@ -241,7 +264,10 @@ export class ToolApplicationService {
       where: { id: attachmentId },
     });
     if (!attachment) {
-      throw new NotFoundException({ message: 'Adjunto no encontrado', code: 1 });
+      throw new NotFoundException({
+        message: 'Adjunto no encontrado',
+        code: 1,
+      });
     }
 
     await this.prisma.toolApplicationAttachment.delete({

@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { BrainstormingAnalyzeService } from './brainstorming-analyze.service';
 import { BrainstormingAnalyzeReqDto } from './dto/brainstorming-analyze.req.dto';
@@ -13,9 +18,13 @@ export class BrainstormingController {
 
   @Post('analyze')
   @RequirePermission('tool-applications:update')
-  @ApiOperation({ summary: 'Genera un análisis AI de la sesión de Brainstorming' })
+  @ApiOperation({
+    summary: 'Genera un análisis AI de la sesión de Brainstorming',
+  })
   @ApiResponse({ status: 201, type: BrainstormingAnalyzeResDto })
-  analyze(@Body() dto: BrainstormingAnalyzeReqDto): Promise<BrainstormingAnalyzeResDto> {
+  analyze(
+    @Body() dto: BrainstormingAnalyzeReqDto,
+  ): Promise<BrainstormingAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

@@ -1,9 +1,23 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { InOutAnalyzeReqDto, InOutInputItemDto, InOutOutputItemDto } from './dto/in-out-analyze.req.dto';
-import { InOutAnalyzeResDto, InOutReportDto } from './dto/in-out-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  InOutAnalyzeReqDto,
+  InOutInputItemDto,
+  InOutOutputItemDto,
+} from './dto/in-out-analyze.req.dto';
+import {
+  InOutAnalyzeResDto,
+  InOutReportDto,
+} from './dto/in-out-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class InOutAnalyzeService {
@@ -12,13 +26,21 @@ export class InOutAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: InOutAnalyzeReqDto, currentVersion: number): Promise<InOutAnalyzeResDto> {
+  async execute(
+    dto: InOutAnalyzeReqDto,
+    currentVersion: number,
+  ): Promise<InOutAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el informe en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el informe en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -27,7 +49,9 @@ export class InOutAnalyzeService {
     try {
       report = JSON.parse(this.extractJson(raw));
     } catch {
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -89,16 +113,22 @@ REGLAS:
   private formatData(dto: InOutAnalyzeReqDto): string {
     const formatInputs = (inputs: InOutInputItemDto[]) =>
       inputs.length > 0
-        ? inputs.map((inp, i) =>
-            `${i + 1}. [${inp.tipo.toUpperCase()}] ${inp.descripcion || '(sin descripción)'}`,
-          ).join('\n')
+        ? inputs
+            .map(
+              (inp, i) =>
+                `${i + 1}. [${inp.tipo.toUpperCase()}] ${inp.descripcion || '(sin descripción)'}`,
+            )
+            .join('\n')
         : '(ninguno registrado)';
 
     const formatOutputs = (outputs: InOutOutputItemDto[]) =>
       outputs.length > 0
-        ? outputs.map((out, i) =>
-            `${i + 1}. [${out.tipo.toUpperCase()}] ${out.descripcion || '(sin descripción)'}`,
-          ).join('\n')
+        ? outputs
+            .map(
+              (out, i) =>
+                `${i + 1}. [${out.tipo.toUpperCase()}] ${out.descripcion || '(sin descripción)'}`,
+            )
+            .join('\n')
         : '(ninguno registrado)';
 
     return `=== PROCESO / SISTEMA ===

@@ -1,4 +1,11 @@
-import { IsArray, IsInt, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -26,7 +33,10 @@ export class AntilogoItemDto {
   @IsString()
   fracaso: string;
 
-  @ApiProperty({ example: 'No depender exclusivamente del precio', required: false })
+  @ApiProperty({
+    example: 'No depender exclusivamente del precio',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   errorAEvitar?: string;
@@ -57,7 +67,10 @@ export class AnalogosAntilogosAnalyzeReqDto {
   @Type(() => AnalogosAntilogosItemsDto)
   items: AnalogosAntilogosItemsDto;
 
-  @ApiProperty({ example: 0, description: 'Cantidad de informes ya existentes (para calcular versión)' })
+  @ApiProperty({
+    example: 0,
+    description: 'Cantidad de informes ya existentes (para calcular versión)',
+  })
   @IsInt()
   @Min(0)
   currentVersion: number;

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { BuzzReportAnalyzeReqDto } from './dto/buzz-report-analyze.req.dto';
@@ -6,7 +10,10 @@ import {
   BuzzReportAnalyzeResDto,
   BuzzReportReportDto,
 } from './dto/buzz-report-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class BuzzReportAnalyzeService {
@@ -15,13 +22,20 @@ export class BuzzReportAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: BuzzReportAnalyzeReqDto): Promise<BuzzReportAnalyzeResDto> {
+  async execute(
+    dto: BuzzReportAnalyzeReqDto,
+  ): Promise<BuzzReportAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el Buzz Report en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el Buzz Report en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -31,7 +45,9 @@ export class BuzzReportAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as BuzzReportReportDto;
     } catch {
       console.error('[BuzzReportAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -114,7 +130,9 @@ REGLAS:
     if (data.menciones?.length) {
       lines.push('\n--- MENCIONES ---');
       for (const m of data.menciones) {
-        lines.push(`\n[${m.canal?.toUpperCase() ?? 'CANAL'}] Sentiment: ${m.sentiment}`);
+        lines.push(
+          `\n[${m.canal?.toUpperCase() ?? 'CANAL'}] Sentiment: ${m.sentiment}`,
+        );
         if (m.autor) lines.push(`Autor: ${m.autor}`);
         if (m.contenido) lines.push(`Contenido: ${m.contenido}`);
         if (m.alcance) lines.push(`Alcance: ${m.alcance}`);
@@ -122,15 +140,21 @@ REGLAS:
     }
 
     if (data.temasRecurrentes?.length) {
-      lines.push(`\n--- TEMAS RECURRENTES IDENTIFICADOS ---\n${data.temasRecurrentes.map(t => `- ${t}`).join('\n')}`);
+      lines.push(
+        `\n--- TEMAS RECURRENTES IDENTIFICADOS ---\n${data.temasRecurrentes.map((t) => `- ${t}`).join('\n')}`,
+      );
     }
 
     if (data.vocesInfluyentes?.length) {
-      lines.push(`\n--- VOCES INFLUYENTES IDENTIFICADAS ---\n${data.vocesInfluyentes.map(v => `- ${v}`).join('\n')}`);
+      lines.push(
+        `\n--- VOCES INFLUYENTES IDENTIFICADAS ---\n${data.vocesInfluyentes.map((v) => `- ${v}`).join('\n')}`,
+      );
     }
 
     if (data.sentimentOverall) {
-      lines.push(`\n--- PERCEPCIÓN GENERAL OBSERVADA ---\n${data.sentimentOverall}`);
+      lines.push(
+        `\n--- PERCEPCIÓN GENERAL OBSERVADA ---\n${data.sentimentOverall}`,
+      );
     }
 
     return lines.join('\n');

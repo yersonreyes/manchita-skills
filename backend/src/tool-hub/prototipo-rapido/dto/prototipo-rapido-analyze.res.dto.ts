@@ -14,5 +14,6 @@ export class PrototipoRapidoReportDto {
 export class PrototipoRapidoAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: PrototipoRapidoReportDto }) report: PrototipoRapidoReportDto;
+  @ApiProperty({ type: PrototipoRapidoReportDto })
+  report: PrototipoRapidoReportDto;
 }

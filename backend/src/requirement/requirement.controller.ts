@@ -12,8 +12,18 @@ import {
   Query,
   Request,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { RequirementPriority, RequirementStatus, RequirementType } from '@prisma/client';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  RequirementPriority,
+  RequirementStatus,
+  RequirementType,
+} from '@prisma/client';
 import { RequirePermission } from '../auth/decorators';
 import {
   ChangeRequirementStatusReqDto,
@@ -42,7 +52,11 @@ export class RequirementController {
     @Query('status') status?: RequirementStatus,
     @Query('priority') priority?: RequirementPriority,
   ) {
-    return this.requirementService.findAll(projectId, { type, status, priority });
+    return this.requirementService.findAll(projectId, {
+      type,
+      status,
+      priority,
+    });
   }
 
   @Get(':id')
@@ -83,7 +97,9 @@ export class RequirementController {
 
   @Patch(':id/status')
   @RequirePermission('requirements:status')
-  @ApiOperation({ summary: 'Cambiar estado de un requisito (solo OWNER/EDITOR del proyecto)' })
+  @ApiOperation({
+    summary: 'Cambiar estado de un requisito (solo OWNER/EDITOR del proyecto)',
+  })
   @ApiResponse({ status: 200, type: RequirementResDto })
   changeStatus(
     @Param('projectId', ParseIntPipe) projectId: number,
@@ -91,7 +107,12 @@ export class RequirementController {
     @Body() dto: ChangeRequirementStatusReqDto,
     @Request() req,
   ) {
-    return this.requirementService.changeStatus(projectId, id, dto, req.user.userId);
+    return this.requirementService.changeStatus(
+      projectId,
+      id,
+      dto,
+      req.user.userId,
+    );
   }
 
   @Delete(':id')

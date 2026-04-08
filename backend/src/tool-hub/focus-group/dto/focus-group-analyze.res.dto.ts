@@ -9,7 +9,8 @@ export class FocusGroupInsightDto {
 export class FocusGroupReportDto {
   @ApiProperty() executiveSummary: string;
   @ApiProperty({ type: [String] }) patronesPrincipales: string[];
-  @ApiProperty({ type: [FocusGroupInsightDto] }) insights: FocusGroupInsightDto[];
+  @ApiProperty({ type: [FocusGroupInsightDto] })
+  insights: FocusGroupInsightDto[];
   @ApiProperty({ type: [String] }) consensos: string[];
   @ApiProperty({ type: [String] }) disensos: string[];
   @ApiProperty({ type: [String] }) citasDestacadas: string[];

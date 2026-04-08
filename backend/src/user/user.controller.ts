@@ -97,7 +97,12 @@ export class UserController {
     },
   })
   @ApiResponse({ status: 201, type: UserResponseDto })
-  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
   uploadAvatar(
     @Param('id') id: string,
     @UploadedFile(

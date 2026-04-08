@@ -68,7 +68,10 @@ export class MapaEvolucionInnovacionDataDto {
   @IsOptional()
   industria?: string;
 
-  @ApiProperty({ example: 'Evolución del transporte urbano desde 1980', required: false })
+  @ApiProperty({
+    example: 'Evolución del transporte urbano desde 1980',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   contexto?: string;

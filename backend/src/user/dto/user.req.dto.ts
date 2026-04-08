@@ -12,7 +12,12 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { AreaProfesional, NivelCompetencia, Senioridad, TipoDisponibilidad } from '@prisma/client';
+import {
+  AreaProfesional,
+  NivelCompetencia,
+  Senioridad,
+  TipoDisponibilidad,
+} from '@prisma/client';
 
 export class CreateUserRequestDto {
   @ApiProperty({ example: 'nuevo@example.com' })
@@ -133,7 +138,10 @@ export class UpdateUserRequestDto {
 }
 
 export class AssignRolesRequestDto {
-  @ApiProperty({ type: () => [Number], description: 'IDs de los roles a asignar' })
+  @ApiProperty({
+    type: () => [Number],
+    description: 'IDs de los roles a asignar',
+  })
   @IsArray()
   @IsNumber({}, { each: true })
   roleIds: number[];

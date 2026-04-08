@@ -147,6 +147,58 @@ enum RequirementStatus {
   DEFERRED
 }
 
+enum Moneda {
+  // Internacionales
+  USD
+  EUR
+  // Latinoamérica
+  ARS
+  BRL
+  CLP
+  COP
+  MXN
+  PEN
+  UYU
+  PYG
+  BOB
+  VES
+  CRC
+  DOP
+  GTQ
+  HNL
+  NIO
+  PAB
+  CUP
+}
+
+enum EstadoPago {
+  PENDIENTE
+  PAGADO
+  VENCIDO
+}
+
+enum EstadoCobro {
+  PENDIENTE
+  COBRADO
+  VENCIDO
+}
+
+enum TipoRecurso {
+  PERSONA
+  SERVIDOR
+  LICENCIA
+  HERRAMIENTA
+  SERVICIO
+  OTRO
+}
+
+enum FrecuenciaCosto {
+  UNICO
+  SEMANAL
+  MENSUAL
+  ANUAL
+}
+
 // ─── USUARIO ─────────────────────────────────────────────────────────────────
 
 model User {
@@ -385,12 +437,14 @@ model Project {
   contexto    String?        @db.Text
   estado      ProjectStatus @default(DRAFT)
   ownerId     Int
+  presupuesto Float?
+  moneda      Moneda?
   activo      Boolean       @default(true)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   // Relaciones
-  owner        User            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  owner        User              @relation("ProjectOwner", fields: [ownerId], references: [id])
   members      ProjectMember[]
   phases       ProjectPhase[]
   wikiPages    WikiPage[]
@@ -398,6 +452,8 @@ model Project {
   tasks        Task[]
   taskTags     TaskTag[]
   requirements Requirement[]
+  recursos     RecursoProyecto[]
+  ingresos     IngresoProyecto[]
 
   @@index([ownerId])
   @@index([estado])
@@ -690,4 +746,88 @@ model Requirement {
   @@index([type])
   @@index([status])
   @@index([createdById])
+}
+
+// ─── RECURSO DE PROYECTO (Presupuesto) ──────────────────────────────────────
+
+model RecursoProyecto {
+  id             Int             @id @default(autoincrement())
+  projectId      Int
+  nombre         String
+  tipo           TipoRecurso
+  costo          Float
+  frecuencia     FrecuenciaCosto
+  cantidad       Int             @default(1)
+  notas          String?         @db.Text
+  activo         Boolean         @default(true)
+  fechaInicio    DateTime?
+  duracionMeses  Int             @default(1)
+  esRecurrente   Boolean         @default(false)
+  ivaPorcentaje  Float           @default(0)
+  estadoPago     EstadoPago      @default(PENDIENTE)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  project  Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  adjuntos RecursoAdjunto[]
+
+  @@index([projectId])
+}
+
+model RecursoAdjunto {
+  id        Int            @id @default(autoincrement())
+  recursoId Int
+  nombre    String
+  url       String
+  tipo      AttachmentType
+  size      Int?
+  createdAt DateTime       @default(now())
+
+  recurso RecursoProyecto @relation(fields: [recursoId], references: [id], onDelete: Cascade)
+
+  @@index([recursoId])
+}
+
+// ─── INGRESO DE PROYECTO (Contabilidad) ─────────────────────────────────────
+
+model IngresoProyecto {
+  id               Int          @id @default(autoincrement())
+  projectId        Int
+  concepto         String
+  monto            Float
+  moneda           Moneda?
+  empresaPagadora  String
+  contactoPagadora String?
+  emailPagadora    String?
+  numeroFactura    String?
+  fechaEmision     DateTime?
+  fechaVencimiento DateTime
+  fechaCobro       DateTime?
+  estadoCobro      EstadoCobro  @default(PENDIENTE)
+  notas            String?      @db.Text
+  ivaPorcentaje    Float        @default(0)
+  activo           Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  project  Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  adjuntos IngresoAdjunto[]
+
+  @@index([projectId])
+  @@index([estadoCobro])
+  @@index([fechaVencimiento])
+}
+
+model IngresoAdjunto {
+  id        Int            @id @default(autoincrement())
+  ingresoId Int
+  nombre    String
+  url       String
+  tipo      AttachmentType
+  size      Int?
+  createdAt DateTime       @default(now())
+
+  ingreso IngresoProyecto @relation(fields: [ingresoId], references: [id], onDelete: Cascade)
+
+  @@index([ingresoId])
 }

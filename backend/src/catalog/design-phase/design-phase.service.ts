@@ -71,7 +71,9 @@ export class DesignPhaseService {
 
   // ─── UPDATE ───────────────────────────────────────────────────────────────
   async update(id: number, dto: UpdateDesignPhaseRequestDto) {
-    const existing = await this.prisma.designPhase.findUnique({ where: { id } });
+    const existing = await this.prisma.designPhase.findUnique({
+      where: { id },
+    });
     if (!existing) {
       throw new NotFoundException({
         message: 'Fase de diseño no encontrada',
@@ -87,22 +89,34 @@ export class DesignPhaseService {
         where: { codigo, NOT: { id } },
       });
       if (duplicated) {
-        throw new ConflictException({ message: 'El código ya está en uso', code: 1 });
+        throw new ConflictException({
+          message: 'El código ya está en uso',
+          code: 1,
+        });
       }
       data.codigo = codigo;
     }
 
     if (dto.nombre !== undefined) data.nombre = dto.nombre.trim();
-    if (dto.descripcion !== undefined) data.descripcion = dto.descripcion.trim();
+    if (dto.descripcion !== undefined)
+      data.descripcion = dto.descripcion.trim();
     if (dto.orden !== undefined) data.orden = dto.orden;
     if (dto.activo !== undefined) data.activo = dto.activo;
 
     if (Object.keys(data).length === 0) {
-      return { res: existing, code: 0, message: 'No hay cambios para actualizar' };
+      return {
+        res: existing,
+        code: 0,
+        message: 'No hay cambios para actualizar',
+      };
     }
 
     const res = await this.prisma.designPhase.update({ where: { id }, data });
 
-    return { res, code: 0, message: 'Fase de diseño actualizada correctamente' };
+    return {
+      res,
+      code: 0,
+      message: 'Fase de diseño actualizada correctamente',
+    };
   }
 }

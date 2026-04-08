@@ -1,18 +1,28 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { InvestigacionRemotaAnalyzeReqDto } from './dto/investigacion-remota-analyze.req.dto';
-import { InvestigacionRemotaAnalyzeResDto, InvestigacionRemotaReportDto } from './dto/investigacion-remota-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  InvestigacionRemotaAnalyzeResDto,
+  InvestigacionRemotaReportDto,
+} from './dto/investigacion-remota-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TIPO_LABELS: Record<string, string> = {
-  'encuesta': 'Encuesta Online',
+  encuesta: 'Encuesta Online',
   'entrevista-video': 'Entrevista por Video',
   'diary-study': 'Diary Study',
-  'testing': 'Unmoderated Testing',
+  testing: 'Unmoderated Testing',
   'card-sorting': 'Card Sorting',
   'tree-testing': 'Tree Testing',
-  'otro': 'Otro',
+  otro: 'Otro',
 };
 
 @Injectable()
@@ -22,23 +32,37 @@ export class InvestigacionRemotaAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: InvestigacionRemotaAnalyzeReqDto): Promise<InvestigacionRemotaAnalyzeResDto> {
+  async execute(
+    dto: InvestigacionRemotaAnalyzeReqDto,
+  ): Promise<InvestigacionRemotaAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
 
     let report: InvestigacionRemotaReportDto;
     try {
-      report = JSON.parse(this.extractJson(raw)) as InvestigacionRemotaReportDto;
+      report = JSON.parse(
+        this.extractJson(raw),
+      ) as InvestigacionRemotaReportDto;
     } catch {
-      console.error('[InvestigacionRemotaAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[InvestigacionRemotaAnalyzeService] Raw AI response:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -127,7 +151,7 @@ REGLAS:
         if (m.objetivo) lines.push(`Objetivo: ${m.objetivo}`);
         if (m.hallazgos?.length) {
           lines.push(`Hallazgos (${m.hallazgos.length}):`);
-          m.hallazgos.forEach(h => lines.push(`  • ${h}`));
+          m.hallazgos.forEach((h) => lines.push(`  • ${h}`));
         }
         if (m.notas) lines.push(`Notas: ${m.notas}`);
       }

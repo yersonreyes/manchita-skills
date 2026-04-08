@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { MatrizFeedbackAnalyzeService } from './matriz-feedback-analyze.service';
 import { MatrizFeedbackAnalyzeReqDto } from './dto/matriz-feedback-analyze.req.dto';
@@ -15,7 +20,9 @@ export class MatrizFeedbackController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un análisis AI de la Matriz de Feedback' })
   @ApiResponse({ status: 201, type: MatrizFeedbackAnalyzeResDto })
-  analyze(@Body() dto: MatrizFeedbackAnalyzeReqDto): Promise<MatrizFeedbackAnalyzeResDto> {
+  analyze(
+    @Body() dto: MatrizFeedbackAnalyzeReqDto,
+  ): Promise<MatrizFeedbackAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }

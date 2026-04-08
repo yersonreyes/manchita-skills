@@ -31,7 +31,10 @@ export class BenchmarkingCompetidorDto {
   @IsString()
   nombre?: string;
 
-  @ApiProperty({ description: 'criterioId → valor', example: { 'uuid-criterio': '★★★★★' } })
+  @ApiProperty({
+    description: 'criterioId → valor',
+    example: { 'uuid-criterio': '★★★★★' },
+  })
   @IsObject()
   valores: Record<string, string>;
 }
@@ -47,7 +50,10 @@ export class BenchmarkingDataDto {
   @IsString()
   miProducto?: string;
 
-  @ApiProperty({ description: 'criterioId → valor de tu producto', example: {} })
+  @ApiProperty({
+    description: 'criterioId → valor de tu producto',
+    example: {},
+  })
   @IsObject()
   miValores: Record<string, string>;
 

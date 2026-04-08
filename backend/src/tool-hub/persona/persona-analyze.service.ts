@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { PersonaAnalyzeReqDto } from './dto/persona-analyze.req.dto';
-import { PersonaAnalyzeResDto, PersonaReportDto } from './dto/persona-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  PersonaAnalyzeResDto,
+  PersonaReportDto,
+} from './dto/persona-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class PersonaAnalyzeService {
@@ -18,7 +28,12 @@ export class PersonaAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el informe en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el informe en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -27,8 +42,13 @@ export class PersonaAnalyzeService {
     try {
       report = JSON.parse(this.extractJson(raw));
     } catch (err) {
-      console.error('[PersonaAnalyzeService] Raw AI response that failed to parse:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      console.error(
+        '[PersonaAnalyzeService] Raw AI response that failed to parse:',
+        raw,
+      );
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -73,7 +93,10 @@ REGLAS:
     const { data } = dto;
     const lines: string[] = ['=== PERFIL DE PERSONA ==='];
 
-    if (data.nombre) lines.push(`Nombre: ${data.nombre}${data.apodo ? ` — "${data.apodo}"` : ''}`);
+    if (data.nombre)
+      lines.push(
+        `Nombre: ${data.nombre}${data.apodo ? ` — "${data.apodo}"` : ''}`,
+      );
     if (data.tipo) lines.push(`Tipo: ${data.tipo}`);
 
     const demo: string[] = [];
@@ -86,12 +109,17 @@ REGLAS:
     if (data.bio) lines.push(`\nBiografía:\n${data.bio}`);
 
     if (data.motivaciones?.length) {
-      lines.push(`\nMotivaciones:\n${data.motivaciones.map((m) => `- ${m}`).join('\n')}`);
+      lines.push(
+        `\nMotivaciones:\n${data.motivaciones.map((m) => `- ${m}`).join('\n')}`,
+      );
     }
     if (data.frustraciones?.length) {
-      lines.push(`\nFrustraciones / Pain Points:\n${data.frustraciones.map((f) => `- ${f}`).join('\n')}`);
+      lines.push(
+        `\nFrustraciones / Pain Points:\n${data.frustraciones.map((f) => `- ${f}`).join('\n')}`,
+      );
     }
-    if (data.comportamiento) lines.push(`\nComportamiento / Tecnología:\n${data.comportamiento}`);
+    if (data.comportamiento)
+      lines.push(`\nComportamiento / Tecnología:\n${data.comportamiento}`);
     if (data.cita) lines.push(`\nCita representativa: "${data.cita}"`);
 
     return lines.join('\n');

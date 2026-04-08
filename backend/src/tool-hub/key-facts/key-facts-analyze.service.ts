@@ -1,9 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { KeyFactsAnalyzeReqDto, KeyFactItemDto } from './dto/key-facts-analyze.req.dto';
-import { KeyFactsAnalyzeResDto, KeyFactsReportDto } from './dto/key-facts-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  KeyFactsAnalyzeReqDto,
+  KeyFactItemDto,
+} from './dto/key-facts-analyze.req.dto';
+import {
+  KeyFactsAnalyzeResDto,
+  KeyFactsReportDto,
+} from './dto/key-facts-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 @Injectable()
 export class KeyFactsAnalyzeService {
@@ -18,7 +31,12 @@ export class KeyFactsAnalyzeService {
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -28,7 +46,9 @@ export class KeyFactsAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as KeyFactsReportDto;
     } catch {
       console.error('[KeyFactsAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -99,10 +119,11 @@ REGLAS:
     const { data } = dto;
     const lines: string[] = ['=== KEY FACTS ==='];
 
-    if (data.contexto) lines.push(`Contexto de la investigación: ${data.contexto}`);
+    if (data.contexto)
+      lines.push(`Contexto de la investigación: ${data.contexto}`);
     lines.push(`Total de hechos documentados: ${data.facts.length}`);
 
-    const factsConDesc = data.facts.filter(f => f.descripcion?.trim());
+    const factsConDesc = data.facts.filter((f) => f.descripcion?.trim());
     lines.push(`Hechos con descripción: ${factsConDesc.length}`);
 
     for (let i = 0; i < data.facts.length; i++) {
@@ -111,7 +132,8 @@ REGLAS:
       lines.push(`\n--- HECHO ${i + 1} ---`);
       lines.push(`Dato: ${fact.descripcion}`);
       if (fact.fuente?.trim()) lines.push(`Fuente: ${fact.fuente}`);
-      if (fact.implicacion?.trim()) lines.push(`Implicación declarada: ${fact.implicacion}`);
+      if (fact.implicacion?.trim())
+        lines.push(`Implicación declarada: ${fact.implicacion}`);
     }
 
     return lines.join('\n');

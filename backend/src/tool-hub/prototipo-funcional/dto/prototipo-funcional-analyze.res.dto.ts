@@ -13,5 +13,6 @@ export class PrototipoFuncionalReportDto {
 export class PrototipoFuncionalAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: PrototipoFuncionalReportDto }) report: PrototipoFuncionalReportDto;
+  @ApiProperty({ type: PrototipoFuncionalReportDto })
+  report: PrototipoFuncionalReportDto;
 }

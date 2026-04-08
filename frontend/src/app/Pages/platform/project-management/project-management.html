@@ -131,6 +131,16 @@
               <i class="pi pi-list-check"></i>
               <span>Requisitos</span>
             </button>
+
+            <button
+              *hasPermission="'project-budget:read'"
+              class="project-action project-action--budget"
+              (click)="navigateToBudget(project.id)"
+              title="Ver presupuesto del proyecto"
+            >
+              <i class="pi pi-wallet"></i>
+              <span>Presupuesto</span>
+            </button>
           </div>
         </td>
 

@@ -1,12 +1,22 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { PrototipoRapidoAnalyzeReqDto } from './dto/prototipo-rapido-analyze.req.dto';
-import { PrototipoRapidoAnalyzeResDto, PrototipoRapidoReportDto } from './dto/prototipo-rapido-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  PrototipoRapidoAnalyzeResDto,
+  PrototipoRapidoReportDto,
+} from './dto/prototipo-rapido-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const TECNICA_LABELS: Record<string, string> = {
-  'sketch': 'Sketch (boceto en papel)',
+  sketch: 'Sketch (boceto en papel)',
   'paper-prototype': 'Paper Prototype (prototipo en papel)',
   'wizard-of-oz': 'Wizard of Oz (humanos simulando el sistema)',
   'clickable-mockup': 'Clickable Mockup (Figma / Adobe XD)',
@@ -26,13 +36,20 @@ export class PrototipoRapidoAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: PrototipoRapidoAnalyzeReqDto): Promise<PrototipoRapidoAnalyzeResDto> {
+  async execute(
+    dto: PrototipoRapidoAnalyzeReqDto,
+  ): Promise<PrototipoRapidoAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -42,7 +59,9 @@ export class PrototipoRapidoAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as PrototipoRapidoReportDto;
     } catch {
       console.error('[PrototipoRapidoAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -109,44 +128,77 @@ REGLAS:
     const { data } = dto;
     const lines: string[] = ['=== PROTOTIPO RÁPIDO ==='];
 
-    if (data.preguntaValidar) lines.push(`\nHIPÓTESIS / PREGUNTA A VALIDAR:\n"${data.preguntaValidar}"`);
-    if (data.tecnica) lines.push(`\nTÉCNICA USADA: ${TECNICA_LABELS[data.tecnica] ?? data.tecnica}`);
-    if (data.tiempoInvertido) lines.push(`TIEMPO INVERTIDO: ${data.tiempoInvertido}`);
-    if (data.descripcionPrototipo) lines.push(`\nDESCRIPCIÓN DEL PROTOTIPO:\n"${data.descripcionPrototipo}"`);
+    if (data.preguntaValidar)
+      lines.push(
+        `\nHIPÓTESIS / PREGUNTA A VALIDAR:\n"${data.preguntaValidar}"`,
+      );
+    if (data.tecnica)
+      lines.push(
+        `\nTÉCNICA USADA: ${TECNICA_LABELS[data.tecnica] ?? data.tecnica}`,
+      );
+    if (data.tiempoInvertido)
+      lines.push(`TIEMPO INVERTIDO: ${data.tiempoInvertido}`);
+    if (data.descripcionPrototipo)
+      lines.push(
+        `\nDESCRIPCIÓN DEL PROTOTIPO:\n"${data.descripcionPrototipo}"`,
+      );
 
     if (data.herramientasUsadas?.length) {
-      lines.push(`\nHERRAMIENTAS USADAS: ${data.herramientasUsadas.join(', ')}`);
+      lines.push(
+        `\nHERRAMIENTAS USADAS: ${data.herramientasUsadas.join(', ')}`,
+      );
     }
 
     if (data.sesionesTest?.length) {
       const total = data.sesionesTest.length;
-      const exitosos = data.sesionesTest.filter(s => s.resultado === 'exito').length;
-      const fallos = data.sesionesTest.filter(s => s.resultado === 'fallo').length;
-      const parciales = data.sesionesTest.filter(s => s.resultado === 'parcial').length;
+      const exitosos = data.sesionesTest.filter(
+        (s) => s.resultado === 'exito',
+      ).length;
+      const fallos = data.sesionesTest.filter(
+        (s) => s.resultado === 'fallo',
+      ).length;
+      const parciales = data.sesionesTest.filter(
+        (s) => s.resultado === 'parcial',
+      ).length;
       const tasa = total > 0 ? Math.round((exitosos / total) * 100) : 0;
 
       lines.push(`\nSESIONES DE TESTING (${total} total | ${tasa}% éxito):`);
-      lines.push(`  Éxitos: ${exitosos} | Fallos: ${fallos} | Parciales: ${parciales}`);
+      lines.push(
+        `  Éxitos: ${exitosos} | Fallos: ${fallos} | Parciales: ${parciales}`,
+      );
 
       data.sesionesTest.forEach((s, i) => {
-        const resultadoLabel = s.resultado === 'exito' ? '✓ Éxito' : s.resultado === 'fallo' ? '✗ Fallo' : '− Parcial';
-        lines.push(`\n  ${i + 1}. Usuario: "${s.usuario ?? 'sin nombre'}" — ${resultadoLabel}`);
+        const resultadoLabel =
+          s.resultado === 'exito'
+            ? '✓ Éxito'
+            : s.resultado === 'fallo'
+              ? '✗ Fallo'
+              : '− Parcial';
+        lines.push(
+          `\n  ${i + 1}. Usuario: "${s.usuario ?? 'sin nombre'}" — ${resultadoLabel}`,
+        );
         if (s.feedback) lines.push(`     Feedback: "${s.feedback}"`);
       });
     }
 
     if (data.hallazgos?.length) {
       lines.push(`\nHALLAZGOS CLAVE:`);
-      data.hallazgos.forEach(h => { if (h) lines.push(`  • ${h}`); });
+      data.hallazgos.forEach((h) => {
+        if (h) lines.push(`  • ${h}`);
+      });
     }
 
     if (data.decision) {
-      lines.push(`\nDECISIÓN DEL EQUIPO: ${DECISION_LABELS[data.decision] ?? data.decision}`);
+      lines.push(
+        `\nDECISIÓN DEL EQUIPO: ${DECISION_LABELS[data.decision] ?? data.decision}`,
+      );
     }
 
     if (data.iteracionesSiguientes?.length) {
       lines.push(`\nITERACIONES / PASOS SIGUIENTES:`);
-      data.iteracionesSiguientes.forEach(it => { if (it) lines.push(`  • ${it}`); });
+      data.iteracionesSiguientes.forEach((it) => {
+        if (it) lines.push(`  • ${it}`);
+      });
     }
 
     return lines.join('\n');

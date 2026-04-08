@@ -1,9 +1,19 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
 import { MatrizHipotesisAnalyzeReqDto } from './dto/matriz-hipotesis-analyze.req.dto';
-import { MatrizHipotesisAnalyzeResDto, MatrizHipotesisReportDto } from './dto/matriz-hipotesis-analyze.res.dto';
-import { buildProjectContextSection, ProjectBriefContext } from '../shared/project-context';
+import {
+  MatrizHipotesisAnalyzeResDto,
+  MatrizHipotesisReportDto,
+} from './dto/matriz-hipotesis-analyze.res.dto';
+import {
+  buildProjectContextSection,
+  ProjectBriefContext,
+} from '../shared/project-context';
 
 const IMPACTO_LABELS: Record<string, string> = {
   alto: 'Alto impacto',
@@ -29,13 +39,20 @@ export class MatrizHipotesisAnalyzeService {
     private readonly aiService: AiService,
   ) {}
 
-  async execute(dto: MatrizHipotesisAnalyzeReqDto): Promise<MatrizHipotesisAnalyzeResDto> {
+  async execute(
+    dto: MatrizHipotesisAnalyzeReqDto,
+  ): Promise<MatrizHipotesisAnalyzeResDto> {
     const { tool, project } = await this.loadContext(dto.toolApplicationId);
     const systemPrompt = this.buildSystemPrompt(tool, project);
     const dataText = this.formatData(dto);
 
     const raw = await this.aiService.chat(
-      [{ role: 'user', content: `${dataText}\n\nGenerá el análisis en JSON ahora.` }],
+      [
+        {
+          role: 'user',
+          content: `${dataText}\n\nGenerá el análisis en JSON ahora.`,
+        },
+      ],
       systemPrompt,
       2048,
     );
@@ -45,7 +62,9 @@ export class MatrizHipotesisAnalyzeService {
       report = JSON.parse(this.extractJson(raw)) as MatrizHipotesisReportDto;
     } catch {
       console.error('[MatrizHipotesisAnalyzeService] Raw AI response:', raw);
-      throw new UnprocessableEntityException('La respuesta del AI no es JSON válido');
+      throw new UnprocessableEntityException(
+        'La respuesta del AI no es JSON válido',
+      );
     }
 
     return {
@@ -111,9 +130,9 @@ REGLAS:
 
     const hipotesisPorCuadrante: Record<string, typeof data.hipotesis> = {
       'PRIORITY 🏆': [],
-      'LATER': [],
-      'DROP': [],
-      'OPTIONAL': [],
+      LATER: [],
+      DROP: [],
+      OPTIONAL: [],
     };
 
     for (const h of data.hipotesis) {
@@ -123,13 +142,17 @@ REGLAS:
 
     lines.push(`\nTOTAL: ${data.hipotesis.length} hipótesis`);
 
-    for (const [cuadrante, hipotesis] of Object.entries(hipotesisPorCuadrante)) {
+    for (const [cuadrante, hipotesis] of Object.entries(
+      hipotesisPorCuadrante,
+    )) {
       if (hipotesis.length === 0) continue;
       lines.push(`\n--- ${cuadrante} (${hipotesis.length}) ---`);
       hipotesis.forEach((h, i) => {
         const imp = IMPACTO_LABELS[h.impacto] ?? h.impacto;
         const inc = INCERTIDUMBRE_LABELS[h.incertidumbre] ?? h.incertidumbre;
-        lines.push(`\n  ${i + 1}. Formulación: "${h.formulacion || '(sin formulación)'}"`);
+        lines.push(
+          `\n  ${i + 1}. Formulación: "${h.formulacion || '(sin formulación)'}"`,
+        );
         lines.push(`     ${imp} | ${inc}`);
         if (h.experimento) lines.push(`     Experimento: "${h.experimento}"`);
       });

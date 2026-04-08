@@ -15,7 +15,10 @@ export class BmcReportDto {
   @ApiProperty({ example: 'El modelo de negocio muestra coherencia entre...' })
   executiveSummary: string;
 
-  @ApiProperty({ type: 'object', additionalProperties: { $ref: '#/components/schemas/BmcBlockAnalysisDto' } })
+  @ApiProperty({
+    type: 'object',
+    additionalProperties: { $ref: '#/components/schemas/BmcBlockAnalysisDto' },
+  })
   blockAnalysis: Record<string, BmcBlockAnalysisDto>;
 
   @ApiProperty({ example: 7 })

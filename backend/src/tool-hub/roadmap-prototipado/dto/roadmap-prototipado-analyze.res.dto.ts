@@ -12,5 +12,6 @@ export class RoadmapPrototipadoReportDto {
 export class RoadmapPrototipadoAnalyzeResDto {
   @ApiProperty() version: number;
   @ApiProperty() generatedAt: string;
-  @ApiProperty({ type: RoadmapPrototipadoReportDto }) report: RoadmapPrototipadoReportDto;
+  @ApiProperty({ type: RoadmapPrototipadoReportDto })
+  report: RoadmapPrototipadoReportDto;
 }

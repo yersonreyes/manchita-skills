@@ -15,9 +15,11 @@ export class BuzzReportCanalInsightDto {
 
 export class BuzzReportReportDto {
   @ApiProperty() executiveSummary: string;
-  @ApiProperty({ type: BuzzReportSentimentBreakdownDto }) sentimentBreakdown: BuzzReportSentimentBreakdownDto;
+  @ApiProperty({ type: BuzzReportSentimentBreakdownDto })
+  sentimentBreakdown: BuzzReportSentimentBreakdownDto;
   @ApiProperty() sentimentNarrative: string;
-  @ApiProperty({ type: [BuzzReportCanalInsightDto] }) topCanales: BuzzReportCanalInsightDto[];
+  @ApiProperty({ type: [BuzzReportCanalInsightDto] })
+  topCanales: BuzzReportCanalInsightDto[];
   @ApiProperty({ type: [String] }) temasPrincipales: string[];
   @ApiProperty({ type: [String] }) vocesInfluyentes: string[];
   @ApiProperty({ type: [String] }) oportunidades: string[];

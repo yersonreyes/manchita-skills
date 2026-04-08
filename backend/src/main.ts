@@ -15,8 +15,8 @@ async function bootstrap() {
   // 3. Validación global — rechaza propiedades desconocidas automáticamente
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,              // Elimina propiedades no declaradas en el DTO
-      forbidNonWhitelisted: true,   // Lanza error si llegan propiedades extra
+      whitelist: true, // Elimina propiedades no declaradas en el DTO
+      forbidNonWhitelisted: true, // Lanza error si llegan propiedades extra
     }),
   );
 
@@ -50,7 +50,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('api/docs', app, document, {
     swaggerOptions: {
-      persistAuthorization: true,  // El token se mantiene en el navegador al recargar
+      persistAuthorization: true, // El token se mantiene en el navegador al recargar
     },
   });
 
@@ -60,7 +60,11 @@ async function bootstrap() {
   });
 
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`Aplicación corriendo en: http://localhost:${process.env.PORT ?? 3000}/api`);
-  console.log(`Swagger UI: http://localhost:${process.env.PORT ?? 3000}/api/docs`);
+  console.log(
+    `Aplicación corriendo en: http://localhost:${process.env.PORT ?? 3000}/api`,
+  );
+  console.log(
+    `Swagger UI: http://localhost:${process.env.PORT ?? 3000}/api/docs`,
+  );
 }
 bootstrap();

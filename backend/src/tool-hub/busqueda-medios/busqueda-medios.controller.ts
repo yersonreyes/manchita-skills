@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RequirePermission } from '../../auth/decorators';
 import { BusquedaMediosAnalyzeService } from './busqueda-medios-analyze.service';
 import { BusquedaMediosAnalyzeReqDto } from './dto/busqueda-medios-analyze.req.dto';
@@ -15,7 +20,9 @@ export class BusquedaMediosController {
   @RequirePermission('tool-applications:update')
   @ApiOperation({ summary: 'Genera un análisis AI de Búsqueda de Medios' })
   @ApiResponse({ status: 201, type: BusquedaMediosAnalyzeResDto })
-  analyze(@Body() dto: BusquedaMediosAnalyzeReqDto): Promise<BusquedaMediosAnalyzeResDto> {
+  analyze(
+    @Body() dto: BusquedaMediosAnalyzeReqDto,
+  ): Promise<BusquedaMediosAnalyzeResDto> {
     return this.analyzeService.execute(dto);
   }
 }
