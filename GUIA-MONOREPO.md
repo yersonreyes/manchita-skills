@@ -98,6 +98,7 @@ mi-proyecto/
 │   ├── prisma/                     # Schema, migraciones, seeds
 │   ├── test/                       # Tests E2E
 │   ├── docker-compose.dev.yml      # PostgreSQL para desarrollo local
+│   ├── docker-compose.yml          # Backend + PostgreSQL (testing local del container)
 │   ├── Dockerfile                  # Build de produccion (single-stage)
 │   ├── .env                        # Variables de entorno (gitignored)
 │   ├── .env.example                # Template de variables
@@ -388,8 +389,14 @@ export const environment = {
 
 | Archivo | Ubicacion | Servicios | Uso |
 |---------|-----------|-----------|-----|
-| `backend/docker-compose.dev.yml` | `backend/` | PostgreSQL unicamente | Desarrollo local |
-| `docker-compose.yml` | Raiz | PostgreSQL + Backend + Frontend | Produccion |
+| `docker-compose.dev.yml` | `backend/` | PostgreSQL unicamente | Desarrollo local diario |
+| `docker-compose.yml` | `backend/` | PostgreSQL + Backend | Testing local del container backend |
+| `docker-compose.yml` | Raiz | PostgreSQL + Backend + Frontend | Produccion (orquestacion completa) |
+
+**Flujo tipico:**
+- Desarrollo diario → `backend/docker-compose.dev.yml` (solo DB, app corre nativa con hot-reload)
+- Probar el build del backend → `backend/docker-compose.yml` (backend containerizado + DB)
+- Deployment completo → `docker-compose.yml` en la raiz (los 3 servicios)
 
 ### 7.2 Desarrollo: docker-compose.dev.yml (Solo PostgreSQL)
 
@@ -432,7 +439,61 @@ npm run backend:docker:down   # Detener
 npm run backend:docker:reset  # Detener y borrar volumen (reset completo)
 ```
 
-### 7.3 Produccion: docker-compose.yml (Orquestacion Completa)
+### 7.3 Testing Local: backend/docker-compose.yml (Backend + PostgreSQL)
+
+Levanta el backend containerizado junto con PostgreSQL. Util para verificar que el Dockerfile funciona antes de hacer deployment completo.
+
+```yaml
+# backend/docker-compose.yml
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U myuser -d mydb']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    ports:
+      - '3000:3000'                               # Mismo puerto que desarrollo
+    command: sh -c "npx prisma migrate deploy && node dist/src/main"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@postgres:5432/mydb?schema=public
+      JWT_SECRET: super_secret_key
+      JWT_EXPIRES_IN: 1h
+      REFRESH_TOKEN_EXPIRES_IN_DAYS: 7
+      PORT: 3000
+
+volumes:
+  postgres_data:
+```
+
+**Diferencias con el docker-compose de produccion (raiz):**
+- Credenciales hardcodeadas (no usa `.env`)
+- Solo 2 servicios (sin frontend)
+- Backend en puerto `3000:3000` (no `3002:3000`)
+- Sin `restart: unless-stopped`
+
+**Uso:**
+```bash
+cd backend
+docker compose up --build     # Construir y levantar
+docker compose down           # Detener
+```
+
+### 7.4 Produccion: docker-compose.yml (Orquestacion Completa)
 
 Orquesta los 3 servicios para produccion. Todas las variables vienen del archivo `.env` en la raiz.
 
@@ -505,7 +566,7 @@ volumes:
 
 4. **Puertos de produccion:** Backend en `3002`, Frontend en `3700`. Distintos a los de desarrollo para evitar conflictos.
 
-### 7.4 Dockerfile del Backend (Single-stage)
+### 7.5 Dockerfile del Backend (Single-stage)
 
 ```dockerfile
 # backend/Dockerfile
@@ -531,9 +592,11 @@ CMD ["node", "dist/src/main"]
 
 **Patron de cache:** Las dependencias se instalan ANTES de copiar el codigo fuente. Si el codigo cambia pero las dependencias no, Docker reutiliza la capa cacheada de `npm install`.
 
+**Sobre la ruta `dist/src/main`:** NestJS compila con `outDir: ./dist` y `sourceRoot: src` (nest-cli.json), generando la salida en `dist/src/`. Por eso el entry point es `dist/src/main`, no `dist/main`.
+
 **Nota:** El `CMD` puede ser sobreescrito por el `command` del docker-compose (que agrega el `prisma migrate deploy` antes).
 
-### 7.5 Dockerfile del Frontend (Multi-stage + Nginx)
+### 7.6 Dockerfile del Frontend (Multi-stage + Nginx)
 
 ```dockerfile
 # frontend/Dockerfile
@@ -560,7 +623,7 @@ EXPOSE 80
 
 **`--legacy-peer-deps`:** Necesario por conflictos de peer dependencies entre librerias del ecosistema Angular.
 
-### 7.6 Nginx: Reverse Proxy y SPA Fallback
+### 7.7 Nginx: Reverse Proxy y SPA Fallback
 
 ```nginx
 # frontend/nginx.conf
@@ -700,14 +763,15 @@ El comando `dev` usa `concurrently` para ejecutar backend y frontend en paralelo
 
 ### 9.3 Puertos y URLs
 
-| Servicio | Puerto | URL |
-|----------|--------|-----|
-| Frontend (dev) | 4200 | `http://localhost:4200` |
-| Backend (dev) | 3000 | `http://localhost:3000` |
-| Swagger API Docs | 3000 | `http://localhost:3000/api/docs` |
-| PostgreSQL (dev) | 5432 | `postgresql://myuser:mypassword@localhost:5432/mydb` |
-| Frontend (prod) | 3700 | `http://localhost:3700` |
-| Backend (prod) | 3002 | `http://localhost:3002` |
+| Servicio | Entorno | Puerto | URL |
+|----------|---------|--------|-----|
+| Frontend | dev (ng serve) | 4200 | `http://localhost:4200` |
+| Backend | dev (nest start) | 3000 | `http://localhost:3000` |
+| Swagger API Docs | dev | 3000 | `http://localhost:3000/api/docs` |
+| PostgreSQL | dev (docker-compose.dev) | 5432 | `postgresql://myuser:mypassword@localhost:5432/mydb` |
+| Backend | test local (backend/docker-compose) | 3000 | `http://localhost:3000` |
+| Backend | produccion (root docker-compose) | 3002 | `http://localhost:3002` |
+| Frontend | produccion (root docker-compose) | 3700 | `http://localhost:3700` |
 
 ### 9.4 Base de Datos (Prisma CLI)
 

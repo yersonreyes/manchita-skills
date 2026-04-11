@@ -1357,32 +1357,34 @@ ci(docker):      actualizar Dockerfile
 
 ### Docker
 
-#### Dockerfile (Multi-stage Build)
+#### Dockerfile (Single-stage Build)
 
 ```dockerfile
-# Stage 1: Build
-FROM node:20-alpine AS base
+FROM node:20-alpine
 WORKDIR /app
+
+# 1. Copiar package.json y prisma primero (aprovecha cache de layers)
 COPY package*.json ./
-COPY prisma ./prisma             # Copiar prisma primero para cache de layers
-RUN npm ci                       # Instalar dependencias
+COPY prisma ./prisma
+RUN npm install
+
+# 2. Copiar config de TypeScript y codigo fuente
 COPY tsconfig*.json nest-cli.json ./
 COPY src ./src
-RUN npx prisma generate          # Generar Prisma Client
-RUN npm run build                # Compilar TypeScript
 
-# Stage 2: Production
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/dist ./dist
-COPY --from=base /app/prisma ./prisma
+# 3. Generar cliente Prisma y compilar NestJS
+RUN npx prisma generate
+RUN npx nest build
+
 EXPOSE 3000
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]
 ```
 
-#### Docker Compose
+> **Nota sobre la ruta `dist/src/main`:** NestJS compila con `outDir: ./dist` y `sourceRoot: src` (nest-cli.json), lo que genera la salida en `dist/src/`. Por eso el entry point es `dist/src/main`, no `dist/main`.
+
+#### Docker Compose (Backend + PostgreSQL)
+
+El archivo `docker-compose.yml` del backend levanta PostgreSQL y el backend juntos. Util para testing local del container sin el frontend.
 
 ```yaml
 version: '3.9'
@@ -1393,6 +1395,8 @@ services:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U myuser -d mydb']
       interval: 10s
@@ -1401,17 +1405,26 @@ services:
 
   backend:
     build: .
-    command: sh -c "npx prisma migrate deploy && node dist/main"
+    ports:
+      - '3000:3000'
+    command: sh -c "npx prisma migrate deploy && node dist/src/main"
     depends_on:
       postgres:
-        condition: service_healthy    # Espera a que Postgres esté listo
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://myuser:mypassword@postgres:5432/mydb?schema=public
       JWT_SECRET: super_secret_key
       JWT_EXPIRES_IN: 1h
+      REFRESH_TOKEN_EXPIRES_IN_DAYS: 7
+      PORT: 3000
+
+volumes:
+  postgres_data:
 ```
 
-> **Nota:** El comando del backend ejecuta `prisma migrate deploy` antes de iniciar la app para aplicar migraciones automáticamente.
+> **Nota:** El comando del backend ejecuta `prisma migrate deploy` antes de iniciar la app para aplicar migraciones automáticamente. La ruta `dist/src/main` corresponde a la salida de `npx nest build`.
+
+> **Para deployment completo (backend + frontend + PostgreSQL):** Usar el `docker-compose.yml` de la raiz del monorepo. Ver [GUIA-MONOREPO.md](../GUIA-MONOREPO.md) seccion 7.3.
 
 #### Docker Compose para Desarrollo Local
 
