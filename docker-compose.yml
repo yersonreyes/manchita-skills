@@ -40,6 +40,7 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       MINIMAX_API_KEY: ${MINIMAX_API_KEY}
       MINIMAX_GROUP_ID: ${MINIMAX_GROUP_ID}
+      AI_PROVIDER: ${AI_PROVIDER:-minimax}
     restart: unless-stopped
 
   frontend:
