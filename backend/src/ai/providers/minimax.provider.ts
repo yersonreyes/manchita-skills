@@ -18,7 +18,7 @@ export class MinimaxProvider implements IAiProvider {
   constructor(
     private readonly apiKey: string,
     private readonly groupId?: string,
-    private readonly model = 'abab6.5s-chat',
+    private readonly model = 'MiniMax-M2.7',
   ) {
     console.log(
       `[MinimaxProvider] Initialized with key: ${apiKey?.substring(0, 10)}...`,
