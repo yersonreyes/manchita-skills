@@ -5,7 +5,7 @@ import { MinimaxProvider } from './minimax.provider';
 import { IAiProvider } from './ai-provider.interface';
 
 export function createAiProvider(config: ConfigService): IAiProvider {
-  const provider = config.get<string>('AI_PROVIDER', 'anthropic');
+  const provider = config.get<string>('AI_PROVIDER', 'minimax');
 
   switch (provider) {
     case 'openai':
