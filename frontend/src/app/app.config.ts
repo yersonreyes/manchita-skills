@@ -21,7 +21,30 @@ import { authRefreshInterceptor } from './core/interceptors/auth-refresh.interce
 
 // ─── Tema personalizado: Obsidian Emerald ────────────────────────────────────
 const ManchitaPreset = definePreset(Aura, {
+  primitive: {
+    borderRadius: {
+      none: '0',
+      xs:   '0.25rem',
+      sm:   '0.375rem',
+      md:   '0.5rem',
+      lg:   '0.625rem',
+      xl:   '0.75rem',
+    },
+  },
   semantic: {
+    fontFamily: "'Outfit', ui-sans-serif, system-ui, sans-serif",
+    focusRing: {
+      width: '2px',
+      style: 'solid',
+      color: '{primary.color}',
+      offset: '2px',
+      shadow: '0 0 0 4px rgb(5 150 105 / 0.2)',
+    },
+    formField: {
+      borderRadius: '{border.radius.md}',
+      paddingX: '0.875rem',
+      paddingY: '0.625rem',
+    },
     primary: {
       50:  '{emerald.50}',
       100: '{emerald.100}',

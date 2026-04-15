@@ -1,13 +1,13 @@
 <div class="mb-8">
-  <h2 class="text-3xl font-bold text-gray-800">Iniciar Sesión</h2>
-  <p class="text-gray-500 mt-2">Bienvenido de vuelta. Ingresa tus credenciales.</p>
+  <h2 class="font-display text-3xl font-semibold text-stone-900 tracking-tight">Iniciar Sesión</h2>
+  <p class="text-stone-500 mt-2">Bienvenido de vuelta. Ingresá tus credenciales.</p>
 </div>
 
-<form class="flex flex-col gap-5" (ngSubmit)="onLogin()">
+<form #loginForm="ngForm" class="flex flex-col gap-5" (ngSubmit)="onLogin()" novalidate>
   <!-- Email -->
-  <div class="flex flex-col gap-2">
-    <label for="email" class="text-sm font-medium text-gray-700">
-      Correo electrónico
+  <div class="flex flex-col gap-1.5">
+    <label for="email" class="text-sm font-medium text-stone-700">
+      Correo electrónico <span class="text-red-500">*</span>
     </label>
     <input
       pInputText
@@ -15,21 +15,34 @@
       type="email"
       [(ngModel)]="email"
       name="email"
+      #emailRef="ngModel"
+      required
+      email
       placeholder="correo@ejemplo.com"
       class="w-full"
+      [class.!border-red-400]="emailRef.invalid && emailRef.touched"
       autocomplete="email"
     />
+    @if (emailRef.invalid && emailRef.touched) {
+      <small class="text-xs text-red-600 flex items-center gap-1">
+        <i class="pi pi-exclamation-circle text-[10px]"></i>
+        @if (emailRef.errors?.['required']) { Ingresá tu correo electrónico. }
+        @else if (emailRef.errors?.['email']) { El correo no tiene un formato válido. }
+      </small>
+    }
   </div>
 
   <!-- Contraseña -->
-  <div class="flex flex-col gap-2">
-    <label for="password" class="text-sm font-medium text-gray-700">
-      Contraseña
+  <div class="flex flex-col gap-1.5">
+    <label for="password" class="text-sm font-medium text-stone-700">
+      Contraseña <span class="text-red-500">*</span>
     </label>
     <p-password
       id="password"
       [(ngModel)]="password"
       name="password"
+      #passwordRef="ngModel"
+      required
       placeholder="••••••••"
       [feedback]="false"
       [toggleMask]="true"
@@ -37,9 +50,15 @@
       inputStyleClass="w-full"
       autocomplete="current-password"
     />
+    @if (passwordRef.invalid && passwordRef.touched) {
+      <small class="text-xs text-red-600 flex items-center gap-1">
+        <i class="pi pi-exclamation-circle text-[10px]"></i>
+        Ingresá tu contraseña.
+      </small>
+    }
     <a
       routerLink="/auth/recover-password"
-      class="text-sm text-emerald-600 hover:text-emerald-700 self-end cursor-pointer"
+      class="text-sm text-emerald-700 hover:text-emerald-800 self-end cursor-pointer mt-1 font-medium"
     >
       ¿Olvidaste tu contraseña?
     </a>
@@ -52,14 +71,15 @@
     icon="pi pi-sign-in"
     styleClass="w-full"
     [loading]="loading()"
+    [disabled]="loading()"
     (onClick)="onLogin()"
   />
 </form>
 
 <!-- Link a registro -->
-<div class="mt-6 text-center text-sm text-gray-500">
-  ¿No tienes cuenta?
-  <a routerLink="/auth/register" class="text-emerald-600 hover:text-emerald-700 font-medium ml-1">
-    Regístrate
+<div class="mt-6 text-center text-sm text-stone-500">
+  ¿No tenés cuenta?
+  <a routerLink="/auth/register" class="text-emerald-700 hover:text-emerald-800 font-medium ml-1">
+    Registrate
   </a>
 </div>

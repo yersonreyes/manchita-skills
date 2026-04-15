@@ -1,0 +1,48 @@
+@let isCompact = compact();
+
+<div
+  class="flex flex-col items-center justify-center text-center"
+  [class.py-16]="!isCompact"
+  [class.px-6]="!isCompact"
+  [class.py-8]="isCompact"
+  [class.px-4]="isCompact"
+>
+  <div
+    class="flex items-center justify-center rounded-full bg-stone-100 text-stone-400 mb-4"
+    [class.w-16]="!isCompact"
+    [class.h-16]="!isCompact"
+    [class.w-12]="isCompact"
+    [class.h-12]="isCompact"
+  >
+    <i
+      class="pi"
+      [class]="icon()"
+      [class.text-2xl]="!isCompact"
+      [class.text-lg]="isCompact"
+    ></i>
+  </div>
+
+  <h3
+    class="font-display font-semibold text-stone-800"
+    [class.text-lg]="!isCompact"
+    [class.text-base]="isCompact"
+  >
+    {{ title() }}
+  </h3>
+
+  @if (description()) {
+    <p class="text-sm text-stone-500 mt-1 max-w-sm">{{ description() }}</p>
+  }
+
+  @if (ctaLabel()) {
+    <p-button
+      [label]="ctaLabel()!"
+      [icon]="'pi ' + ctaIcon()"
+      [severity]="ctaSeverity() === 'secondary' ? 'secondary' : undefined"
+      [outlined]="ctaSeverity() === 'secondary'"
+      size="small"
+      styleClass="mt-5"
+      (onClick)="onCta()"
+    />
+  }
+</div>

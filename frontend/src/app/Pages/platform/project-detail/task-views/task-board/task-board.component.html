@@ -55,9 +55,16 @@
             }
 
             @if (getTasksForStatus(status.id).length === 0) {
-              <div class="task-board__col-empty">
-                <span>Sin tareas</span>
-              </div>
+              <button
+                type="button"
+                class="task-board__col-empty-cta group"
+                (click)="openNewTask(status.id)"
+              >
+                <i class="pi pi-plus-circle text-xl text-stone-300 group-hover:text-emerald-500 transition-colors"></i>
+                <span class="text-xs text-stone-500 group-hover:text-emerald-700 transition-colors">
+                  Agregar tarea
+                </span>
+              </button>
             }
           </div>
         </div>

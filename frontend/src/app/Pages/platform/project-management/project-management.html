@@ -7,9 +7,39 @@
   />
 </app-page-header>
 
-<p-card>
+@if (loading() && projects().length === 0) {
+  <app-page-skeleton variant="table" [rows]="6" />
+} @else if (!loading() && projects().length === 0) {
+  <div class="surface-card">
+    <app-empty-state
+      icon="pi-folder-open"
+      title="Todavía no tenés proyectos"
+      description="Creá tu primer proyecto para empezar a trabajar con el catálogo Double Diamond."
+      ctaLabel="Crear primer proyecto"
+      ctaIcon="pi-plus"
+      (cta)="openCreateDialog()"
+    />
+  </div>
+} @else {
+<div class="surface-card overflow-hidden">
+  <div class="px-4 py-3 border-b border-stone-200 flex items-center gap-3 flex-wrap">
+    <p-iconfield iconPosition="left" class="flex-1 min-w-60">
+      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+      <input
+        pInputText
+        type="text"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        placeholder="Buscar por nombre, descripción o propietario…"
+        class="w-full"
+      />
+    </p-iconfield>
+    <span class="text-xs text-stone-500">
+      {{ filteredProjects().length }} de {{ projects().length }}
+    </span>
+  </div>
   <p-table
-    [value]="projects()"
+    [value]="filteredProjects()"
     [loading]="loading()"
     [paginator]="true"
     [rows]="10"
@@ -74,7 +104,7 @@
 
         <!-- Acciones -->
         <td>
-          <div class="project-actions">
+          <div class="flex items-center gap-2 justify-end">
             <button
               class="project-action project-action--tools"
               (click)="navigateToProject(project.id)"
@@ -93,53 +123,14 @@
               <span>Tareas</span>
             </button>
 
+            <p-menu #overflow [model]="buildProjectMenu(project)" [popup]="true" appendTo="body" />
             <button
-              class="project-action project-action--members"
-              (click)="openMembersDialog(project)"
-              title="Gestionar equipo del proyecto"
+              type="button"
+              class="w-8 h-8 inline-flex items-center justify-center rounded-md text-stone-500 hover:bg-stone-100 hover:text-stone-700 transition-colors"
+              title="Más acciones"
+              (click)="overflow.toggle($event)"
             >
-              <i class="pi pi-users"></i>
-              <span>Equipo</span>
-            </button>
-
-            <button
-              *hasPermission="'projects:update'"
-              class="project-action project-action--edit"
-              (click)="openEditDialog(project)"
-              title="Editar proyecto"
-            >
-              <i class="pi pi-pencil"></i>
-              <span>Editar</span>
-            </button>
-
-            <button
-              *hasPermission="'wiki:read'"
-              class="project-action project-action--wiki"
-              (click)="navigateToWiki(project.id)"
-              title="Ver wiki del proyecto"
-            >
-              <i class="pi pi-book"></i>
-              <span>Wiki</span>
-            </button>
-
-            <button
-              *hasPermission="'requirements:read'"
-              class="project-action project-action--requirements"
-              (click)="navigateToRequirements(project.id)"
-              title="Ver requisitos del proyecto"
-            >
-              <i class="pi pi-list-check"></i>
-              <span>Requisitos</span>
-            </button>
-
-            <button
-              *hasPermission="'project-budget:read'"
-              class="project-action project-action--budget"
-              (click)="navigateToBudget(project.id)"
-              title="Ver presupuesto del proyecto"
-            >
-              <i class="pi pi-wallet"></i>
-              <span>Presupuesto</span>
+              <i class="pi pi-ellipsis-v text-sm"></i>
             </button>
           </div>
         </td>
@@ -149,17 +140,19 @@
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="5">
-          <div class="project-empty">
-            <i class="pi pi-folder-open"></i>
-            <p>No se encontraron proyectos</p>
-            <span>Creá uno nuevo usando el botón de arriba</span>
-          </div>
+        <td colspan="5" class="!p-0">
+          <app-empty-state
+            [compact]="true"
+            icon="pi-search"
+            title="Sin resultados"
+            description="Probá con otro término de búsqueda o limpiá el filtro."
+          />
         </td>
       </tr>
     </ng-template>
   </p-table>
-</p-card>
+</div>
+}
 
 <!-- ─── Wizard de Proyecto ──────────────────────────────────────────────── -->
 <p-dialog

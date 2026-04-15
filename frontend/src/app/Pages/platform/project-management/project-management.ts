@@ -4,13 +4,13 @@ import { Router } from '@angular/router';
 import { UiDialogService } from '@core/services/ui-dialog.service';
 import { UserDto } from '@core/services/userService/user.res.dto';
 import { UserService } from '@core/services/userService/user.service';
+import { PermissionCheckService } from '@core/services/common/permission-check.service';
 import { ProjectMemberRole, ProjectStatus, UpdateProjectReqDto, UpsertMemberReqDto } from '@core/services/projectService/project.req.dto';
 import { ProjectMemberDto, ProjectResDto } from '@core/services/projectService/project.res.dto';
 import { ProjectService } from '@core/services/projectService/project.service';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { HasPermissionDirective } from '@shared/directives/has-permission.directive';
 import { Button } from 'primeng/button';
-import { Card } from 'primeng/card';
 import { Checkbox } from 'primeng/checkbox';
 import { DatePicker } from 'primeng/datepicker';
 import { Dialog } from 'primeng/dialog';
@@ -22,6 +22,12 @@ import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Textarea } from 'primeng/textarea';
 import { Tooltip } from 'primeng/tooltip';
+import { Menu } from 'primeng/menu';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import type { MenuItem as PrimeMenuItem } from 'primeng/api';
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { PageSkeletonComponent } from '@shared/components/page-skeleton/page-skeleton.component';
 
 interface SelectOption<T> {
   label: string;
@@ -41,14 +47,18 @@ interface SelectOption<T> {
     InputNumber,
     Select,
     Tag,
-    Card,
     Tooltip,
     Checkbox,
 
     DatePicker,
     Textarea,
+    Menu,
+    IconField,
+    InputIcon,
     HasPermissionDirective,
     PageHeaderComponent,
+    EmptyStateComponent,
+    PageSkeletonComponent,
   ],
   templateUrl: './project-management.html',
   styleUrl: './project-management.sass',
@@ -58,11 +68,44 @@ export class ProjectManagement implements OnInit {
   private readonly userService = inject(UserService);
   private readonly uiDialog = inject(UiDialogService);
   private readonly router = inject(Router);
+  private readonly permissionService = inject(PermissionCheckService);
 
   // ─── Estado de la página ──────────────────────────────────────────────────
   projects = signal<ProjectResDto[]>([]);
   allUsers = signal<UserDto[]>([]);
   loading = signal(false);
+  searchQuery = signal('');
+
+  filteredProjects = computed(() => {
+    const q = this.searchQuery().trim().toLowerCase();
+    if (!q) return this.projects();
+    return this.projects().filter(
+      (p) =>
+        p.nombre.toLowerCase().includes(q) ||
+        (p.descripcion ?? '').toLowerCase().includes(q) ||
+        (p.owner?.nombre ?? '').toLowerCase().includes(q),
+    );
+  });
+
+  buildProjectMenu(project: ProjectResDto): PrimeMenuItem[] {
+    const can = (p: string) => this.permissionService.hasPermission(p);
+    const items: PrimeMenuItem[] = [
+      { label: 'Equipo', icon: 'pi pi-users', command: () => this.openMembersDialog(project) },
+    ];
+    if (can('projects:update')) {
+      items.push({ label: 'Editar', icon: 'pi pi-pencil', command: () => this.openEditDialog(project) });
+    }
+    if (can('wiki:read')) {
+      items.push({ label: 'Wiki', icon: 'pi pi-book', command: () => this.navigateToWiki(project.id) });
+    }
+    if (can('requirements:read')) {
+      items.push({ label: 'Requisitos', icon: 'pi pi-list-check', command: () => this.navigateToRequirements(project.id) });
+    }
+    if (can('project-budget:read')) {
+      items.push({ label: 'Presupuesto', icon: 'pi pi-wallet', command: () => this.navigateToBudget(project.id) });
+    }
+    return items;
+  }
 
   // ─── Estado del wizard ────────────────────────────────────────────────────
   dialogVisible = signal(false);

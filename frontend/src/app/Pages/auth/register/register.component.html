@@ -1,42 +1,83 @@
 <div class="mb-8">
-  <h2 class="text-3xl font-bold text-gray-800">Crear Cuenta</h2>
-  <p class="text-gray-500 mt-2">Completa el formulario para registrarte.</p>
+  <h2 class="font-display text-3xl font-semibold text-stone-900 tracking-tight">Crear Cuenta</h2>
+  <p class="text-stone-500 mt-2">Completá el formulario para registrarte.</p>
 </div>
 
-<form class="flex flex-col gap-5" (ngSubmit)="onRegister()">
-  <div class="flex flex-col gap-2">
-    <label for="nombre" class="text-sm font-medium text-gray-700">Nombre completo</label>
+<form #regForm="ngForm" class="flex flex-col gap-5" (ngSubmit)="onRegister()" novalidate>
+  <div class="flex flex-col gap-1.5">
+    <label for="nombre" class="text-sm font-medium text-stone-700">
+      Nombre completo <span class="text-red-500">*</span>
+    </label>
     <input pInputText id="nombre" type="text" [(ngModel)]="nombre" name="nombre"
-      placeholder="Juan Pérez" class="w-full" />
+      #nombreRef="ngModel" required minlength="2"
+      placeholder="Juan Pérez" class="w-full"
+      [class.!border-red-400]="nombreRef.invalid && nombreRef.touched" />
+    @if (nombreRef.invalid && nombreRef.touched) {
+      <small class="text-xs text-red-600 flex items-center gap-1">
+        <i class="pi pi-exclamation-circle text-[10px]"></i>
+        @if (nombreRef.errors?.['required']) { Ingresá tu nombre. }
+        @else if (nombreRef.errors?.['minlength']) { Mínimo 2 caracteres. }
+      </small>
+    }
   </div>
 
-  <div class="flex flex-col gap-2">
-    <label for="email" class="text-sm font-medium text-gray-700">Correo electrónico</label>
+  <div class="flex flex-col gap-1.5">
+    <label for="email" class="text-sm font-medium text-stone-700">
+      Correo electrónico <span class="text-red-500">*</span>
+    </label>
     <input pInputText id="email" type="email" [(ngModel)]="email" name="email"
-      placeholder="correo@ejemplo.com" class="w-full" />
+      #emailRef="ngModel" required email
+      placeholder="correo@ejemplo.com" class="w-full"
+      [class.!border-red-400]="emailRef.invalid && emailRef.touched" />
+    @if (emailRef.invalid && emailRef.touched) {
+      <small class="text-xs text-red-600 flex items-center gap-1">
+        <i class="pi pi-exclamation-circle text-[10px]"></i>
+        @if (emailRef.errors?.['required']) { Ingresá tu correo. }
+        @else if (emailRef.errors?.['email']) { Formato de correo inválido. }
+      </small>
+    }
   </div>
 
-  <div class="flex flex-col gap-2">
-    <label for="password" class="text-sm font-medium text-gray-700">Contraseña</label>
+  <div class="flex flex-col gap-1.5">
+    <label for="password" class="text-sm font-medium text-stone-700">
+      Contraseña <span class="text-red-500">*</span>
+    </label>
     <p-password id="password" [(ngModel)]="password" name="password"
+      #passwordRef="ngModel" required [minlength]="6"
       placeholder="Mínimo 6 caracteres" [toggleMask]="true"
       styleClass="w-full" inputStyleClass="w-full" />
+    @if (passwordRef.invalid && passwordRef.touched) {
+      <small class="text-xs text-red-600 flex items-center gap-1">
+        <i class="pi pi-exclamation-circle text-[10px]"></i>
+        @if (passwordRef.errors?.['required']) { Ingresá una contraseña. }
+        @else if (passwordRef.errors?.['minlength']) { Mínimo 6 caracteres. }
+      </small>
+    }
   </div>
 
-  <div class="flex flex-col gap-2">
-    <label for="confirmPassword" class="text-sm font-medium text-gray-700">Confirmar contraseña</label>
+  <div class="flex flex-col gap-1.5">
+    <label for="confirmPassword" class="text-sm font-medium text-stone-700">
+      Confirmar contraseña <span class="text-red-500">*</span>
+    </label>
     <p-password id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword"
-      placeholder="Repite tu contraseña" [feedback]="false" [toggleMask]="true"
+      #confirmRef="ngModel" required
+      placeholder="Repetí tu contraseña" [feedback]="false" [toggleMask]="true"
       styleClass="w-full" inputStyleClass="w-full" />
+    @if (confirmRef.touched && confirmPassword && password !== confirmPassword) {
+      <small class="text-xs text-red-600 flex items-center gap-1">
+        <i class="pi pi-exclamation-circle text-[10px]"></i>
+        Las contraseñas no coinciden.
+      </small>
+    }
   </div>
 
   <p-button type="submit" label="Registrarse" icon="pi pi-user-plus"
-    styleClass="w-full" [loading]="loading()" (onClick)="onRegister()" />
+    styleClass="w-full" [loading]="loading()" [disabled]="loading()" (onClick)="onRegister()" />
 </form>
 
-<div class="mt-6 text-center text-sm text-gray-500">
-  ¿Ya tienes cuenta?
-  <a routerLink="/auth/login" class="text-emerald-600 hover:text-emerald-700 font-medium ml-1">
-    Inicia sesión
+<div class="mt-6 text-center text-sm text-stone-500">
+  ¿Ya tenés cuenta?
+  <a routerLink="/auth/login" class="text-emerald-700 hover:text-emerald-800 font-medium ml-1">
+    Iniciá sesión
   </a>
 </div>

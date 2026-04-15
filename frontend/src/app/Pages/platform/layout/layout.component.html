@@ -67,7 +67,17 @@
       variant="text"
       (onClick)="toggleSidebar()"
     />
-    <span class="header__app-title">Panel de Administración</span>
+    <span class="header__app-title hidden sm:inline">Panel</span>
+  </div>
+
+  <div class="header__search hidden md:flex items-center gap-2 flex-1 max-w-md mx-4 px-3 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-500 hover:bg-white hover:border-stone-300 transition-colors">
+    <i class="pi pi-search text-xs"></i>
+    <input
+      type="text"
+      placeholder="Buscar proyectos, tareas, herramientas…"
+      class="flex-1 bg-transparent text-sm outline-none placeholder:text-stone-400"
+    />
+    <kbd class="text-[10px] font-mono text-stone-400 bg-white border border-stone-200 rounded px-1.5 py-0.5">⌘K</kbd>
   </div>
 
   <div class="header__right">
