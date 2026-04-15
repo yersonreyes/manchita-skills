@@ -1,66 +1,111 @@
 <div class="auth-wrapper">
   <!-- Panel izquierdo: formulario -->
   <div class="auth-form-panel">
+    <!-- Logo + nombre arriba (visible siempre) -->
+    <div class="auth-form-brand">
+      <div class="auth-form-brand-mark">
+        <span class="auth-form-brand-mark__d1"></span>
+        <span class="auth-form-brand-mark__d2"></span>
+      </div>
+      <span class="auth-form-brand-text">Manchita Skills</span>
+    </div>
+
     <div class="auth-form-body">
       <router-outlet />
     </div>
+
+    <p class="auth-form-footer">
+      Diseñá con método. <span class="auth-form-footer__accent">Double Diamond</span>
+    </p>
   </div>
 
   <!-- Panel derecho: branding -->
   <div class="auth-brand-panel">
-    <!-- SVG de fondo -->
+    <!-- SVG de fondo con grilla y diamantes sutiles -->
     <svg class="brand-bg-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
         <pattern id="ms-grid" width="40" height="40" patternUnits="userSpaceOnUse">
           <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
         </pattern>
+        <radialGradient id="ms-glow" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="rgba(5,150,105,0.18)" />
+          <stop offset="100%" stop-color="rgba(5,150,105,0)" />
+        </radialGradient>
       </defs>
       <rect width="100%" height="100%" fill="url(#ms-grid)" />
-      <!-- Hexágonos decorativos usando coordenadas porcentuales -->
-      <polygon
-        points="75%,5% 92%,15% 92%,35% 75%,45% 58%,35% 58%,15%"
-        fill="none" stroke="rgba(5,150,105,0.15)" stroke-width="1.5"/>
-      <polygon
-        points="20%,55% 37%,65% 37%,85% 20%,95% 3%,85% 3%,65%"
-        fill="none" stroke="rgba(245,158,11,0.12)" stroke-width="1.5"/>
-      <polygon
-        points="85%,65% 97%,72% 97%,86% 85%,93% 73%,86% 73%,72%"
-        fill="none" stroke="rgba(5,150,105,0.10)" stroke-width="1.5"/>
+      <rect width="100%" height="100%" fill="url(#ms-glow)" />
     </svg>
 
     <!-- Contenido -->
     <div class="brand-content">
-      <!-- Logo mark -->
-      <div class="brand-logo">
-        <div class="brand-logo-mark">
-          <div class="brand-logo-outer"></div>
-          <div class="brand-logo-inner"></div>
-          <div class="brand-logo-icon">
-            <i class="pi pi-bolt" style="color: #f59e0b; font-size: 1.375rem;"></i>
-          </div>
+      <span class="brand-eyebrow">
+        <i class="pi pi-compass text-[11px]"></i>
+        Metodología Double Diamond
+      </span>
+
+      <h1 class="brand-title">
+        Diseñá con<br/>
+        <span class="brand-title__accent">propósito.</span>
+      </h1>
+
+      <p class="brand-description">
+        Una plataforma para aplicar la metodología <strong>Double Diamond</strong>
+        en tus proyectos: 4 fases, más de 60 herramientas curadas,
+        y un equipo trabajando en el mismo lugar.
+      </p>
+
+      <!-- Diagrama Double Diamond -->
+      <div class="diamond-diagram">
+        <svg viewBox="0 0 320 90" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- Diamante 1: Discover → Define -->
+          <polygon
+            points="10,45 80,15 150,45 80,75"
+            fill="rgba(5,150,105,0.12)"
+            stroke="rgba(52,211,153,0.6)"
+            stroke-width="1.5"
+          />
+          <!-- Diamante 2: Develop → Deliver -->
+          <polygon
+            points="170,45 240,15 310,45 240,75"
+            fill="rgba(245,158,11,0.10)"
+            stroke="rgba(245,158,11,0.55)"
+            stroke-width="1.5"
+          />
+          <!-- Vértices: Problem & Solution -->
+          <circle cx="150" cy="45" r="3.5" fill="#34d399" />
+          <circle cx="170" cy="45" r="3.5" fill="#f59e0b" />
+          <line x1="150" y1="45" x2="170" y2="45" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-dasharray="2 2" />
+        </svg>
+        <div class="diamond-labels">
+          <span>Descubrir</span>
+          <span>Definir</span>
+          <span>Desarrollar</span>
+          <span>Entregar</span>
         </div>
       </div>
 
-      <h1 class="brand-title">Manchita Skills</h1>
+      <!-- Stats -->
+      <div class="brand-stats">
+        <div class="brand-stat">
+          <span class="brand-stat__num">4</span>
+          <span class="brand-stat__label">Fases</span>
+        </div>
+        <div class="brand-stat-divider"></div>
+        <div class="brand-stat">
+          <span class="brand-stat__num">9</span>
+          <span class="brand-stat__label">Categorías</span>
+        </div>
+        <div class="brand-stat-divider"></div>
+        <div class="brand-stat">
+          <span class="brand-stat__num">60+</span>
+          <span class="brand-stat__label">Herramientas</span>
+        </div>
+      </div>
 
-      <p class="brand-description">
-        Plataforma de gestión de habilidades y competencias.
-        Administra usuarios, roles y permisos con precisión.
+      <!-- Quote / framing -->
+      <p class="brand-quote">
+        “El proceso no es decoración. Es el método que separa una buena idea de una solución que importa.”
       </p>
-
-      <!-- Divisor amber -->
-      <div class="brand-divider">
-        <div class="brand-divider-line"></div>
-        <div class="brand-divider-dot"></div>
-        <div class="brand-divider-line"></div>
-      </div>
-
-      <!-- Feature chips -->
-      <div class="brand-chips">
-        <span class="brand-chip brand-chip--emerald">Control de acceso</span>
-        <span class="brand-chip brand-chip--amber">Roles y permisos</span>
-        <span class="brand-chip brand-chip--emerald">Gestión de usuarios</span>
-      </div>
     </div>
   </div>
 </div>
