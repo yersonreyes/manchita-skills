@@ -3,11 +3,17 @@
   class="sidebar"
   [class.sidebar--collapsed]="sidebarCollapsed()"
 >
-  <!-- Logo -->
+  <!-- Logo: Double Diamond mark -->
   <div class="sidebar__logo">
-    <i class="pi pi-star-fill text-amber-400 text-xl"></i>
+    <div class="sidebar__logo-mark" aria-hidden="true">
+      <span class="sidebar__logo-d sidebar__logo-d--emerald"></span>
+      <span class="sidebar__logo-d sidebar__logo-d--amber"></span>
+    </div>
     @if (!sidebarCollapsed()) {
-      <span class="sidebar__title">Manchita Skills</span>
+      <div class="sidebar__logo-text">
+        <span class="sidebar__title">Manchita</span>
+        <span class="sidebar__subtitle">Double Diamond</span>
+      </div>
     }
   </div>
 
@@ -67,7 +73,10 @@
       variant="text"
       (onClick)="toggleSidebar()"
     />
-    <span class="header__app-title hidden sm:inline">Panel</span>
+    <span class="header__eyebrow hidden sm:inline-flex">
+      <i class="pi pi-compass text-[10px]"></i>
+      Double Diamond
+    </span>
   </div>
 
   <div class="header__search hidden md:flex items-center gap-2 flex-1 max-w-md mx-4 px-3 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-500 hover:bg-white hover:border-stone-300 transition-colors">
